@@ -1,0 +1,2067 @@
+[
+ {
+  "id": "naruto",
+  "nome": "NARUTO",
+  "anime": "Naruto",
+  "velocidade": 0.8,
+  "visual": {
+   "penteado": "naruto",
+   "pele": "#F6C9A0",
+   "cabelo": "#F8D648",
+   "olhos": "#2C7FE0",
+   "roupa": "#F07A1A",
+   "ombros": "#2A2A33",
+   "calca": "#F07A1A",
+   "sapato": "#2E5BA8",
+   "acessorioCor": "#2E4FA0",
+   "acessorios": [
+    "bigodes"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "RASENGAN",
+    "cor": "#2F8CF0",
+    "cor2": "#BFE6FF",
+    "efeito": "esfera",
+    "alcance": 22,
+    "dano": 16,
+    "recarga": 2.2,
+    "som": "esfera",
+    "especial": true
+   },
+   {
+    "nome": "SHADOW CLONE",
+    "cor": "#F07A1A",
+    "cor2": "#FFE2B0",
+    "efeito": "clones",
+    "alcance": 34,
+    "dano": 12,
+    "recarga": 3.4,
+    "som": "soco"
+   }
+  ],
+  "poder": 8.5
+ },
+ {
+  "id": "sasuke",
+  "nome": "SASUKE",
+  "anime": "Naruto",
+  "velocidade": 0.85,
+  "visual": {
+   "penteado": "sasuke",
+   "pele": "#F4CDA8",
+   "cabelo": "#232845",
+   "olhos": "#D0202E",
+   "roupa": "#ECECF4",
+   "decote": "pele",
+   "cinto": "#7A4BB0",
+   "calca": "#2B2F4A",
+   "sapato": "#3A3A48"
+  },
+  "golpes": [
+   {
+    "nome": "CHIDORI",
+    "cor": "#E8C21C",
+    "cor2": "#BDE8FF",
+    "efeito": "raio",
+    "alcance": 30,
+    "dano": 15,
+    "recarga": 2.4,
+    "status": "PAR",
+    "som": "raio",
+    "especial": true
+   },
+   {
+    "nome": "AMATERASU",
+    "cor": "#4A1F70",
+    "cor2": "#1A0F24",
+    "efeito": "chamas",
+    "alcance": 44,
+    "dano": 11,
+    "recarga": 3.6,
+    "status": "BRN",
+    "som": "fogo"
+   }
+  ],
+  "poder": 8.5
+ },
+ {
+  "id": "goku",
+  "nome": "GOKU",
+  "anime": "Dragon Ball",
+  "velocidade": 0.8,
+  "visual": {
+   "penteado": "goku",
+   "pele": "#F6C9A0",
+   "cabelo": "#1C1C24",
+   "olhos": "#1C1C24",
+   "roupa": "#F07A1A",
+   "decote": "#2849A8",
+   "cinto": "#2849A8",
+   "luvas": "#2849A8",
+   "calca": "#F07A1A",
+   "sapato": "#2849A8"
+  },
+  "golpes": [
+   {
+    "nome": "KAMEHAMEHA",
+    "cor": "#2F8CF0",
+    "cor2": "#E8F6FF",
+    "efeito": "feixe",
+    "alcance": 62,
+    "dano": 16,
+    "recarga": 2.8,
+    "som": "feixe",
+    "especial": true
+   },
+   {
+    "nome": "SPIRIT BOMB",
+    "cor": "#6FC8FF",
+    "cor2": "#E8F8FF",
+    "efeito": "bomba",
+    "alcance": 56,
+    "dano": 20,
+    "recarga": 6.0,
+    "som": "explosao",
+    "especial": true,
+    "area": 20
+   }
+  ],
+  "poder": 10
+ },
+ {
+  "id": "vegeta",
+  "nome": "VEGETA",
+  "anime": "Dragon Ball",
+  "velocidade": 0.82,
+  "visual": {
+   "penteado": "vegeta",
+   "pele": "#F4CDA8",
+   "cabelo": "#1C1C24",
+   "olhos": "#1C1C24",
+   "roupa": "#F4F4F0",
+   "mangas": "#2B3FA0",
+   "ombros": "#E8C040",
+   "luvas": "#F4F4F0",
+   "calca": "#2B3FA0",
+   "sapato": "#F4F4F0"
+  },
+  "golpes": [
+   {
+    "nome": "GALICK GUN",
+    "cor": "#8A3FD8",
+    "cor2": "#F0D8FF",
+    "efeito": "feixe",
+    "alcance": 60,
+    "dano": 15,
+    "recarga": 2.8,
+    "som": "feixe"
+   },
+   {
+    "nome": "FINAL FLASH",
+    "cor": "#E8C21C",
+    "cor2": "#FFFBE0",
+    "efeito": "feixe",
+    "alcance": 70,
+    "dano": 19,
+    "recarga": 5.0,
+    "som": "feixe",
+    "especial": true
+   }
+  ],
+  "poder": 9.3
+ },
+ {
+  "id": "luffy",
+  "nome": "LUFFY",
+  "anime": "One Piece",
+  "velocidade": 0.8,
+  "visual": {
+   "penteado": "luffy",
+   "pele": "#EDBB8E",
+   "cabelo": "#1C1C24",
+   "olhos": "#1C1C24",
+   "roupa": "#D62828",
+   "decote": "pele",
+   "mangas": "pele",
+   "cinto": "#E8C040",
+   "calca": "#2E5BA8",
+   "shorts": true,
+   "sapato": "#B07A48",
+   "acessorioCor": "#E8C35A",
+   "acessorioCor2": "#C8202A",
+   "acessorios": [
+    "cicatriz-olho"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "GOMU GOMU PISTOL",
+    "cor": "#D62828",
+    "cor2": "#FFD6C0",
+    "efeito": "elastico",
+    "alcance": 46,
+    "dano": 13,
+    "recarga": 2.0,
+    "som": "soco"
+   },
+   {
+    "nome": "GEAR SECOND",
+    "cor": "#F06A9A",
+    "cor2": "#FFD6E6",
+    "efeito": "aura",
+    "alcance": 30,
+    "dano": 17,
+    "recarga": 4.0,
+    "som": "soco",
+    "especial": true
+   }
+  ],
+  "poder": 8.5
+ },
+ {
+  "id": "zoro",
+  "nome": "ZORO",
+  "anime": "One Piece",
+  "velocidade": 0.78,
+  "visual": {
+   "penteado": "zoro",
+   "pele": "#EDBB8E",
+   "cabelo": "#4FA84A",
+   "olhos": "#3A3A40",
+   "roupa": "#2F6B3A",
+   "decote": "pele",
+   "cinto": "#B0283A",
+   "calca": "#24242C",
+   "sapato": "#3A2E28",
+   "acessorioCor": "#E8C040",
+   "acessorios": [
+    "brincos",
+    "tres-katanas"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "ONIGIRI",
+    "cor": "#2FA83A",
+    "cor2": "#D8FFD0",
+    "efeito": "corte",
+    "alcance": 28,
+    "dano": 15,
+    "recarga": 2.2,
+    "som": "corte"
+   },
+   {
+    "nome": "SANTORYU",
+    "cor": "#C8CCD8",
+    "cor2": "#FFFFFF",
+    "efeito": "corte",
+    "alcance": 30,
+    "dano": 18,
+    "recarga": 4.0,
+    "som": "corte",
+    "especial": true
+   }
+  ],
+  "poder": 7.8
+ },
+ {
+  "id": "ichigo",
+  "nome": "ICHIGO",
+  "anime": "Bleach",
+  "velocidade": 0.82,
+  "visual": {
+   "penteado": "ichigo",
+   "pele": "#F6C9A0",
+   "cabelo": "#F28A1E",
+   "olhos": "#6A3A1E",
+   "roupa": "#1E1E26",
+   "decote": "#F4F4F0",
+   "cinto": "#E8E8EC",
+   "calca": "#1E1E26",
+   "sapato": "#E8E8EC",
+   "acessorios": [
+    "espada-grande"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "GETSUGA TENSHO",
+    "cor": "#B01822",
+    "cor2": "#140A0C",
+    "efeito": "onda",
+    "alcance": 58,
+    "dano": 17,
+    "recarga": 2.6,
+    "som": "corte",
+    "especial": true
+   }
+  ],
+  "poder": 8.6
+ },
+ {
+  "id": "tanjiro",
+  "nome": "TANJIRO",
+  "anime": "Demon Slayer",
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "tanjiro",
+   "pele": "#F6C9A0",
+   "cabelo": "#5A1E22",
+   "cabelo2": "#B0302A",
+   "olhos": "#9A2A2A",
+   "roupa": "#2E8B57",
+   "centro": "#20222E",
+   "mangas": "#2E8B57",
+   "padrao": "xadrez",
+   "padraoCor": "#1A1A1E",
+   "cinto": "#F0F0F0",
+   "calca": "#20222E",
+   "sapato": "#E8E8E8",
+   "acessorioCor": "#F4F4F4",
+   "acessorioCor2": "#D02828",
+   "acessorios": [
+    "cicatriz-testa",
+    "brincos-hanafuda",
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "WATER BREATHING",
+    "cor": "#3AA8E8",
+    "cor2": "#D8F4FF",
+    "efeito": "arco",
+    "alcance": 28,
+    "dano": 14,
+    "recarga": 2.2,
+    "som": "agua"
+   },
+   {
+    "nome": "HINOKAMI KAGURA",
+    "cor": "#E8501A",
+    "cor2": "#FFD040",
+    "efeito": "arco",
+    "alcance": 30,
+    "dano": 17,
+    "recarga": 4.2,
+    "status": "BRN",
+    "som": "fogo",
+    "especial": true
+   }
+  ],
+  "poder": 5.5
+ },
+ {
+  "id": "zenitsu",
+  "nome": "ZENITSU",
+  "anime": "Demon Slayer",
+  "velocidade": 0.95,
+  "visual": {
+   "penteado": "zenitsu",
+   "pele": "#F6C9A0",
+   "cabelo": "#F8D030",
+   "cabelo2": "#F08A1E",
+   "olhos": "#B07A20",
+   "roupa": "#F2C230",
+   "centro": "#20222E",
+   "mangas": "#F2C230",
+   "padrao": "triangulos",
+   "padraoCor": "#FFFFFF",
+   "cinto": "#F0F0F0",
+   "calca": "#20222E",
+   "sapato": "#E8E8E8",
+   "acessorios": [
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "THUNDERCLAP FLASH",
+    "cor": "#E8C21C",
+    "cor2": "#FFFBE0",
+    "efeito": "raio",
+    "alcance": 40,
+    "dano": 17,
+    "recarga": 2.8,
+    "status": "PAR",
+    "som": "raio",
+    "especial": true
+   }
+  ],
+  "poder": 5.2
+ },
+ {
+  "id": "gojo",
+  "nome": "GOJO",
+  "anime": "Jujutsu Kaisen",
+  "velocidade": 0.8,
+  "visual": {
+   "penteado": "gojo",
+   "pele": "#F8D8BC",
+   "cabelo": "#F4F6FA",
+   "olhos": "#58D8F0",
+   "roupa": "#1C1E2C",
+   "ombros": "#1C1E2C",
+   "calca": "#1C1E2C",
+   "sapato": "#14141A",
+   "acessorioCor": "#141418"
+  },
+  "golpes": [
+   {
+    "nome": "HOLLOW PURPLE",
+    "cor": "#8A3FD8",
+    "cor2": "#F0D8FF",
+    "efeito": "projetil",
+    "alcance": 64,
+    "dano": 19,
+    "recarga": 4.6,
+    "som": "feixe",
+    "especial": true,
+    "area": 16
+   },
+   {
+    "nome": "INFINITY",
+    "cor": "#2CC8D8",
+    "cor2": "#D8FFFF",
+    "efeito": "escudo",
+    "alcance": 0,
+    "dano": 0,
+    "recarga": 8.0,
+    "som": "escudo"
+   }
+  ],
+  "poder": 9.6
+ },
+ {
+  "id": "itadori",
+  "nome": "ITADORI",
+  "anime": "Jujutsu Kaisen",
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "itadori",
+   "pele": "#F6C9A0",
+   "cabelo": "#F2A0B8",
+   "cabelo2": "#6A3A40",
+   "olhos": "#7A4A2A",
+   "roupa": "#1E2030",
+   "ombros": "#C0283A",
+   "cinto": "#E8C040",
+   "calca": "#1E2030",
+   "sapato": "#E8E8E8"
+  },
+  "golpes": [
+   {
+    "nome": "DIVERGENT FIST",
+    "cor": "#2F6CF0",
+    "cor2": "#BFD8FF",
+    "efeito": "soco",
+    "alcance": 24,
+    "dano": 14,
+    "recarga": 2.0,
+    "som": "soco"
+   },
+   {
+    "nome": "BLACK FLASH",
+    "cor": "#B01822",
+    "cor2": "#140A0C",
+    "efeito": "soco",
+    "alcance": 26,
+    "dano": 19,
+    "recarga": 4.4,
+    "som": "raio",
+    "especial": true
+   }
+  ],
+  "poder": 6.6
+ },
+ {
+  "id": "deku",
+  "nome": "DEKU",
+  "anime": "My Hero Academia",
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "deku",
+   "pele": "#F6C9A0",
+   "cabelo": "#1F4A30",
+   "olhos": "#2FA060",
+   "roupa": "#2E8B6A",
+   "ombros": "#1C1C22",
+   "luvas": "#F4F4F0",
+   "cinto": "#1C1C22",
+   "calca": "#2E8B6A",
+   "sapato": "#D02A2A",
+   "acessorios": [
+    "sardas"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "DETROIT SMASH",
+    "cor": "#2FC06A",
+    "cor2": "#E0FFE8",
+    "efeito": "soco",
+    "alcance": 26,
+    "dano": 18,
+    "recarga": 3.0,
+    "som": "soco",
+    "especial": true,
+    "area": 14
+   }
+  ],
+  "poder": 7.2
+ },
+ {
+  "id": "bakugo",
+  "nome": "BAKUGO",
+  "anime": "My Hero Academia",
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "bakugo",
+   "pele": "#F6C9A0",
+   "cabelo": "#F2E2A0",
+   "olhos": "#D0202E",
+   "roupa": "#22222A",
+   "mangas": "pele",
+   "padrao": "x",
+   "padraoCor": "#F07A1A",
+   "cinto": "#F07A1A",
+   "calca": "#22222A",
+   "sapato": "#F07A1A",
+   "acessorioCor": "#8A8E98",
+   "acessorioCor2": "#F07A1A",
+   "acessorios": [
+    "manoplas"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "HOWITZER IMPACT",
+    "cor": "#F07A1A",
+    "cor2": "#FFE070",
+    "efeito": "explosao",
+    "alcance": 40,
+    "dano": 18,
+    "recarga": 3.4,
+    "som": "explosao",
+    "especial": true,
+    "area": 18
+   }
+  ],
+  "poder": 6.2
+ },
+ {
+  "id": "todoroki",
+  "nome": "TODOROKI",
+  "anime": "My Hero Academia",
+  "velocidade": 0.8,
+  "visual": {
+   "penteado": "todoroki",
+   "pele": "#F6D2B0",
+   "cabelo": "#F4F4F8",
+   "cabelo2": "#D8302E",
+   "olhos": "#6E7480",
+   "olhos2": "#2CB8C8",
+   "roupa": "#2B3E6E",
+   "centro": "#F4F4F0",
+   "cinto": "#9A9EA8",
+   "calca": "#4A4E5A",
+   "sapato": "#2A2A30",
+   "acessorios": [
+    "cicatriz-queimadura"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "ICE WALL",
+    "cor": "#2CC8D8",
+    "cor2": "#E8FFFF",
+    "efeito": "gelo",
+    "alcance": 48,
+    "dano": 14,
+    "recarga": 3.2,
+    "status": "FRZ",
+    "som": "gelo"
+   },
+   {
+    "nome": "FLASHFIRE",
+    "cor": "#E0302A",
+    "cor2": "#FFD040",
+    "efeito": "chamas",
+    "alcance": 46,
+    "dano": 16,
+    "recarga": 3.6,
+    "status": "BRN",
+    "som": "fogo",
+    "especial": true
+   }
+  ],
+  "poder": 6.4
+ },
+ {
+  "id": "gon",
+  "nome": "GON",
+  "anime": "Hunter x Hunter",
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "gon",
+   "pele": "#F2C49A",
+   "cabelo": "#1C1C24",
+   "cabelo2": "#2E8B3A",
+   "olhos": "#6A3A1E",
+   "roupa": "#2E8B3A",
+   "centro": "#2E8B3A",
+   "cinto": "#7A4A28",
+   "calca": "#2E8B3A",
+   "shorts": true,
+   "sapato": "#8A5A2A"
+  },
+  "golpes": [
+   {
+    "nome": "JAJANKEN",
+    "cor": "#E8C21C",
+    "cor2": "#FFFBE0",
+    "efeito": "soco",
+    "alcance": 24,
+    "dano": 19,
+    "recarga": 3.6,
+    "som": "soco",
+    "especial": true
+   }
+  ],
+  "poder": 6.0
+ },
+ {
+  "id": "killua",
+  "nome": "KILLUA",
+  "anime": "Hunter x Hunter",
+  "velocidade": 0.95,
+  "visual": {
+   "penteado": "killua",
+   "pele": "#F8DCC4",
+   "cabelo": "#ECEEF4",
+   "olhos": "#3A8CE0",
+   "roupa": "#F4F4F8",
+   "mangas": "#6B4FA0",
+   "calca": "#2B3050",
+   "shorts": true,
+   "sapato": "#6B4FA0"
+  },
+  "golpes": [
+   {
+    "nome": "GODSPEED",
+    "cor": "#3A8CF0",
+    "cor2": "#D8F0FF",
+    "efeito": "raio",
+    "alcance": 40,
+    "dano": 16,
+    "recarga": 2.6,
+    "status": "PAR",
+    "som": "raio",
+    "especial": true
+   }
+  ],
+  "poder": 6.3
+ },
+ {
+  "id": "kakashi",
+  "nome": "KAKASHI",
+  "anime": "Naruto",
+  "poder": 7.4,
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "kakashi",
+   "pele": "#F6C9A0",
+   "cabelo": "#C8CCD4",
+   "olhos": "#2A2A30",
+   "roupa": "#3E5A3A",
+   "mangas": "#2A3A5A",
+   "ombros": "#4E6A44",
+   "cinto": "#2A3A5A",
+   "calca": "#2A3A5A",
+   "sapato": "#2A3A5A",
+   "acessorioCor": "#2E4FA0",
+   "acessorioCor2": "#1E2A44",
+   "acessorios": [
+    "mascara-boca"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "RAIKIRI",
+    "cor": "#3AA8F0",
+    "cor2": "#E0F4FF",
+    "efeito": "raio",
+    "alcance": 34,
+    "dano": 16,
+    "recarga": 2.4,
+    "som": "raio",
+    "status": "PAR",
+    "especial": true
+   },
+   {
+    "nome": "KAMUI",
+    "cor": "#4A2A6A",
+    "cor2": "#C8A0F0",
+    "efeito": "projetil",
+    "alcance": 56,
+    "dano": 15,
+    "recarga": 4.5,
+    "som": "esfera"
+   }
+  ]
+ },
+ {
+  "id": "itachi",
+  "nome": "ITACHI",
+  "anime": "Naruto",
+  "poder": 8.0,
+  "velocidade": 0.82,
+  "visual": {
+   "penteado": "itachi",
+   "pele": "#F2D2B4",
+   "cabelo": "#1C1C26",
+   "olhos": "#D0202E",
+   "roupa": "#1A1A24",
+   "ombros": "#1A1A24",
+   "padrao": "x",
+   "padraoCor": "#C02030",
+   "calca": "#1A1A24",
+   "sapato": "#3A3A48",
+   "capa": "#1A1A24",
+   "acessorioCor": "#2E4FA0"
+  },
+  "golpes": [
+   {
+    "nome": "AMATERASU",
+    "cor": "#4A1F70",
+    "cor2": "#1A0F24",
+    "efeito": "chamas",
+    "alcance": 46,
+    "dano": 14,
+    "recarga": 3.4,
+    "som": "fogo",
+    "status": "BRN",
+    "especial": true
+   },
+   {
+    "nome": "FIRE BALL",
+    "cor": "#F05A1A",
+    "cor2": "#FFD040",
+    "efeito": "projetil",
+    "alcance": 54,
+    "dano": 13,
+    "recarga": 2.6,
+    "som": "fogo",
+    "status": "BRN"
+   }
+  ]
+ },
+ {
+  "id": "gaara",
+  "nome": "GAARA",
+  "anime": "Naruto",
+  "poder": 7.0,
+  "velocidade": 0.72,
+  "visual": {
+   "penteado": "gaara",
+   "pele": "#F2D2B4",
+   "cabelo": "#B8302A",
+   "olhos": "#5ABFA0",
+   "roupa": "#7A3A3A",
+   "ombros": "#C8B088",
+   "cinto": "#C8B088",
+   "calca": "#5A2E2E",
+   "sapato": "#3A3A48",
+   "acessorios": [
+    "kanji-testa",
+    "olheiras"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "SAND COFFIN",
+    "cor": "#C8A060",
+    "cor2": "#F0DCA8",
+    "efeito": "gelo",
+    "alcance": 50,
+    "dano": 15,
+    "recarga": 3.0,
+    "som": "explosao",
+    "especial": true
+   },
+   {
+    "nome": "SAND SHIELD",
+    "cor": "#C8A060",
+    "cor2": "#F0DCA8",
+    "efeito": "escudo",
+    "alcance": 0,
+    "dano": 0,
+    "recarga": 8.0,
+    "som": "escudo"
+   }
+  ]
+ },
+ {
+  "id": "rocklee",
+  "nome": "ROCK LEE",
+  "anime": "Naruto",
+  "poder": 5.6,
+  "velocidade": 0.98,
+  "visual": {
+   "penteado": "rocklee",
+   "pele": "#F6C9A0",
+   "cabelo": "#14141A",
+   "olhos": "#14141A",
+   "roupa": "#2FA048",
+   "calca": "#2FA048",
+   "sapato": "#2FA048",
+   "cinto": "#C8302A",
+   "luvas": "#F0E8D8",
+   "acessorioCor": "#2E4FA0",
+   "acessorios": [
+    "sobrancelhas"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "LEAF HURRICANE",
+    "cor": "#2FA048",
+    "cor2": "#D8FFD0",
+    "efeito": "soco",
+    "alcance": 26,
+    "dano": 13,
+    "recarga": 1.8,
+    "som": "soco"
+   },
+   {
+    "nome": "PRIMARY LOTUS",
+    "cor": "#E8402A",
+    "cor2": "#FFE070",
+    "efeito": "soco",
+    "alcance": 28,
+    "dano": 17,
+    "recarga": 4.0,
+    "som": "soco",
+    "especial": true,
+    "area": 12
+   }
+  ]
+ },
+ {
+  "id": "gohan",
+  "nome": "GOHAN",
+  "anime": "Dragon Ball",
+  "poder": 8.8,
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "goku",
+   "pele": "#F6C9A0",
+   "cabelo": "#1C1C24",
+   "olhos": "#1C1C24",
+   "roupa": "#6A3A9A",
+   "decote": "#F4F4F0",
+   "cinto": "#C8302A",
+   "calca": "#6A3A9A",
+   "sapato": "#8A5A2A"
+  },
+  "golpes": [
+   {
+    "nome": "MASENKO",
+    "cor": "#F2D23A",
+    "cor2": "#FFFBE0",
+    "efeito": "feixe",
+    "alcance": 62,
+    "dano": 16,
+    "recarga": 2.8,
+    "som": "feixe",
+    "especial": true
+   },
+   {
+    "nome": "BEAST RUSH",
+    "cor": "#E8E8F0",
+    "cor2": "#B060E0",
+    "efeito": "soco",
+    "alcance": 28,
+    "dano": 17,
+    "recarga": 3.6,
+    "som": "soco",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "piccolo",
+  "nome": "PICCOLO",
+  "anime": "Dragon Ball",
+  "poder": 7.6,
+  "velocidade": 0.8,
+  "visual": {
+   "penteado": "piccolo",
+   "pele": "#6CC04A",
+   "cabelo": "#F4F4F0",
+   "cabelo2": "#6A3A9A",
+   "olhos": "#1C1C24",
+   "roupa": "#6A3A9A",
+   "mangas": "pele",
+   "cinto": "#3AA8E8",
+   "calca": "#6A3A9A",
+   "sapato": "#8A5A2A",
+   "capa": "#F4F4F0",
+   "acessorioCor": "#F4F4F0",
+   "acessorioCor2": "#6A3A9A"
+  },
+  "golpes": [
+   {
+    "nome": "SPECIAL BEAM CANNON",
+    "cor": "#F2D23A",
+    "cor2": "#9A5AE8",
+    "efeito": "feixe",
+    "alcance": 70,
+    "dano": 18,
+    "recarga": 4.4,
+    "som": "feixe",
+    "especial": true
+   },
+   {
+    "nome": "HELLZONE GRENADE",
+    "cor": "#F2D23A",
+    "cor2": "#FFFBE0",
+    "efeito": "explosao",
+    "alcance": 46,
+    "dano": 14,
+    "recarga": 3.2,
+    "som": "explosao",
+    "area": 16
+   }
+  ]
+ },
+ {
+  "id": "frieza",
+  "nome": "FRIEZA",
+  "anime": "Dragon Ball",
+  "poder": 9.0,
+  "velocidade": 0.78,
+  "visual": {
+   "penteado": "frieza",
+   "pele": "#F4F0F8",
+   "cabelo": "#8A3AB8",
+   "olhos": "#C8202E",
+   "roupa": "#F4F0F8",
+   "mangas": "pele",
+   "ombros": "#8A3AB8",
+   "calca": "#F4F0F8",
+   "sapato": "#F4F0F8"
+  },
+  "golpes": [
+   {
+    "nome": "DEATH BEAM",
+    "cor": "#C84AE0",
+    "cor2": "#FFD8FF",
+    "efeito": "feixe",
+    "alcance": 68,
+    "dano": 15,
+    "recarga": 2.2,
+    "som": "feixe"
+   },
+   {
+    "nome": "DEATH BALL",
+    "cor": "#E8402A",
+    "cor2": "#FFC040",
+    "efeito": "bomba",
+    "alcance": 58,
+    "dano": 21,
+    "recarga": 6.0,
+    "som": "explosao",
+    "especial": true,
+    "area": 20
+   }
+  ]
+ },
+ {
+  "id": "sanji",
+  "nome": "SANJI",
+  "anime": "One Piece",
+  "poder": 7.4,
+  "velocidade": 0.9,
+  "visual": {
+   "penteado": "sanji",
+   "pele": "#F6C9A0",
+   "cabelo": "#F2D048",
+   "olhos": "#2A3A6A",
+   "roupa": "#1E1E2A",
+   "centro": "#3A6AC0",
+   "cinto": "#1E1E2A",
+   "calca": "#1E1E2A",
+   "sapato": "#2A2A30",
+   "acessorios": [
+    "sobrancelhas-curvas"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "DIABLE JAMBE",
+    "cor": "#F05A1A",
+    "cor2": "#FFD040",
+    "efeito": "soco",
+    "alcance": 26,
+    "dano": 15,
+    "recarga": 2.4,
+    "som": "fogo",
+    "status": "BRN",
+    "especial": true
+   },
+   {
+    "nome": "CONCASSE",
+    "cor": "#E8E8F0",
+    "cor2": "#FFFFFF",
+    "efeito": "soco",
+    "alcance": 24,
+    "dano": 13,
+    "recarga": 1.8,
+    "som": "soco"
+   }
+  ]
+ },
+ {
+  "id": "ace",
+  "nome": "ACE",
+  "anime": "One Piece",
+  "poder": 7.6,
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "ace",
+   "pele": "#EDBB8E",
+   "cabelo": "#1C1C24",
+   "olhos": "#1C1C24",
+   "roupa": "pele",
+   "mangas": "pele",
+   "cinto": "#C8A040",
+   "calca": "#2A2A30",
+   "sapato": "#5A3A28",
+   "acessorioCor": "#F28A1E",
+   "acessorioCor2": "#C8302A",
+   "acessorios": [
+    "sardas"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "FIRE FIST",
+    "cor": "#F05A1A",
+    "cor2": "#FFD040",
+    "efeito": "projetil",
+    "alcance": 58,
+    "dano": 16,
+    "recarga": 2.6,
+    "som": "fogo",
+    "status": "BRN",
+    "especial": true
+   },
+   {
+    "nome": "FIRE PILLAR",
+    "cor": "#E8401A",
+    "cor2": "#FFE070",
+    "efeito": "chamas",
+    "alcance": 42,
+    "dano": 13,
+    "recarga": 3.0,
+    "som": "fogo",
+    "status": "BRN"
+   }
+  ]
+ },
+ {
+  "id": "rukia",
+  "nome": "RUKIA",
+  "anime": "Bleach",
+  "poder": 6.4,
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "rukia",
+   "pele": "#F6D8C0",
+   "cabelo": "#1C1C26",
+   "olhos": "#5A4A9A",
+   "roupa": "#1E1E26",
+   "decote": "#F4F4F0",
+   "cinto": "#E8E8EC",
+   "calca": "#1E1E26",
+   "sapato": "#E8E8EC",
+   "acessorios": [
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "SODE NO SHIRAYUKI",
+    "cor": "#BFEFFF",
+    "cor2": "#FFFFFF",
+    "efeito": "gelo",
+    "alcance": 50,
+    "dano": 15,
+    "recarga": 3.0,
+    "som": "gelo",
+    "status": "FRZ",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "byakuya",
+  "nome": "BYAKUYA",
+  "anime": "Bleach",
+  "poder": 8.0,
+  "velocidade": 0.82,
+  "visual": {
+   "penteado": "byakuya",
+   "pele": "#F6D8C0",
+   "cabelo": "#1C1C26",
+   "olhos": "#3A3A48",
+   "roupa": "#1E1E26",
+   "decote": "#F4F4F0",
+   "ombros": "#B8D8C8",
+   "calca": "#1E1E26",
+   "sapato": "#E8E8EC",
+   "capa": "#F4F4F0",
+   "acessorioCor": "#F4F4F8",
+   "acessorios": [
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "SENBONZAKURA",
+    "cor": "#F28AB8",
+    "cor2": "#FFE0F0",
+    "efeito": "arco",
+    "alcance": 36,
+    "dano": 17,
+    "recarga": 3.2,
+    "som": "corte",
+    "especial": true
+   },
+   {
+    "nome": "BYAKURAI",
+    "cor": "#E8F4FF",
+    "cor2": "#FFFFFF",
+    "efeito": "feixe",
+    "alcance": 60,
+    "dano": 13,
+    "recarga": 2.4,
+    "som": "raio",
+    "status": "PAR"
+   }
+  ]
+ },
+ {
+  "id": "kenpachi",
+  "nome": "KENPACHI",
+  "anime": "Bleach",
+  "poder": 8.2,
+  "velocidade": 0.78,
+  "visual": {
+   "penteado": "kenpachi",
+   "pele": "#E9B48A",
+   "cabelo": "#1C1C24",
+   "olhos": "#2A2A30",
+   "roupa": "#1E1E26",
+   "decote": "pele",
+   "calca": "#1E1E26",
+   "sapato": "#E8E8EC",
+   "capa": "#F4F4F0",
+   "acessorios": [
+    "tapa-olho",
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "KENPACHI SLASH",
+    "cor": "#F2C230",
+    "cor2": "#FFFBE0",
+    "efeito": "corte",
+    "alcance": 30,
+    "dano": 20,
+    "recarga": 3.4,
+    "som": "corte",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "inosuke",
+  "nome": "INOSUKE",
+  "anime": "Demon Slayer",
+  "poder": 5.2,
+  "velocidade": 0.92,
+  "visual": {
+   "penteado": "inosuke",
+   "pele": "#F6C9A0",
+   "cabelo": "#7A7E8A",
+   "cabelo2": "#5A3A28",
+   "olhos": "#E8E8EC",
+   "roupa": "pele",
+   "mangas": "pele",
+   "cinto": "#F0F0F0",
+   "calca": "#4A4A58",
+   "sapato": "#E8E8E8",
+   "acessorios": [
+    "katana"
+   ],
+   "acessorioCor2": "#E89A9A"
+  },
+  "golpes": [
+   {
+    "nome": "BEAST BREATHING",
+    "cor": "#8A8E98",
+    "cor2": "#E8E8F0",
+    "efeito": "corte",
+    "alcance": 28,
+    "dano": 14,
+    "recarga": 2.0,
+    "som": "corte"
+   }
+  ]
+ },
+ {
+  "id": "rengoku",
+  "nome": "RENGOKU",
+  "anime": "Demon Slayer",
+  "poder": 6.4,
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "rengoku",
+   "pele": "#F6C9A0",
+   "cabelo": "#F2C230",
+   "cabelo2": "#D8402A",
+   "olhos": "#E89A20",
+   "roupa": "#20222E",
+   "capa": "#F4F0E8",
+   "padrao": "chamas",
+   "padraoCor": "#E8501A",
+   "cinto": "#F0F0F0",
+   "calca": "#20222E",
+   "sapato": "#E8E8E8",
+   "acessorios": [
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "FLAME BREATHING",
+    "cor": "#E8501A",
+    "cor2": "#FFD040",
+    "efeito": "arco",
+    "alcance": 30,
+    "dano": 15,
+    "recarga": 2.4,
+    "som": "fogo",
+    "status": "BRN"
+   },
+   {
+    "nome": "9TH FORM: RENGOKU",
+    "cor": "#F05A1A",
+    "cor2": "#FFE070",
+    "efeito": "onda",
+    "alcance": 50,
+    "dano": 19,
+    "recarga": 4.4,
+    "som": "fogo",
+    "especial": true,
+    "status": "BRN"
+   }
+  ]
+ },
+ {
+  "id": "megumi",
+  "nome": "MEGUMI",
+  "anime": "Jujutsu Kaisen",
+  "poder": 6.0,
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "megumi",
+   "pele": "#F4D8C0",
+   "cabelo": "#1C1C26",
+   "olhos": "#2A3A6A",
+   "roupa": "#1E2030",
+   "cinto": "#E8C040",
+   "calca": "#1E2030",
+   "sapato": "#2A2A30"
+  },
+  "golpes": [
+   {
+    "nome": "DIVINE DOGS",
+    "cor": "#2A2A38",
+    "cor2": "#E8E8F0",
+    "efeito": "clones",
+    "alcance": 34,
+    "dano": 13,
+    "recarga": 2.6,
+    "som": "soco"
+   },
+   {
+    "nome": "NUE",
+    "cor": "#E8E8F0",
+    "cor2": "#F2D23A",
+    "efeito": "raio",
+    "alcance": 44,
+    "dano": 14,
+    "recarga": 3.2,
+    "som": "raio",
+    "status": "PAR"
+   }
+  ]
+ },
+ {
+  "id": "sukuna",
+  "nome": "SUKUNA",
+  "anime": "Jujutsu Kaisen",
+  "poder": 9.6,
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "itadori",
+   "pele": "#F6C9A0",
+   "cabelo": "#F2A0B8",
+   "cabelo2": "#6A3A40",
+   "olhos": "#D0202E",
+   "roupa": "#F0EEE8",
+   "ombros": "#1E1E26",
+   "cinto": "#1E1E26",
+   "calca": "#F0EEE8",
+   "sapato": "#2A2A30",
+   "acessorios": [
+    "tatuagem"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "DISMANTLE",
+    "cor": "#D0202E",
+    "cor2": "#FFD0D0",
+    "efeito": "corte",
+    "alcance": 34,
+    "dano": 17,
+    "recarga": 2.2,
+    "som": "corte",
+    "especial": true
+   },
+   {
+    "nome": "FUGA",
+    "cor": "#F05A1A",
+    "cor2": "#FFE070",
+    "efeito": "projetil",
+    "alcance": 60,
+    "dano": 20,
+    "recarga": 5.0,
+    "som": "fogo",
+    "especial": true,
+    "status": "BRN",
+    "area": 18
+   }
+  ]
+ },
+ {
+  "id": "allmight",
+  "nome": "ALL MIGHT",
+  "anime": "My Hero Academia",
+  "poder": 8.3,
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "allmight",
+   "pele": "#F2C49A",
+   "cabelo": "#F2D048",
+   "olhos": "#2A6AD0",
+   "roupa": "#2E5BC8",
+   "ombros": "#D02A2A",
+   "cinto": "#F2D048",
+   "luvas": "#F4F4F0",
+   "calca": "#2E5BC8",
+   "sapato": "#D02A2A"
+  },
+  "golpes": [
+   {
+    "nome": "UNITED STATES OF SMASH",
+    "cor": "#2E5BC8",
+    "cor2": "#FFE070",
+    "efeito": "soco",
+    "alcance": 28,
+    "dano": 21,
+    "recarga": 5.0,
+    "som": "explosao",
+    "especial": true,
+    "area": 18
+   },
+   {
+    "nome": "TEXAS SMASH",
+    "cor": "#D02A2A",
+    "cor2": "#FFFFFF",
+    "efeito": "soco",
+    "alcance": 26,
+    "dano": 15,
+    "recarga": 2.2,
+    "som": "soco"
+   }
+  ]
+ },
+ {
+  "id": "kurapika",
+  "nome": "KURAPIKA",
+  "anime": "Hunter x Hunter",
+  "poder": 6.3,
+  "velocidade": 0.84,
+  "visual": {
+   "penteado": "kurapika",
+   "pele": "#F6D8C0",
+   "cabelo": "#F2D048",
+   "olhos": "#D0202E",
+   "roupa": "#2E5BC8",
+   "ombros": "#E8C040",
+   "cinto": "#E8C040",
+   "calca": "#F4F4F0",
+   "sapato": "#2A2A30",
+   "capa": "#F4F4F0"
+  },
+  "golpes": [
+   {
+    "nome": "CHAIN JAIL",
+    "cor": "#B8BEC8",
+    "cor2": "#F4F4F8",
+    "efeito": "elastico",
+    "alcance": 48,
+    "dano": 14,
+    "recarga": 2.6,
+    "som": "soco",
+    "linha": "#C8CCD8",
+    "status": "PAR"
+   }
+  ]
+ },
+ {
+  "id": "hisoka",
+  "nome": "HISOKA",
+  "anime": "Hunter x Hunter",
+  "poder": 6.8,
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "hisoka",
+   "pele": "#F6D8C0",
+   "cabelo": "#E8402A",
+   "olhos": "#E8C040",
+   "roupa": "#E8E0D0",
+   "mangas": "#8A3AB8",
+   "padrao": "x",
+   "padraoCor": "#8A3AB8",
+   "cinto": "#3AA8E8",
+   "calca": "#E8E0D0",
+   "sapato": "#F28AB8",
+   "acessorios": [
+    "estrela-lagrima"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "BUNGEE GUM",
+    "cor": "#F28AB8",
+    "cor2": "#FFE0F0",
+    "efeito": "elastico",
+    "alcance": 50,
+    "dano": 14,
+    "recarga": 2.2,
+    "som": "soco",
+    "linha": "#F8A8D0"
+   },
+   {
+    "nome": "CARD THROW",
+    "cor": "#F4F4F0",
+    "cor2": "#D0202E",
+    "efeito": "onda",
+    "alcance": 54,
+    "dano": 13,
+    "recarga": 2.4,
+    "som": "corte"
+   }
+  ]
+ },
+ {
+  "id": "eren",
+  "nome": "EREN",
+  "anime": "Attack on Titan",
+  "poder": 5.4,
+  "velocidade": 0.82,
+  "visual": {
+   "penteado": "eren",
+   "pele": "#F6C9A0",
+   "cabelo": "#4A2E1E",
+   "olhos": "#3AC0A0",
+   "roupa": "#C8A878",
+   "decote": "#F4F4F0",
+   "cinto": "#4A3020",
+   "calca": "#F0E8D8",
+   "sapato": "#4A3020",
+   "capa": "#3E6A3A",
+   "acessorios": [
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "TITAN PUNCH",
+    "cor": "#E8402A",
+    "cor2": "#FFE070",
+    "efeito": "soco",
+    "alcance": 28,
+    "dano": 19,
+    "recarga": 4.0,
+    "som": "explosao",
+    "especial": true,
+    "area": 14
+   },
+   {
+    "nome": "ODM SLASH",
+    "cor": "#B8BEC8",
+    "cor2": "#FFFFFF",
+    "efeito": "corte",
+    "alcance": 30,
+    "dano": 13,
+    "recarga": 2.0,
+    "som": "corte"
+   }
+  ]
+ },
+ {
+  "id": "levi",
+  "nome": "LEVI",
+  "anime": "Attack on Titan",
+  "poder": 5.6,
+  "velocidade": 1.0,
+  "visual": {
+   "penteado": "levi",
+   "pele": "#F4D8C0",
+   "cabelo": "#1C1C24",
+   "cabelo2": "#3A3A44",
+   "olhos": "#5A6070",
+   "roupa": "#C8A878",
+   "decote": "#F4F4F0",
+   "cinto": "#4A3020",
+   "calca": "#F0E8D8",
+   "sapato": "#4A3020",
+   "capa": "#3E6A3A",
+   "acessorios": [
+    "cachecol"
+   ],
+   "acessorioCor": "#F4F4F0"
+  },
+  "golpes": [
+   {
+    "nome": "SPINNING SLASH",
+    "cor": "#B8BEC8",
+    "cor2": "#FFFFFF",
+    "efeito": "corte",
+    "alcance": 32,
+    "dano": 17,
+    "recarga": 2.6,
+    "som": "corte",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "mikasa",
+  "nome": "MIKASA",
+  "anime": "Attack on Titan",
+  "poder": 5.0,
+  "velocidade": 0.94,
+  "visual": {
+   "penteado": "mikasa",
+   "pele": "#F4D8C0",
+   "cabelo": "#1C1C24",
+   "olhos": "#3A3A44",
+   "roupa": "#C8A878",
+   "decote": "#F4F4F0",
+   "cinto": "#4A3020",
+   "calca": "#F0E8D8",
+   "sapato": "#4A3020",
+   "capa": "#3E6A3A",
+   "acessorios": [
+    "cachecol"
+   ],
+   "acessorioCor": "#C8302A"
+  },
+  "golpes": [
+   {
+    "nome": "ODM STRIKE",
+    "cor": "#B8BEC8",
+    "cor2": "#FFFFFF",
+    "efeito": "corte",
+    "alcance": 30,
+    "dano": 15,
+    "recarga": 2.2,
+    "som": "corte"
+   }
+  ]
+ },
+ {
+  "id": "saitama",
+  "nome": "SAITAMA",
+  "anime": "One Punch Man",
+  "poder": 10.0,
+  "velocidade": 0.78,
+  "visual": {
+   "penteado": "careca",
+   "pele": "#F6C9A0",
+   "cabelo": "#F6C9A0",
+   "olhos": "#1C1C24",
+   "roupa": "#F2D048",
+   "luvas": "#D02A2A",
+   "cinto": "#1C1C24",
+   "calca": "#F2D048",
+   "sapato": "#D02A2A",
+   "capa": "#F4F4F0"
+  },
+  "golpes": [
+   {
+    "nome": "SERIOUS PUNCH",
+    "cor": "#F2D048",
+    "cor2": "#FFFFFF",
+    "efeito": "soco",
+    "alcance": 26,
+    "dano": 24,
+    "recarga": 6.0,
+    "som": "explosao",
+    "especial": true,
+    "area": 22
+   },
+   {
+    "nome": "NORMAL PUNCHES",
+    "cor": "#F4F4F0",
+    "cor2": "#F2D048",
+    "efeito": "soco",
+    "alcance": 24,
+    "dano": 13,
+    "recarga": 1.8,
+    "som": "soco"
+   }
+  ]
+ },
+ {
+  "id": "genos",
+  "nome": "GENOS",
+  "anime": "One Punch Man",
+  "poder": 6.6,
+  "velocidade": 0.88,
+  "visual": {
+   "penteado": "ichigo",
+   "pele": "#F4D8C0",
+   "cabelo": "#F2D048",
+   "olhos": "#1C1C24",
+   "roupa": "#2A2A30",
+   "mangas": "#8A8E98",
+   "luvas": "#B8BEC8",
+   "calca": "#2A3A6A",
+   "sapato": "#2A2A30"
+  },
+  "golpes": [
+   {
+    "nome": "INCINERATION CANNON",
+    "cor": "#F05A1A",
+    "cor2": "#FFE070",
+    "efeito": "feixe",
+    "alcance": 64,
+    "dano": 16,
+    "recarga": 3.0,
+    "som": "fogo",
+    "status": "BRN",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "denji",
+  "nome": "DENJI",
+  "anime": "Chainsaw Man",
+  "poder": 6.0,
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "killua",
+   "pele": "#F6C9A0",
+   "cabelo": "#E8B840",
+   "olhos": "#E8A030",
+   "roupa": "#F4F4F0",
+   "centro": "#1C1C24",
+   "cinto": "#2A2A30",
+   "calca": "#2A2A30",
+   "sapato": "#5A3A28",
+   "acessorios": [
+    "serra"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "CHAINSAW RIP",
+    "cor": "#E8502A",
+    "cor2": "#FFD040",
+    "efeito": "corte",
+    "alcance": 26,
+    "dano": 17,
+    "recarga": 2.4,
+    "som": "corte",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "power",
+  "nome": "POWER",
+  "anime": "Chainsaw Man",
+  "poder": 5.0,
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "power",
+   "pele": "#F6D8C0",
+   "cabelo": "#F2A0B8",
+   "olhos": "#F2C230",
+   "roupa": "#E8E0D0",
+   "centro": "#2E5BC8",
+   "cinto": "#2A2A30",
+   "calca": "#2A2A30",
+   "sapato": "#2A2A30",
+   "acessorioCor": "#C8202A",
+   "acessorioCor2": "#8A1A1A"
+  },
+  "golpes": [
+   {
+    "nome": "BLOOD HAMMER",
+    "cor": "#C8202A",
+    "cor2": "#FF9A9A",
+    "efeito": "soco",
+    "alcance": 28,
+    "dano": 16,
+    "recarga": 2.8,
+    "som": "soco",
+    "especial": true,
+    "area": 12
+   }
+  ]
+ },
+ {
+  "id": "edward",
+  "nome": "EDWARD",
+  "anime": "Fullmetal Alchemist",
+  "poder": 6.2,
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "edward",
+   "pele": "#F6C9A0",
+   "cabelo": "#E8C040",
+   "olhos": "#E8A030",
+   "roupa": "#1C1C24",
+   "luvas": "#F4F4F0",
+   "cinto": "#2A2A30",
+   "calca": "#1C1C24",
+   "sapato": "#2A2A30",
+   "capa": "#C8302A"
+  },
+  "golpes": [
+   {
+    "nome": "ALCHEMY SPIKES",
+    "cor": "#9AA0A8",
+    "cor2": "#E8ECF0",
+    "efeito": "gelo",
+    "alcance": 48,
+    "dano": 15,
+    "recarga": 2.8,
+    "som": "explosao",
+    "especial": true
+   },
+   {
+    "nome": "BLADE ARM",
+    "cor": "#B8BEC8",
+    "cor2": "#FFFFFF",
+    "efeito": "corte",
+    "alcance": 26,
+    "dano": 13,
+    "recarga": 1.8,
+    "som": "corte"
+   }
+  ]
+ },
+ {
+  "id": "mustang",
+  "nome": "MUSTANG",
+  "anime": "Fullmetal Alchemist",
+  "poder": 7.0,
+  "velocidade": 0.8,
+  "visual": {
+   "penteado": "curto",
+   "pele": "#F4D8C0",
+   "cabelo": "#1C1C24",
+   "olhos": "#1C1C24",
+   "roupa": "#2E4FA0",
+   "ombros": "#E8C040",
+   "cinto": "#2A2A30",
+   "luvas": "#F4F4F0",
+   "calca": "#2E4FA0",
+   "sapato": "#1C1C24"
+  },
+  "golpes": [
+   {
+    "nome": "FLAME ALCHEMY",
+    "cor": "#F05A1A",
+    "cor2": "#FFE070",
+    "efeito": "explosao",
+    "alcance": 52,
+    "dano": 17,
+    "recarga": 3.0,
+    "som": "explosao",
+    "status": "BRN",
+    "especial": true,
+    "area": 16
+   }
+  ]
+ },
+ {
+  "id": "yor",
+  "nome": "YOR",
+  "anime": "Spy x Family",
+  "poder": 5.6,
+  "velocidade": 0.94,
+  "visual": {
+   "penteado": "yor",
+   "pele": "#F6D8C0",
+   "cabelo": "#1C1C24",
+   "olhos": "#D0202E",
+   "roupa": "#1C1C24",
+   "padrao": "triangulos",
+   "padraoCor": "#C8202A",
+   "calca": "#1C1C24",
+   "sapato": "#1C1C24",
+   "acessorioCor": "#E8C040",
+   "acessorioCor2": "#C8202A"
+  },
+  "golpes": [
+   {
+    "nome": "THORN STILETTO",
+    "cor": "#E8C040",
+    "cor2": "#FFF4C0",
+    "efeito": "corte",
+    "alcance": 28,
+    "dano": 16,
+    "recarga": 2.2,
+    "som": "corte",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "natsu",
+  "nome": "NATSU",
+  "anime": "Fairy Tail",
+  "poder": 7.0,
+  "velocidade": 0.86,
+  "visual": {
+   "penteado": "bakugo",
+   "pele": "#F6C9A0",
+   "cabelo": "#F28AB0",
+   "olhos": "#2A2A30",
+   "roupa": "#1C1C24",
+   "mangas": "pele",
+   "decote": "pele",
+   "cinto": "#E8C040",
+   "calca": "#F4F4F0",
+   "sapato": "#2A2A30",
+   "acessorios": [
+    "cachecol"
+   ],
+   "acessorioCor": "#F4F4F0"
+  },
+  "golpes": [
+   {
+    "nome": "FIRE DRAGON ROAR",
+    "cor": "#F05A1A",
+    "cor2": "#FFE070",
+    "efeito": "feixe",
+    "alcance": 62,
+    "dano": 17,
+    "recarga": 3.4,
+    "som": "fogo",
+    "status": "BRN",
+    "especial": true
+   },
+   {
+    "nome": "IRON FIST",
+    "cor": "#E8401A",
+    "cor2": "#FFD040",
+    "efeito": "soco",
+    "alcance": 24,
+    "dano": 13,
+    "recarga": 1.8,
+    "som": "soco",
+    "status": "BRN"
+   }
+  ]
+ },
+ {
+  "id": "jotaro",
+  "nome": "JOTARO",
+  "anime": "JoJo's Bizarre Adventure",
+  "poder": 8.0,
+  "velocidade": 0.78,
+  "visual": {
+   "penteado": "jotaro",
+   "pele": "#EDBB8E",
+   "cabelo": "#1C1C26",
+   "olhos": "#2A8AA0",
+   "roupa": "#1E2030",
+   "decote": "#F4F4F0",
+   "cinto": "#E8C040",
+   "calca": "#1E2030",
+   "sapato": "#2A2A30",
+   "capa": "#1E2030",
+   "acessorioCor": "#1E2030",
+   "acessorioCor2": "#E8C040"
+  },
+  "golpes": [
+   {
+    "nome": "ORA ORA ORA",
+    "cor": "#8A5AE8",
+    "cor2": "#F0D8FF",
+    "efeito": "soco",
+    "alcance": 26,
+    "dano": 18,
+    "recarga": 2.8,
+    "som": "soco",
+    "especial": true
+   },
+   {
+    "nome": "STAR FINGER",
+    "cor": "#8A5AE8",
+    "cor2": "#F0D8FF",
+    "efeito": "elastico",
+    "alcance": 46,
+    "dano": 13,
+    "recarga": 2.2,
+    "som": "soco",
+    "linha": "#8A5AE8"
+   }
+  ]
+ },
+ {
+  "id": "mob",
+  "nome": "MOB",
+  "anime": "Mob Psycho 100",
+  "poder": 8.4,
+  "velocidade": 0.74,
+  "visual": {
+   "penteado": "rocklee",
+   "pele": "#F6C9A0",
+   "cabelo": "#1C1C24",
+   "olhos": "#1C1C24",
+   "roupa": "#1C1C24",
+   "cinto": "#E8C040",
+   "calca": "#1C1C24",
+   "sapato": "#2A2A30"
+  },
+  "golpes": [
+   {
+    "nome": "???%",
+    "cor": "#E8E8F0",
+    "cor2": "#B8F0FF",
+    "efeito": "explosao",
+    "alcance": 56,
+    "dano": 20,
+    "recarga": 5.0,
+    "som": "explosao",
+    "especial": true,
+    "area": 22
+   },
+   {
+    "nome": "PSYCHIC WAVE",
+    "cor": "#9AD8FF",
+    "cor2": "#FFFFFF",
+    "efeito": "onda",
+    "alcance": 52,
+    "dano": 13,
+    "recarga": 2.4,
+    "som": "esfera"
+   }
+  ]
+ },
+ {
+  "id": "asta",
+  "nome": "ASTA",
+  "anime": "Black Clover",
+  "poder": 6.6,
+  "velocidade": 0.9,
+  "visual": {
+   "penteado": "asta",
+   "pele": "#F2C49A",
+   "cabelo": "#D8DCE4",
+   "olhos": "#3A8A4A",
+   "roupa": "#2A2A30",
+   "capa": "#1C1C24",
+   "cinto": "#4A3020",
+   "calca": "#2A2A30",
+   "sapato": "#4A3020",
+   "acessorios": [
+    "espada-grande"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "BLACK DIVIDER",
+    "cor": "#1C1C24",
+    "cor2": "#8A8E98",
+    "efeito": "onda",
+    "alcance": 54,
+    "dano": 17,
+    "recarga": 2.8,
+    "som": "corte",
+    "especial": true
+   }
+  ]
+ },
+ {
+  "id": "jinwoo",
+  "nome": "JINWOO",
+  "anime": "Solo Leveling",
+  "poder": 8.6,
+  "velocidade": 0.92,
+  "visual": {
+   "penteado": "curto",
+   "pele": "#F4D8C0",
+   "cabelo": "#1C1C26",
+   "olhos": "#7A4AE8",
+   "roupa": "#1C1C24",
+   "calca": "#1C1C24",
+   "sapato": "#2A2A30",
+   "capa": "#1C1C24",
+   "acessorios": [
+    "katana"
+   ]
+  },
+  "golpes": [
+   {
+    "nome": "ARISE",
+    "cor": "#3A1A6A",
+    "cor2": "#9A6AF0",
+    "efeito": "clones",
+    "alcance": 36,
+    "dano": 16,
+    "recarga": 3.4,
+    "som": "soco",
+    "especial": true
+   },
+   {
+    "nome": "DAGGER RUSH",
+    "cor": "#7A4AE8",
+    "cor2": "#E0D0FF",
+    "efeito": "corte",
+    "alcance": 28,
+    "dano": 15,
+    "recarga": 2.0,
+    "som": "corte"
+   }
+  ]
+ }
+]

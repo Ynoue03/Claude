@@ -1,6 +1,6 @@
 // Sprites chibi 24×32 desenhados pixel a pixel a partir dos dados do lutador (cores + penteado).
 // Cada quadro vira um canvas pequeno (com contorno de 1 px → 26×34) guardado em cache.
-import { CONTORNO, tom } from "./cores";
+import { brilho, CONTORNO, mistura, sombra, tom } from "./cores";
 import { PENTEADOS } from "./penteados";
 import type { Lutador, Visual } from "./tipos";
 
@@ -36,6 +36,13 @@ const OVAL: [number, number, number][] = [
 ];
 
 const cor = (v: Visual, c: string | undefined) => (c === "pele" ? v.pele : c);
+
+// "pele" vale em qualquer campo de cor (personagens sem camisa, mangas curtas…)
+export const resolverVisual = (v: Visual): Visual => {
+  const r = { ...v } as Record<string, unknown>;
+  for (const [k, val] of Object.entries(r)) if (val === "pele" && k !== "pele") r[k] = v.pele;
+  return r as Visual;
+};
 
 // ── pernas ──────────────────────────────────────────────
 const pernas = (g: Grade, v: Visual, dir: string, pose: Pose) => {
@@ -106,6 +113,10 @@ const tronco = (g: Grade, v: Visual, dir: string, pose: Pose) => {
       if (x % 4 === 1) g.set(x, 24, v.padraoCor);
     }
   }
+  if (v.padrao === "escamas" && v.padraoCor) {
+    for (let y = 19; y <= 25; y++)
+      for (let x = x0; x <= x1; x++) if ((x * 2 + y) % 5 === 0) g.set(x, y, v.padraoCor);
+  }
   if (dir === "baixo") {
     if (v.centro) g.rect(10, 18, 13, 23, cor(v, v.centro));
     if (v.decote) {
@@ -120,6 +131,7 @@ const tronco = (g: Grade, v: Visual, dir: string, pose: Pose) => {
     }
   }
   if (lado && v.centro) g.rect(13, 18, 14, 23, cor(v, v.centro));
+  if (dir === "baixo") g.rect(10, 18, 13, 18, sombra(v.decote ?? v.centro ?? roupa, 0.3));
   if (lado && v.decote) g.rect(13, 18, 14, 19, cor(v, v.decote));
   if (v.cinto) g.rect(x0, 24, x1, 24, v.cinto);
   g.rect(x0, 25, x1, 25, v.calca);
@@ -210,6 +222,21 @@ const cabeca = (g: Grade, v: Visual, dir: string, pose: Pose) => {
     if (acc.includes("sardas")) g.pts([[7, 14], [9, 15], [14, 15], [16, 14]], tom(pele, -0.3));
     if (acc.includes("cicatriz-olho")) g.pts([[14, 14], [15, 14]], "#8A2A2A");
     if (acc.includes("cicatriz-testa")) g.pts([[14, 9], [15, 9], [15, 10], [16, 10]], "#A03028");
+    if (acc.includes("olheiras")) g.pts([[8, 14], [9, 14], [14, 14], [15, 14]], tom(pele, -0.4));
+    if (acc.includes("tatuagem")) g.pts([[7, 14], [8, 14], [9, 15], [14, 15], [15, 14], [16, 14]], "#2A1A22");
+    if (acc.includes("estrela-lagrima")) {
+      g.pts([[7, 14], [7, 15]], "#3A8CF0");
+      g.pts([[16, 13], [15, 14], [16, 14], [17, 14], [16, 15]], "#E83A8A");
+    }
+    if (acc.includes("sobrancelhas")) {
+      g.rect(7, 10, 10, 10, "#14141A");
+      g.rect(13, 10, 16, 10, "#14141A");
+    }
+    if (acc.includes("sobrancelhas-curvas")) g.pts([[8, 10], [9, 10], [10, 9]], tom(v.cabelo, -0.3));
+    if (acc.includes("tapa-olho")) {
+      g.rect(7, 11, 10, 13, "#14141A");
+      g.pts([[6, 10], [5, 9], [11, 10], [12, 9]], "#14141A");
+    }
   }
   if (dir === "lado") {
     if (pose !== "dano") {
@@ -230,6 +257,7 @@ const cabeca = (g: Grade, v: Visual, dir: string, pose: Pose) => {
     m: "#B8BEC8",
     w: "#FFFFFF",
     k: v.acessorioCor ?? "#141418",
+    p: pele,
   };
   masc.forEach((linha, y) => {
     [...linha].forEach((ch, x) => {
@@ -238,6 +266,19 @@ const cabeca = (g: Grade, v: Visual, dir: string, pose: Pose) => {
       g.set(x, y, mapa[ch]);
     });
   });
+  if (acc.includes("mascara-boca")) {
+    const c = v.acessorioCor2 ?? "#1E2A44";
+    if (dir === "baixo") g.rect(6, 14, 17, 17, c);
+    if (dir === "lado") g.rect(11, 14, 18, 17, c);
+  }
+  if (acc.includes("kanji-testa") && dir === "baixo") g.pts([[14, 9], [15, 9], [14, 10], [16, 10]], "#C8302A");
+  if (acc.includes("serra")) {
+    g.rect(11, 0, 12, 5, "#B8BEC8");
+    for (let y = 0; y <= 5; y += 2) {
+      g.set(10, y, "#5A5E68");
+      g.set(13, y + 1, "#5A5E68");
+    }
+  }
   // brilho do cabelo (2 px no topo)
   if (dir !== "cima") {
     const topo = masc.findIndex((l) => l.includes("#"));
@@ -307,15 +348,49 @@ const manoplas = (g: Grade, v: Visual, dir: string, pose: Pose) => {
   }
 };
 
+const capa = (g: Grade, v: Visual, dir: string) => {
+  if (!v.capa) return;
+  const c = v.capa;
+  const chamas = v.padrao === "chamas" && v.padraoCor;
+  const [x0, x1] = dir === "lado" ? [5, 10] : dir === "cima" ? [6, 17] : [5, 18];
+  g.rect(x0, 18, x1, 29, c);
+  g.rect(x0, 18, x0, 29, sombra(c, 0.25));
+  if (chamas) {
+    for (let x = x0; x <= x1; x++) {
+      const h = x % 3 === 0 ? 4 : x % 3 === 1 ? 2 : 3;
+      g.rect(x, 30 - h, x, 29, v.padraoCor);
+      if (h === 4) g.set(x, 26, "#FFD040");
+    }
+  }
+};
+
+const cachecol = (g: Grade, v: Visual, dir: string) => {
+  if (!(v.acessorios ?? []).includes("cachecol")) return;
+  const c = v.acessorioCor ?? "#C8302A";
+  if (dir === "lado") {
+    g.rect(9, 17, 14, 19, c);
+    g.rect(7, 19, 8, 22, c);
+  } else {
+    g.rect(7, 17, 16, 19, c);
+    g.rect(7, 17, 16, 17, brilho(c, 0.2));
+    if (dir === "baixo") g.rect(14, 20, 15, 23, c);
+    else g.rect(9, 20, 10, 24, c);
+  }
+};
+
 // ── montagem ────────────────────────────────────────────
-const montar = (v: Visual, dir: string, pose: Pose): Grade => {
+const montar = (v0: Visual, dir: string, pose: Pose): Grade => {
+  const v = resolverVisual(v0);
   const g = new Grade();
   const acc = v.acessorios ?? [];
   const grande = acc.includes("espada-grande");
+  if (dir !== "cima") capa(g, v, dir);
   if (grande && dir !== "cima") espadaGrande(g, dir);
   if (dir === "lado") katanas(g, v, dir);
   pernas(g, v, dir, pose);
   tronco(g, v, dir, pose);
+  if (dir === "cima") capa(g, v, dir);
+  cachecol(g, v, dir);
   cabeca(g, v, dir, pose);
   if (grande && dir === "cima") espadaGrande(g, dir);
   if (dir !== "lado") katanas(g, v, dir);
@@ -328,7 +403,8 @@ const montar = (v: Visual, dir: string, pose: Pose): Grade => {
   return g;
 };
 
-// sombreamento simples (luz do alto à esquerda) + contorno escuro de 1 px
+// Acabamento: sombra com hue shifting no lado de baixo/direita da silhueta, luz quente no topo/esquerda
+// e contorno seletivo ("sel-out"): escuro embaixo, colorido em cima — volume sem "pillow shading".
 const acabamento = (px: Px): Px => {
   const out = px.slice();
   const at = (x: number, y: number) =>
@@ -337,13 +413,17 @@ const acabamento = (px: Px): Px => {
     for (let x = 0; x < SW; x++) {
       const c = px[y * SW + x];
       if (!c) continue;
-      if (!at(x + 1, y) || !at(x, y + 1)) out[y * SW + x] = tom(c, -0.18);
+      if (!at(x + 1, y) || !at(x, y + 1)) out[y * SW + x] = sombra(c, 0.22);
+      else if (!at(x - 1, y) || !at(x, y - 1)) out[y * SW + x] = brilho(c, 0.16);
     }
   const fim = out.slice();
   for (let y = 0; y < SH; y++)
     for (let x = 0; x < SW; x++) {
       if (out[y * SW + x]) continue;
-      if (at(x - 1, y) || at(x + 1, y) || at(x, y - 1) || at(x, y + 1)) fim[y * SW + x] = CONTORNO;
+      const viz = at(x, y + 1) ?? at(x + 1, y) ?? at(x - 1, y) ?? at(x, y - 1);
+      if (!viz) continue;
+      const ladoClaro = !!(at(x, y + 1) || at(x + 1, y));
+      fim[y * SW + x] = ladoClaro ? mistura(viz, CONTORNO, 0.68) : CONTORNO;
     }
   return fim;
 };

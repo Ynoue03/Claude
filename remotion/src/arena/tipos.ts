@@ -44,6 +44,7 @@ export type Golpe = {
   som: SomGolpe;
   especial?: boolean; // tremor de tela no impacto
   area?: number; // raio de dano em área (px)
+  linha?: string; // cor do "braço" no efeito elastico (corrente, chiclete…); padrão = pele
 };
 
 export type Visual = {
@@ -60,7 +61,7 @@ export type Visual = {
   decote?: string; // V do decote
   ombros?: string;
   cinto?: string;
-  padrao?: "xadrez" | "triangulos" | "x";
+  padrao?: "xadrez" | "triangulos" | "x" | "chamas" | "escamas";
   padraoCor?: string;
   luvas?: string;
   calca: string;
@@ -68,16 +69,18 @@ export type Visual = {
   sapato: string;
   acessorioCor?: string; // 'o' na máscara (bandana, chapéu)
   acessorioCor2?: string; // 'r' na máscara
-  acessorios?: string[]; // bigodes, sardas, cicatriz-olho, cicatriz-queimadura, cicatriz-testa, brincos, brincos-hanafuda, katana, tres-katanas, espada-grande, manoplas
+  capa?: string; // casaco longo / capa atrás do corpo
+  acessorios?: string[]; // mascara-boca, tatuagem, kanji-testa, cachecol, bigodes, sardas, cicatriz-olho, cicatriz-queimadura, cicatriz-testa, brincos, brincos-hanafuda, katana, tres-katanas, espada-grande, manoplas
 };
 
 export type Lutador = {
   id: string;
   nome: string;
   anime: string;
-  hp: number;
-  velocidade: number; // px por quadro
-  dano: number; // multiplicador
+  poder?: number; // 1–10, força no cânone: define HP/dano e a chance de ir longe na luta
+  hp?: number; // opcional: calculado pelo poder
+  velocidade?: number; // px por quadro (padrão 0,82)
+  dano?: number; // multiplicador (opcional: calculado pelo poder)
   visual: Visual;
   golpes: Golpe[];
 };
@@ -98,5 +101,23 @@ export type Episodio = {
   perfil: string;
   textos: Textos;
   audio?: string | null; // arquivo em public/ (gerado por scripts/arena.sh)
-  lutadores: Lutador[];
+  arena?: string; // id do tema (temas.ts) ou "aleatoria" (sorteada pela seed)
+  sorteio?: Sorteio; // usado quando `lutadores` está vazio
+  lutadores?: Lutador[]; // elenco fixo (vazio = sorteio no elenco.json)
+};
+
+export type Sorteio = {
+  quantidade?: number; // padrão 16 (2 a 16)
+  maxPorAnime?: number; // padrão 2
+  animes?: string[]; // limitar a estes animes (ex.: ["Dragon Ball"])
+  incluir?: string[]; // ids que entram sempre
+  excluir?: string[];
+};
+
+// Episódio resolvido: elenco sorteado, atributos calculados, tema escolhido.
+export type LutadorPronto = Lutador & { poder: number; hp: number; velocidade: number; dano: number };
+export type EpisodioPronto = Omit<Episodio, "lutadores"> & {
+  lutadores: LutadorPronto[];
+  tema: string;
+  obstaculo: boolean;
 };

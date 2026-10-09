@@ -1,5 +1,6 @@
 {
   "seed": 77,
+  "arena": "shibuya",
   "vencedor": "GOJO",
-  "perfil": "@seuperfil"
+  "sorteio": { "quantidade": 16, "maxPorAnime": 2, "incluir": ["gojo", "sukuna"] }
 }

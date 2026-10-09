@@ -31,3 +31,8 @@ export const luz = (hex: string) => {
 };
 
 export const CONTORNO = "#1A1424";
+
+// Sombreamento com "hue shifting" (técnica clássica de pixel art): a sombra puxa para o roxo/azul
+// e a luz puxa para o amarelo, em vez de só escurecer/clarear.
+export const sombra = (hex: string, k: number) => mistura(tom(hex, -k), "#3A2470", k * 0.6);
+export const brilho = (hex: string, k: number) => mistura(tom(hex, k), "#FFF2B0", k * 0.7);

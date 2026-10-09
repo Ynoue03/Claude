@@ -4,7 +4,7 @@ import { anel, disco, linha, px, zigue, type Ctx } from "./pixel";
 import { hash } from "./rng";
 import type { Ataque, Sim } from "./sim";
 import { sprite } from "./sprites";
-import type { Episodio } from "./tipos";
+import type { EpisodioPronto as Episodio } from "./tipos";
 
 type P = { x: number; y: number };
 
@@ -188,9 +188,10 @@ export const desenharAtaque = (ctx: Ctx, atq: Ataque, f: number, sim: Sim, ep: E
       if (f >= atq.ini + atq.carga - 2 && k > 0) {
         const p = lerp(fonte, alvoP, k);
         linha(ctx, fonte.x, fonte.y, p.x, p.y, CONTORNO, 3);
-        linha(ctx, fonte.x, fonte.y, p.x, p.y, L.visual.pele, 1);
+        const braco = g.linha ?? L.visual.pele;
+        linha(ctx, fonte.x, fonte.y, p.x, p.y, braco, 1);
         disco(ctx, p.x, p.y, 3, CONTORNO);
-        disco(ctx, p.x, p.y, 2, L.visual.pele);
+        disco(ctx, p.x, p.y, 2, g.linha ? cor : L.visual.pele);
         for (let j = 1; j < 4; j++) {
           const q = lerp(fonte, p, j / 4);
           px(ctx, q.x, q.y - 3, cor2);

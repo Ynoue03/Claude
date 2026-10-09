@@ -1,0 +1,5 @@
+{
+  "seed": 9001,
+  "arena": "budokai",
+  "sorteio": { "quantidade": 5, "animes": ["Dragon Ball"] }
+}

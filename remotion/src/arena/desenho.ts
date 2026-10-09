@@ -2,13 +2,18 @@
 import { CONTORNO, luz, tom } from "./cores";
 import { desenharAtaque, poeira } from "./efeitos";
 import { larguraTexto, texto } from "./fonte";
-import { desenharAgua, desenharEspumaFlores, desenharPedra, ilhaEstatica, M, MH, MW, PEDRA_BASE } from "./mapa";
+import {
+  BASE_CENTRO, desenharAnimado, desenharCentro, desenharFundo, desenharNoite, desenharParticulas, desenharVinheta,
+  estatico, M, MH, MW, tema,
+} from "./mapa";
 import { anel, disco, elipse, linha, px, ret, type Ctx } from "./pixel";
+import { brilho } from "./cores";
 import { hash } from "./rng";
 import type { Sim } from "./sim";
 import { SH, SW, sprite, spriteCaido } from "./sprites";
 import { H, T, W } from "./tempo";
-import type { Episodio } from "./tipos";
+import type { EpisodioPronto as Episodio } from "./tipos";
+import { resolverVisual } from "./sprites";
 
 const ESCALA = 4;
 const surgeEm = (i: number) => 6 + i * 4;
@@ -76,11 +81,30 @@ export const camera = (sim: Sim, f: number) => {
 const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
   ctx.save();
   ctx.translate(M, M);
-  desenharAgua(ctx, f);
-  ctx.drawImage(ilhaEstatica(), -M, -M);
-  desenharEspumaFlores(ctx, f);
+  const tm = tema(ep.tema);
+  desenharFundo(ctx, tm, f);
+  ctx.drawImage(estatico(tm).canvas, -M, -M);
+  desenharAnimado(ctx, tm, f);
   const q = sim.quadros[f];
   const L = ep.lutadores;
+
+  // marcas no chão: crateras e queimados que ficam depois dos golpes fortes
+  for (const atq of sim.ataques) {
+    if (!atq.acertou || f < atq.impacto) continue;
+    const ef = atq.golpe.efeito;
+    if (!(atq.golpe.area || ef === "explosao" || ef === "bomba" || ef === "projetil")) continue;
+    const idade = f - atq.impacto;
+    if (idade > 450) continue;
+    ctx.globalAlpha = Math.max(0, 0.55 * (1 - idade / 450));
+    const cx = atq.para.x;
+    const cy = atq.para.y;
+    elipse(ctx, cx, cy, 9, 3, "#2A2018");
+    elipse(ctx, cx - 1, cy - 1, 6, 2, "#3A2E22");
+    px(ctx, cx + 7, cy - 2, "#2A2018", 2);
+    px(ctx, cx - 9, cy + 1, "#2A2018", 2);
+    ctx.globalAlpha = 1;
+  }
+  desenharNoite(ctx, tm, f);
 
   // sombras
   q.forEach((s, i) => {
@@ -90,7 +114,7 @@ const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
   });
 
   // ordenação por profundidade (lutadores + pedra)
-  const itens: { y: number; d: () => void }[] = [{ y: PEDRA_BASE, d: () => desenharPedra(ctx) }];
+  const itens: { y: number; d: () => void }[] = ep.obstaculo ? [{ y: BASE_CENTRO, d: () => desenharCentro(ctx, tm) }] : [];
   q.forEach((s, i) => {
     if (f < surgeEm(i)) return;
     const morto = !s.vivo;
@@ -116,7 +140,28 @@ const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
         const atq = s.pose === "ataque" ? ataqueAtivo(sim, i, f) : null;
         if (atq && atq.golpe.efeito === "explosao" && f < atq.impacto) dir = [0, 3, 1, 2][Math.floor((f - atq.ini) / 2) % 4];
         const flash = f - s.hitF < 7 && (f - s.hitF) % 2 === 0;
-        ctx.drawImage(sprite(l, dir, s.pose, flash), X, Y);
+        // aura de carga dos especiais (chama em pixel subindo em volta do corpo)
+        if (atq && atq.golpe.especial && f < atq.impacto) {
+          const c = atq.golpe.cor;
+          for (let k = 0; k < 10; k++) {
+            const a = (k / 10) * Math.PI * 2;
+            const sub = ((f * 1.3 + k * 5) % 14);
+            px(ctx, s.x + Math.cos(a) * 10, s.y - 4 - sub - Math.abs(Math.sin(a)) * 10, k % 3 ? c : brilho(c, 0.5), 2);
+          }
+        }
+        // rastro (afterimage) nas investidas
+        if (atq && f < atq.impacto && ["raio", "aura", "soco", "corte", "arco", "esfera"].includes(atq.golpe.efeito)) {
+          for (const atras of [4, 2]) {
+            const p = sim.quadros[Math.max(0, f - atras)][i];
+            if (Math.hypot(p.x - s.x, p.y - s.y) < 3) continue;
+            ctx.globalAlpha = atras === 4 ? 0.25 : 0.45;
+            ctx.drawImage(sprite(l, dir, "ataque", true), Math.round(p.x) - 13, Math.round(p.y) - SH + 1);
+            ctx.globalAlpha = 1;
+          }
+        }
+        // respiração parado e balanço ao andar
+        const bob = s.pose === "parado" && !s.salto ? ((f + i * 7) % 32 < 16 ? 0 : 1) : s.pose === "passo1" || s.pose === "passo2" ? -1 : 0;
+        ctx.drawImage(sprite(l, dir, s.pose, flash), X, Y + bob);
         // status sobre o sprite
         if (s.status === "FRZ") {
           ctx.fillStyle = "rgba(120,230,255,0.45)";
@@ -154,6 +199,20 @@ const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
   itens.sort((a, b) => a.y - b.y);
   for (const it of itens) it.d();
 
+  // poeira dos passos
+  q.forEach((s, i) => {
+    if (!s.vivo) return;
+    for (let k = 0; k < 6; k++) {
+      const g = f - k;
+      if (g < 0 || g % 10 !== 0) continue;
+      const p = sim.quadros[g][i];
+      if (p.pose !== "passo1" && p.pose !== "passo2") continue;
+      ctx.globalAlpha = 0.6 - k * 0.09;
+      disco(ctx, p.x - 3 + (g % 20 ? 6 : 0), p.y - k * 0.4, Math.max(0, 2 - k / 3), "#E8E0D0");
+      ctx.globalAlpha = 1;
+    }
+  });
+
   // surgimento (intro) e "poof" da derrota
   q.forEach((s, i) => {
     const ts = f - surgeEm(i);
@@ -172,6 +231,22 @@ const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
     if (f < atq.ini || f > atq.fim + 14) continue;
     desenharAtaque(ctx, atq, f, sim, ep);
   }
+
+  // luz dos golpes (mais forte à noite)
+  ctx.globalCompositeOperation = "lighter";
+  for (const atq of sim.ataques) {
+    const ti = f - atq.impacto;
+    if (ti < -4 || ti > 10 || atq.golpe.efeito === "escudo") continue;
+    const p = ti < 0 ? q[atq.atk] : atq.para;
+    const r = (atq.golpe.especial ? 26 : 16) * (1 - Math.max(0, ti) / 12);
+    ctx.globalAlpha = (tm.noite ? 0.22 : 0.1) * (ti < 0 ? 0.6 : 1);
+    disco(ctx, p.x, p.y - 14, r, atq.golpe.cor);
+    disco(ctx, p.x, p.y - 14, r * 0.6, atq.golpe.cor2 ?? "#FFFFFF");
+  }
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+  desenharParticulas(ctx, tm, f);
+  desenharVinheta(ctx, tm);
 
   // barras de HP + status
   q.forEach((s, i) => {
@@ -277,7 +352,8 @@ const hud = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
   ret(ctx, x0 + w - 1, y0, 1, h, "#8A84A8");
   const q = sim.quadros[f];
   const vivos = q.filter((s) => s.vivo).length;
-  texto(ctx, ep.titulo, x0 + 4, y0 + 3, "#F8D048");
+  const local = f >= T.luta ? `${tema(ep.tema).nome}` : ep.titulo;
+  texto(ctx, local, x0 + 4, y0 + 3, f >= T.luta ? "#7FE8FF" : "#F8D048");
   texto(ctx, `${ep.textos.vivos} ${vivos}`, x0 + w - 4, y0 + 3, "#FFFFFF", 1, undefined, "dir");
   ret(ctx, x0 + 3, y0 + 10, w - 6, 1, "#3A3460");
   const cw = (w - 6) / 4;
@@ -290,7 +366,7 @@ const hud = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
     const fora = !s.vivo && f >= s.morte + 6;
     const ferido = f - s.hitF < 5 && s.vivo;
     ret(ctx, x, y, 3, 5, fora ? "#4A4858" : l.visual.cabelo);
-    ret(ctx, x, y + 3, 3, 2, fora ? "#4A4858" : l.visual.roupa);
+    ret(ctx, x, y + 3, 3, 2, fora ? "#4A4858" : resolverVisual(l.visual).roupa);
     if (fora) {
       px(ctx, x, y + 1, "#E8483A");
       px(ctx, x + 2, y + 1, "#E8483A");
@@ -347,6 +423,19 @@ const desenharUI = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
     if (ab >= 1) {
       texto(ctx, ep.titulo, W / 2, y + 8, "#B07A2A", 1, undefined, "centro");
       if (t % 30 < 24 || t < 20) texto(ctx, tx.escolha, W / 2, y + 16, "#2A1E3A", 2, undefined, "centro");
+    }
+    // placa do local sorteado
+    if (t > 10) {
+      const tm = tema(ep.tema);
+      const linha1 = `STAGE: ${tm.nome}`;
+      const linha2 = tm.anime.toUpperCase();
+      const ws = Math.min(226, Math.max(larguraTexto(linha1), larguraTexto(linha2)) + 14);
+      const xs = Math.round(W / 2 - ws / 2);
+      ret(ctx, xs - 1, y + 35, ws + 2, 20, "#06050C");
+      ret(ctx, xs, y + 36, ws, 18, "#1E1A3A");
+      ret(ctx, xs, y + 36, ws, 1, "#7FE8FF");
+      texto(ctx, linha1, W / 2, y + 39, "#7FE8FF", 1, undefined, "centro");
+      texto(ctx, linha2, W / 2, y + 46, "#B8B4D0", 1, undefined, "centro");
     }
   }
   // contagem

@@ -4,7 +4,7 @@
 // inimigo mais próximo, ataca, foge com HP baixo.
 import { criarRng } from "./rng";
 import { ARENA, CENTRO, FPS, PEDRA, T, TOTAL } from "./tempo";
-import type { Episodio, Golpe, Status } from "./tipos";
+import type { EpisodioPronto, Golpe, Status } from "./tipos";
 import type { Pose } from "./sprites";
 
 export type Quadro = {
@@ -91,7 +91,7 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 const dist = (a: { x: number; y: number }, b: { x: number; y: number }) =>
   Math.hypot(a.x - b.x, a.y - b.y);
 
-export const limitarArena = (p: { x: number; y: number }) => {
+export const limitarArena = (p: { x: number; y: number }, obstaculo = true) => {
   let dx = clamp(p.x - CENTRO.x, -ARENA.a, ARENA.a);
   let dy = clamp(p.y - CENTRO.y, -ARENA.b, ARENA.b);
   const s = Math.abs(dx) / ARENA.a + Math.abs(dy) / ARENA.b;
@@ -101,6 +101,7 @@ export const limitarArena = (p: { x: number; y: number }) => {
   }
   p.x = CENTRO.x + dx;
   p.y = CENTRO.y + dy;
+  if (!obstaculo) return;
   const pd = Math.hypot(p.x - PEDRA.x, p.y - PEDRA.y);
   const rmin = PEDRA.r + 5;
   if (pd < rmin) {
@@ -123,21 +124,25 @@ export const posInicial = (i: number, n: number) => {
   return { x: CENTRO.x + Math.cos(ang) * 80, y: CENTRO.y + Math.sin(ang) * 90 };
 };
 
-export const resolverVencedor = (ep: Episodio) => {
+export const resolverVencedor = (ep: EpisodioPronto) => {
   const v = (ep.vencedor ?? "").toString().trim().toLowerCase();
   if (!v) return -1;
   return ep.lutadores.findIndex((l) => l.id.toLowerCase() === v || l.nome.toLowerCase() === v);
 };
 
-export const simular = (ep: Episodio): Sim => {
+export const simular = (ep: EpisodioPronto): Sim => {
   const rng = criarRng(ep.seed);
   const L = ep.lutadores;
   const n = L.length;
 
   // ── roteiro do diretor ─────────────────────────────────
+  // Ordem de sobrevivência sorteada com peso pelo poder canônico (peso = poder³): o mais forte
+  // tende a ir longe, mas qualquer um pode surpreender. "vencedor" no JSON força o campeão.
+  const chave = L.map((l) => Math.pow(rng.prox(), 1 / Math.pow(l.poder, 3)));
+  const sobrevive = L.map((_, i) => i).sort((a, b) => chave[b] - chave[a]);
   let venc = resolverVencedor(ep);
-  if (venc < 0) venc = rng.int(n);
-  const ordem = rng.embaralhar(L.map((_, i) => i).filter((i) => i !== venc));
+  if (venc < 0) venc = sobrevive[0];
+  const ordem = sobrevive.filter((i) => i !== venc).reverse();
   const vice = ordem[ordem.length - 1];
   const D: number[] = new Array(n).fill(Infinity);
   D[vice] = T.final;
@@ -503,7 +508,7 @@ export const simular = (ep: Episodio): Sim => {
             B.y += dy;
           }
         }
-      for (const a of vs) limitarArena(a);
+      for (const a of vs) limitarArena(a, ep.obstaculo);
 
       // fim do duelo → vencedor comemora
       const v = fs[venc];

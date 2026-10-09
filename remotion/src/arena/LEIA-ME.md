@@ -14,15 +14,22 @@ O script roda a simulação em Node (deixas de som), gera trilha + efeitos (`aud
 renderiza o vídeo e masteriza (−14 LUFS / −1 dBTP). Preview: `npm run dev` → pasta **Arena**
 (`AnimePixelArena` e a folha de sprites `ArenaSprites`).
 
+Prompt completo para recriar/gerar episódios: [`PROMPT-ARENA.md`](../../../PROMPT-ARENA.md).
+
 ## Dados (JSON)
 `arena-padrao.json` tem tudo; um episódio novo só precisa dos campos que mudam:
 
 | Campo | O que faz |
 |---|---|
-| `seed` | define a luta inteira (movimentos, ordem das quedas, vencedor) |
-| `vencedor` | id ou nome para forçar o resultado (`null` = pela seed) |
+| `seed` | define tudo: elenco sorteado, arena, movimentos, ordem das quedas, vencedor |
+| `arena` | `"aleatoria"` ou um id de `temas.ts` (vale-do-fim, budokai, marineford, shibuya, sokyoku, trem-infinito, ua-festival, namek) |
+| `sorteio` | `quantidade`, `maxPorAnime`, `animes`, `incluir`, `excluir` — sorteia no `elenco.json` (50 personagens, 18 animes) |
+| `lutadores[]` | elenco fixo (substitui o sorteio) |
+| `vencedor` | id ou nome para forçar o resultado (`null` = pela seed, com peso pelo poder) |
 | `perfil`, `titulo`, `textos` | @ do CTA, título do HUD, banners e frases do CTA |
-| `lutadores[]` | nome, HP, velocidade, dano, visual e golpes |
+
+Cada personagem do `elenco.json` tem `poder` (1–10, força no cânone): HP = 70 + poder×8,
+dano = 0,72 + poder×0,055, e a ordem de sobrevivência é sorteada com peso poder³.
 
 Visual do lutador: cores (`pele`, `cabelo`, `roupa`, `mangas`, `centro`, `decote`, `ombros`, `cinto`,
 `luvas`, `calca`, `sapato`), `penteado` (chave de `penteados.ts`, ou `mascara` própria de 24 colunas),
@@ -40,5 +47,5 @@ trilha 168 BPM) · 80–87 s vencedor + confete · 87–90 s CTA.
 O "diretor" em `sim.ts` agenda as quedas pela seed e ajusta o dano para cumprir o roteiro; a IA decide o resto.
 
 ## Arquivos
-`sim.ts` simulação · `sprites.ts` + `penteados.ts` sprites chibi · `mapa.ts` arena · `efeitos.ts` golpes ·
+`montar.ts` sorteio do elenco e da arena · `elenco.json` banco de personagens · `temas.ts` arenas · `sim.ts` simulação · `sprites.ts` + `penteados.ts` sprites chibi · `mapa.ts` arena · `efeitos.ts` golpes ·
 `desenho.ts` câmera, HUD e banners · `fonte.ts` fonte pixel · `cli.ts` deixas de áudio.

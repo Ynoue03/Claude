@@ -19,6 +19,6 @@ export const ArenaComposition: React.FC = () => (
       height={1920}
       defaultProps={arenaPadrao}
     />
-    <Still id="ArenaSprites" component={FolhaSprites} width={1080} height={1920} defaultProps={arenaPadrao} />
+    <Still id="ArenaSprites" component={FolhaSprites} width={1080} height={1920} />
   </Folder>
 );
