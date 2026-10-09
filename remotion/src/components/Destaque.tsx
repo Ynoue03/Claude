@@ -17,7 +17,12 @@ export const TextoComDestaque: React.FC<{
   const alvo = destaque ? destaque.split(" ") : [];
   let ini = -1;
   if (alvo.length) {
-    ini = palavras.findIndex((_, i) => alvo.every((w, j) => palavras[i + j]?.replace(/[.,!?]/g, "") === w.replace(/[.,!?]/g, "")));
+    ini = palavras.findIndex((_, i) =>
+      alvo.every(
+        (w, j) =>
+          palavras[i + j]?.replace(/[.,!?]/g, "") === w.replace(/[.,!?]/g, ""),
+      ),
+    );
   }
   const sublinhar = delay + palavras.length * 0.07 + 0.6;
   return (
@@ -35,7 +40,10 @@ export const TextoComDestaque: React.FC<{
             seed={3 + i}
             progress={interpolate(
               frame,
-              [(sublinhar + (i - ini) * 0.25) * fps, (sublinhar + (i - ini + 1) * 0.25) * fps],
+              [
+                (sublinhar + (i - ini) * 0.25) * fps,
+                (sublinhar + (i - ini + 1) * 0.25) * fps,
+              ],
               [0, 1],
               { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
             )}

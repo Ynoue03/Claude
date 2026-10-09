@@ -15,7 +15,9 @@ export const TreinoComposition = () => (
     width={vertical.width}
     height={vertical.height}
     defaultProps={treinoExemplo}
-    calculateMetadata={({ props }) => ({ durationInFrames: treinoDuration(props, vertical.fps) })}
+    calculateMetadata={({ props }) => ({
+      durationInFrames: treinoDuration(props, vertical.fps),
+    })}
   />
 );
 
@@ -28,6 +30,8 @@ export const ReceitaComposition = () => (
     width={vertical.width}
     height={vertical.height}
     defaultProps={receitaExemplo}
-    calculateMetadata={({ props }) => ({ durationInFrames: receitaDuration(props, vertical.fps) })}
+    calculateMetadata={({ props }) => ({
+      durationInFrames: receitaDuration(props, vertical.fps),
+    })}
   />
 );

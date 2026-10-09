@@ -1,6 +1,13 @@
 import React from "react";
 import { lightLeak } from "@remotion/effects/light-leak";
-import { AbsoluteFill, interpolate, Sequence, Solid, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  Sequence,
+  Solid,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 
 // Vazamento de luz quente sobre o corte — usado em <TransitionSeries.Overlay>.
 export const LightLeak: React.FC<{ seed?: number }> = ({ seed = 0 }) => {
@@ -27,7 +34,10 @@ export const LightLeak: React.FC<{ seed?: number }> = ({ seed = 0 }) => {
 };
 
 // Um light leak centralizado em cada troca de cena.
-export const Vazamentos: React.FC<{ inicios: number[]; duracao: number }> = ({ inicios, duracao }) => {
+export const Vazamentos: React.FC<{ inicios: number[]; duracao: number }> = ({
+  inicios,
+  duracao,
+}) => {
   const { fps } = useVideoConfig();
   const largura = Math.round(duracao + 0.6 * fps);
   return (
@@ -35,7 +45,10 @@ export const Vazamentos: React.FC<{ inicios: number[]; duracao: number }> = ({ i
       {inicios.slice(1).map((f, i) => (
         <Sequence
           key={f}
-          from={Math.max(0, f + Math.round(duracao / 2) - Math.round(largura / 2))}
+          from={Math.max(
+            0,
+            f + Math.round(duracao / 2) - Math.round(largura / 2),
+          )}
           durationInFrames={largura}
           premountFor={fps}
         >

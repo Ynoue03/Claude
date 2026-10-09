@@ -1,5 +1,9 @@
 // Converte a duração de cada cena (s) em frames, descontando as transições.
-export const montarCenas = (duracoes: number[], transicao: number, fps: number) => {
+export const montarCenas = (
+  duracoes: number[],
+  transicao: number,
+  fps: number,
+) => {
   const frames = duracoes.map((d) => Math.round(d * fps));
   const t = Math.round(transicao * fps);
   const inicios: number[] = [];

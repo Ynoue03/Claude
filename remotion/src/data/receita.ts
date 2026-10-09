@@ -4,7 +4,9 @@ export type ReceitaProps = {
   ingredientes: string[];
   macros: { kcal: number; proteina: number; carbo: number; gordura: number };
   handle: string;
-  musica?: string; // arquivo em public/, ex.: "musica/lofi.mp3"
+  musica?: string; // arquivo em public/ (trilhas prontas em public/audio/musica/)
+  musicaVolume?: number; // 0–1, padrão 0.6
+  sfx?: boolean; // efeitos sonoros (padrão: ligado)
 };
 
 export const receitaExemplo: ReceitaProps = {
@@ -19,4 +21,5 @@ export const receitaExemplo: ReceitaProps = {
   ],
   macros: { kcal: 520, proteina: 42, carbo: 38, gordura: 21 },
   handle: "@seuperfil",
+  musica: "audio/musica/receita-lofi.wav",
 };

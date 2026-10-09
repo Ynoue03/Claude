@@ -1,5 +1,10 @@
 import React from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { colors, ease, fonts, safe } from "../brand";
 
 // Moldura de revista: @perfil e "01 / 04" no topo, linha de progresso na base.

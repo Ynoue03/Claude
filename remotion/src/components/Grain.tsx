@@ -6,7 +6,9 @@ export const Grain: React.FC<{ opacity?: number }> = ({ opacity = 0.07 }) => {
   const frame = useCurrentFrame();
   const seed = Math.floor(frame / 2);
   return (
-    <AbsoluteFill style={{ pointerEvents: "none", mixBlendMode: "multiply", opacity }}>
+    <AbsoluteFill
+      style={{ pointerEvents: "none", mixBlendMode: "multiply", opacity }}
+    >
       <svg width="100%" height="100%">
         <filter id={`grain-${seed}`}>
           <feTurbulence

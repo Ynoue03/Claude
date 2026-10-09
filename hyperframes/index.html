@@ -258,6 +258,21 @@
         <div class="progresso" id="progresso"></div>
       </div>
       <div id="grain"></div>
+
+      <!-- ——— Áudio (gerado por audio/gerar.py — 100% próprio) ———
+           Música com fade de entrada, recuo no fecho (para o sino respirar) e fade de saída.
+           Efeitos em tempo absoluto; o whoosh tem pico em 0,45 s → começa 0,45 s antes do meio do corte. -->
+      <audio id="musica" src="assets/audio/musica/pre-treino-pop.wav" data-start="0" data-duration="10" data-track-index="10"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.6,"v":0.45},{"t":8.0,"v":0.45},{"t":8.4,"v":0.25},{"t":8.6,"v":0.25},{"t":10,"v":0}]}]}'></audio>
+      <audio id="sfx-ar" src="assets/audio/sfx/ar.wav" data-start="0.35" data-track-index="11" data-duration="1.25" data-volume="0.4"></audio>
+      <audio id="sfx-transicao-1" src="assets/audio/sfx/transicao.wav" data-start="2.7" data-track-index="12" data-duration="1.8" data-volume="0.5"></audio>
+      <audio id="sfx-cartao-1" src="assets/audio/sfx/cartao.wav" data-start="3.6" data-track-index="13" data-duration="0.82" data-volume="0.55"></audio>
+      <audio id="sfx-cartao-2" src="assets/audio/sfx/cartao.wav" data-start="4.1" data-track-index="14" data-duration="0.82" data-volume="0.55"></audio>
+      <audio id="sfx-cartao-3" src="assets/audio/sfx/cartao.wav" data-start="4.6" data-track-index="15" data-duration="0.82" data-volume="0.55"></audio>
+      <audio id="sfx-transicao-2" src="assets/audio/sfx/transicao.wav" data-start="7.3" data-track-index="16" data-duration="1.8" data-volume="0.5"></audio>
+      <audio id="sfx-salvar" src="assets/audio/sfx/salvar.wav" data-start="8.35" data-track-index="17" data-duration="0.9" data-volume="0.6"></audio>
+      <audio id="sfx-sino" src="assets/audio/sfx/sino-receita.wav" data-start="8.65" data-track-index="18" data-duration="1.35"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.6},{"t":0.55,"v":0.6},{"t":1.35,"v":0}]}]}'></audio>
     </div>
 
     <script>

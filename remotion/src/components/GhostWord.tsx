@@ -1,13 +1,18 @@
 import React from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { ease, fonts } from "../brand";
 
 // Palavra gigante e translúcida ao fundo, deslizando devagar — camada editorial.
-export const GhostWord: React.FC<{ text: string; color: string; top?: number }> = ({
-  text,
-  color,
-  top = 1180,
-}) => {
+export const GhostWord: React.FC<{
+  text: string;
+  color: string;
+  top?: number;
+}> = ({ text, color, top = 1180 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   return (

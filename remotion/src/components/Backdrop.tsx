@@ -3,11 +3,11 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 
 // Fundo "vivo": cor base + luz suave que respira devagar + vinheta.
 // Nenhum quadro fica parado, mas nada chama atenção.
-export const Backdrop: React.FC<{ tom: string; luz?: string; escuro?: boolean }> = ({
-  tom,
-  luz = "rgba(255, 250, 242, 0.75)",
-  escuro = false,
-}) => {
+export const Backdrop: React.FC<{
+  tom: string;
+  luz?: string;
+  escuro?: boolean;
+}> = ({ tom, luz = "rgba(255, 250, 242, 0.75)", escuro = false }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;

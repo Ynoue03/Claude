@@ -24,7 +24,14 @@ export const Anel: React.FC<{
   return (
     <div style={{ position: "relative", width: tamanho, height: tamanho }}>
       <svg width={tamanho} height={tamanho} style={{ rotate: "-90deg" }}>
-        <circle cx={tamanho / 2} cy={tamanho / 2} r={r} stroke={`${colors.ink}10`} strokeWidth={14} fill="none" />
+        <circle
+          cx={tamanho / 2}
+          cy={tamanho / 2}
+          r={r}
+          stroke={`${colors.ink}10`}
+          strokeWidth={14}
+          fill="none"
+        />
         {fatias.map((f, i) => {
           const len = (f.valor / total) * circ;
           const inicio = acc;

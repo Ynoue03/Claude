@@ -60,6 +60,14 @@ No HyperFrames, os mesmos efeitos estão em `hyperframes/index.html` (moldura, l
 
 **Estrutura padrão de um vídeo:** Gancho/título (≈3 s) → Conteúdo (lista, passos, números) → Dica ou dado (≈3 s) → CTA "salve / comente" + @perfil (≈2,5 s). Total ideal: 10–20 s.
 
+## Áudio (detalhes em `ESTUDO-AUDIO.md`)
+- Trilhas e efeitos são **próprios**, gerados por `audio/gerar.py` (sem direito autoral de terceiros).
+- Treino → `treino-house` (112 BPM) · Receita → `receita-lofi` (84 BPM) · Dica/pré-treino → `pre-treino-pop` (100 BPM).
+- Um efeito por evento importante (corte, item de lista, destaque, fecho); listas sobem na escala; nada de sons "meme".
+- Remotion: use `<Som arquivo em volume>` dentro da cena que dispara o evento e os volumes de `mix` em `components/Som.tsx`.
+- Acentos ~4–6 dB acima da trilha; a trilha recua no fecho.
+- **Sempre masterizar antes de postar:** `scripts/masterizar.sh out/video.mp4` (−14 LUFS, −1 dBTP).
+
 ## Tom do texto
 - Português do Brasil, frases curtas, sem exagero ("secar 10 kg em 7 dias" ❌).
 - Nada de promessa de resultado ou orientação médica; valores nutricionais são aproximados (use "≈").
@@ -71,6 +79,10 @@ cd remotion && npm i
 npm run dev                                        # Studio (preview e edição)
 npx remotion render TreinoDoDia out/treino.mp4      # renderiza com os dados de exemplo
 npx remotion render TreinoDoDia out/costas.mp4 --props=./exemplos/costas.json  # outro conteúdo, mesmo template
+
+# Entrega (volume padrão das redes)
+scripts/masterizar.sh remotion/out/treino.mp4      # gera treino-master.mp4
+python3 audio/gerar.py                              # regenera trilhas e efeitos
 
 # HyperFrames
 cd hyperframes

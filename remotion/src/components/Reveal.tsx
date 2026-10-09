@@ -23,7 +23,12 @@ export const Reveal: React.FC<{
     <div
       style={{
         opacity: interpolate(frame, [start, end], [0, 1], opts),
-        translate: interpolate(frame, [start, end], [`0px ${distance}px`, "0px 0px"], opts),
+        translate: interpolate(
+          frame,
+          [start, end],
+          [`0px ${distance}px`, "0px 0px"],
+          opts,
+        ),
         filter: `blur(${interpolate(frame, [start, end], [8, 0], opts)}px)`,
         ...style,
       }}

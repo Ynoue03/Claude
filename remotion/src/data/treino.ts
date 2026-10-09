@@ -4,7 +4,9 @@ export type TreinoProps = {
   exercicios: { nome: string; series: string }[];
   dica: string;
   dicaDestaque?: string; // trecho da dica sublinhado à mão
-  musica?: string; // arquivo em public/, ex.: "musica/lofi.mp3"
+  musica?: string; // arquivo em public/ (trilhas prontas em public/audio/musica/)
+  musicaVolume?: number; // 0–1, padrão 0.6
+  sfx?: boolean; // efeitos sonoros (padrão: ligado)
   handle: string;
 };
 
@@ -21,4 +23,5 @@ export const treinoExemplo: TreinoProps = {
   dica: "Controle a descida. Três segundos em cada repetição.",
   dicaDestaque: "Três segundos",
   handle: "@seuperfil",
+  musica: "audio/musica/treino-house.wav",
 };
