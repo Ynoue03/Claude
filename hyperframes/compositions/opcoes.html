@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        #opcoes-root {
+          position: absolute;
+          inset: 0;
+          background: var(--sand);
+        }
+      </style>
+      <div id="opcoes-root" class="cena" data-layout-allow-overlap data-composition-id="opcoes" data-width="1080" data-height="1920">
+        <div id="opcoes-kicker" class="kicker">3 opções</div>
+        <div id="opcao-1" class="card"><span class="card-name">Banana + pasta de amendoim</span><span class="card-kcal">≈ 230 kcal</span></div>
+        <div id="opcao-2" class="card"><span class="card-name">Tapioca com ovo</span><span class="card-kcal">≈ 260 kcal</span></div>
+        <div id="opcao-3" class="card"><span class="card-name">Iogurte + aveia</span><span class="card-kcal">≈ 210 kcal</span></div>
+      </div>
+      <script>
+        (() => {
+          const tl = gsap.timeline({ paused: true });
+          const reveal = { opacity: 0, y: 40, filter: "blur(8px)" };
+          const visivel = { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "expo.out" };
+          tl.fromTo("#opcoes-root", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0);
+          tl.fromTo("#opcoes-kicker", reveal, visivel, 0.2);
+          tl.fromTo("#opcao-1", { ...reveal, y: 60 }, visivel, 0.5);
+          tl.fromTo("#opcao-2", { ...reveal, y: 60 }, visivel, 1.0);
+          tl.fromTo("#opcao-3", { ...reveal, y: 60 }, visivel, 1.5);
+          window.__timelines["opcoes"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

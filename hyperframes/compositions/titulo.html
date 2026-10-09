@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        #titulo-root {
+          position: absolute;
+          inset: 0;
+          background: var(--cream);
+        }
+      </style>
+      <div id="titulo-root" class="cena" data-composition-id="titulo" data-width="1080" data-height="1920">
+        <div id="titulo-kicker" class="kicker">Pré-treino</div>
+        <h1 id="titulo-texto" class="display" style="font-size: 150px">O que comer 1h antes</h1>
+        <div id="titulo-linha" class="rule"></div>
+      </div>
+      <script>
+        (() => {
+          const tl = gsap.timeline({ paused: true });
+          const reveal = { opacity: 0, y: 40, filter: "blur(8px)" };
+          const visivel = { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "expo.out" };
+          tl.fromTo("#titulo-kicker", reveal, visivel, 0);
+          tl.fromTo("#titulo-texto", reveal, visivel, 0.25);
+          tl.fromTo("#titulo-linha", { scaleX: 0 }, { scaleX: 1, duration: 1, ease: "power2.inOut" }, 0.7);
+          window.__timelines["titulo"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
