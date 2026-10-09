@@ -2,3 +2,7 @@ node_modules/
 out/
 .DS_Store
 .env
+# vídeos de referência de terceiros (só as fichas de análise vão para o git)
+modelos/**/*.mp4
+modelos/**/*.mov
+modelos/**/*.webm

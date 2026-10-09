@@ -8,6 +8,12 @@ Templates de vídeos verticais no estilo *aesthetic* para Reels/TikTok/Shorts, e
 
 ## Como pedir um vídeo novo ao Claude
 
+**Atalho:** digite `/novo-video` no Claude Code. Ele pergunta o nicho e se você tem um vídeo modelo,
+analisa o modelo, monta o plano de edição (transições + efeitos sonoros) e só produz depois da sua aprovação.
+O guia completo está em `GUIA-EDICAO.md`.
+
+Ou descreva diretamente:
+
 Abra o Claude Code dentro da pasta do motor e descreva o vídeo com estes 5 itens:
 
 1. **Formato e duração** — "Reel vertical, ~15 s"

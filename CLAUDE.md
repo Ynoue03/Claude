@@ -10,6 +10,10 @@ Este repositório produz vídeos curtos de motion graphics com o Claude, em dois
 Antes de mexer em um projeto, entre na pasta dele e use as skills instaladas lá
 (`remotion-best-practices` / `hyperframes`). Elas têm as regras técnicas de cada motor.
 
+**Vídeo novo? Comece pelo `GUIA-EDICAO.md`** (ou `/novo-video`): briefing com nicho e vídeo modelo,
+presets por nicho, catálogos de transições e efeitos sonoros, plano de edição e checklist de entrega.
+Não produza sem briefing e plano aprovados.
+
 ## Identidade visual (vale para os dois motores)
 
 **Clima:** calmo, limpo, editorial, "clean girl / quiet luxury". Nada de neon, glitch, cortes agressivos ou fontes pesadas.
@@ -79,6 +83,9 @@ cd remotion && npm i
 npm run dev                                        # Studio (preview e edição)
 npx remotion render TreinoDoDia out/treino.mp4      # renderiza com os dados de exemplo
 npx remotion render TreinoDoDia out/costas.mp4 --props=./exemplos/costas.json  # outro conteúdo, mesmo template
+
+# Vídeo modelo → ficha técnica (cortes, ritmo, BPM, quadros)
+python3 scripts/analisar-modelo.py modelos/referencia.mp4
 
 # Entrega (volume padrão das redes)
 scripts/masterizar.sh remotion/out/treino.mp4      # gera treino-master.mp4
