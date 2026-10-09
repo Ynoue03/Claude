@@ -78,6 +78,7 @@
         transform-origin: left center;
       }
       .card {
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 18px 40px -24px rgba(90, 70, 50, 0.35);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -105,6 +106,127 @@
         color: var(--sand);
         text-align: center;
       }
+
+      /* ——— acabamento premium ——— */
+      .cena-fundo {
+        position: absolute;
+        inset: 0;
+      }
+      .luz {
+        position: absolute;
+        width: 1300px;
+        height: 1300px;
+        left: -200px;
+        top: -150px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgba(255, 250, 242, 0.8), transparent);
+      }
+      .vinheta {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(90, 70, 50, 0.13) 100%);
+      }
+      .conteudo {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+      }
+      .palavra {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: top;
+        padding: 0.04em 0.12em 0.16em;
+        margin: -0.04em -0.12em -0.16em;
+      }
+      .palavra > span {
+        display: inline-block;
+        transform-origin: left bottom;
+      }
+      .kicker-traco {
+        display: inline-block;
+        width: 56px;
+        height: 2px;
+        background: currentColor;
+        vertical-align: middle;
+        margin-right: 22px;
+        transform-origin: left center;
+      }
+      .fantasma {
+        position: absolute;
+        top: 1180px;
+        left: 0;
+        white-space: nowrap;
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-weight: 500;
+        font-size: 560px;
+        line-height: 1;
+        color: var(--sand);
+        opacity: 0;
+      }
+      #moldura {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        color: var(--muted);
+      }
+      #moldura .topo {
+        position: absolute;
+        top: 150px;
+        left: 96px;
+        right: 96px;
+        display: flex;
+        justify-content: space-between;
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        font-size: 24px;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+      }
+      #moldura .contador {
+        position: relative;
+        display: inline-block;
+        width: 480px;
+        height: 30px;
+        text-align: right;
+      }
+      #moldura .contador span {
+        position: absolute;
+        right: 0;
+        white-space: nowrap;
+        opacity: 0;
+      }
+      #moldura .trilho {
+        position: absolute;
+        bottom: 250px;
+        left: 96px;
+        right: 96px;
+        height: 2px;
+        background: currentColor;
+        opacity: 0.25;
+      }
+      #moldura .progresso {
+        position: absolute;
+        bottom: 250px;
+        left: 96px;
+        width: 888px;
+        height: 2px;
+        background: currentColor;
+        transform-origin: left center;
+      }
+      #vazamento {
+        position: absolute;
+        inset: -20%;
+        pointer-events: none;
+        z-index: 40;
+        mix-blend-mode: screen;
+        opacity: 0;
+        background: radial-gradient(40% 35% at 70% 30%, rgba(255, 190, 140, 0.9), transparent 70%),
+          radial-gradient(35% 30% at 25% 70%, rgba(255, 220, 180, 0.7), transparent 70%);
+      }
       #grain {
         position: absolute;
         inset: -10%;
@@ -123,11 +245,42 @@
         data-start="3" data-duration="5" data-track-index="2" data-width="1080" data-height="1920"></div>
       <div id="cta" data-composition-id="cta" data-composition-src="compositions/cta.html"
         data-start="7.6" data-duration="2.4" data-track-index="3" data-width="1080" data-height="1920"></div>
+      <div id="vazamento"></div>
+      <div id="moldura">
+        <div class="topo">
+          <span>@seuperfil</span>
+          <span class="contador"
+            ><span id="cont-1">Pré-treino · 01 / 03</span><span id="cont-2">Pré-treino · 02 / 03</span
+            ><span id="cont-3">Pré-treino · 03 / 03</span></span
+          >
+        </div>
+        <div class="trilho"></div>
+        <div class="progresso" id="progresso"></div>
+      </div>
       <div id="grain"></div>
     </div>
 
     <script>
       const tl = gsap.timeline({ paused: true });
+
+      // Moldura: entra, contador de cena, cor clara na cena escura, progresso linear
+      tl.fromTo("#moldura", { opacity: 0 }, { opacity: 1, duration: 1, ease: "expo.out" }, 0.4);
+      tl.fromTo("#progresso", { scaleX: 0 }, { scaleX: 1, duration: 10, ease: "none" }, 0);
+      tl.set("#cont-1", { opacity: 1 }, 0);
+      tl.set("#cont-1", { opacity: 0 }, 3);
+      tl.set("#cont-2", { opacity: 1 }, 3);
+      tl.set("#cont-2", { opacity: 0 }, 7.6);
+      tl.set("#cont-3", { opacity: 1 }, 7.6);
+      tl.to("#moldura", { color: "#e4d8c8", duration: 0.5, ease: "power2.inOut" }, 7.6);
+
+      // Luz quente sobre cada corte
+      tl.set("#vazamento", { opacity: 0, x: -60 }, 0);
+      [3.0, 7.6].forEach((t) => {
+        tl.set("#vazamento", { x: -60 }, t - 0.15);
+        tl.to("#vazamento", { opacity: 0.5, x: 0, duration: 0.45, ease: "power2.out" }, t - 0.1);
+        tl.to("#vazamento", { opacity: 0, x: 60, duration: 0.6, ease: "power2.in" }, t + 0.4);
+      });
+
       // Grão: "treme" de forma determinística (12 saltos por segundo)
       for (let i = 0; i < 120; i++) {
         tl.set("#grain", { x: ((i * 37) % 60) - 30, y: ((i * 53) % 60) - 30 }, i / 12);

@@ -9,21 +9,51 @@
         #cta-root {
           position: absolute;
           inset: 0;
-          background: var(--olive);
         }
       </style>
       <div id="cta-root" class="cena" data-layout-allow-overlap data-composition-id="cta" data-width="1080" data-height="1920">
-        <h2 id="cta-texto" class="display" style="font-size: 130px; color: var(--cream); margin: 0; text-align: center">Qual é o seu?</h2>
-        <div id="cta-handle" class="kicker handle">@seuperfil</div>
+        <div id="cta-fundo" class="cena-fundo" style="background: var(--olive)">
+          <div id="cta-luz" class="luz" style="background: radial-gradient(closest-side, rgba(255,240,215,0.18), transparent)"></div>
+          <div class="vinheta" style="background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0,0,0,0.28) 100%)"></div>
+        </div>
+        <div id="cta-conteudo" class="conteudo" data-layout-allow-overlap style="align-items: center; text-align: center">
+          <svg id="cta-icone" width="120" height="120" viewBox="0 0 120 120" fill="none" stroke="var(--sand)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M34 18 L86 18 L86 104 L60 84 L34 104 Z" /></svg>
+          <h2 id="cta-texto" data-layout-allow-overflow data-layout-allow-overlap class="display" style="font-size: 132px; color: var(--cream); margin-top: 50px; line-height: 1.04; text-wrap: balance">Qual é o seu favorito?</h2>
+          <div id="cta-sub" style="font-family: 'Inter', sans-serif; font-weight: 300; font-size: 40px; color: var(--sand); margin-top: 50px">Comente e salve para amanhã</div>
+        </div>
       </div>
       <script>
         (() => {
           const tl = gsap.timeline({ paused: true });
           const reveal = { opacity: 0, y: 40, filter: "blur(8px)" };
           const visivel = { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "expo.out" };
-          tl.fromTo("#cta-root", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0);
-          tl.fromTo("#cta-texto", { ...reveal, scale: 0.96 }, { ...visivel, scale: 1 }, 0.2);
-          tl.fromTo("#cta-handle", reveal, visivel, 0.7);
+          // Quebra o texto em palavras mascaradas (revelação editorial)
+          const dividir = (sel) => {
+            const el = document.querySelector(sel);
+            const palavras = el.textContent.trim().split(/\s+/);
+            el.innerHTML = palavras.map((w) => `<span class="palavra"><span>${w}</span></span>`).join(" ");
+            return el.querySelectorAll(".palavra > span");
+          };
+          const subir = (alvos, t) =>
+            tl.fromTo(alvos, { yPercent: 115, rotation: 6 }, { yPercent: 0, rotation: 0, duration: 0.85, ease: "expo.out", stagger: 0.07 }, t);
+          const desenhar = (sel, t, dur = 1.2) => {
+            document.querySelectorAll(sel).forEach((p) => {
+              const L = p.getTotalLength();
+              tl.fromTo(p, { strokeDasharray: L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: dur, ease: "power2.inOut" }, t);
+            });
+          };
+          const luz = (sel, dur) =>
+            tl.fromTo(sel, { x: -120, y: -40 }, { x: 140, y: 80, duration: dur, ease: "sine.inOut" }, 0);
+          const sair = (sel, t) =>
+            tl.to(sel, { y: -90, opacity: 0, filter: "blur(12px)", scale: 0.97, duration: 0.6, ease: "power2.in" }, t);
+          const entrar = (sel) =>
+            tl.fromTo(sel, { y: 110, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, 0);
+
+          entrar("#cta-root");
+          luz("#cta-luz", 2.4);
+          desenhar("#cta-icone path", 0.2, 1);
+          subir(dividir("#cta-texto"), 0.35);
+          tl.fromTo("#cta-sub", reveal, visivel, 1.0);
           window.__timelines["cta"] = tl;
         })();
       </script>

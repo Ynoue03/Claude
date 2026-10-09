@@ -29,6 +29,7 @@ export const colors = {
   cream: "#F3EEE6",
   sand: "#E4D8C8",
   clay: "#B98B6A",
+  clayDark: "#9A6E50", // clay para texto (contraste)
   sage: "#9AA58A",
   olive: "#5C6449",
   ink: "#1C1B19",

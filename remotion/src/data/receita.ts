@@ -4,6 +4,7 @@ export type ReceitaProps = {
   ingredientes: string[];
   macros: { kcal: number; proteina: number; carbo: number; gordura: number };
   handle: string;
+  musica?: string; // arquivo em public/, ex.: "musica/lofi.mp3"
 };
 
 export const receitaExemplo: ReceitaProps = {

@@ -9,25 +9,59 @@
         #opcoes-root {
           position: absolute;
           inset: 0;
-          background: var(--sand);
         }
       </style>
       <div id="opcoes-root" class="cena" data-layout-allow-overlap data-composition-id="opcoes" data-width="1080" data-height="1920">
-        <div id="opcoes-kicker" class="kicker">3 opções</div>
-        <div id="opcao-1" class="card"><span class="card-name">Banana + pasta de amendoim</span><span class="card-kcal">≈ 230 kcal</span></div>
-        <div id="opcao-2" class="card"><span class="card-name">Tapioca com ovo</span><span class="card-kcal">≈ 260 kcal</span></div>
-        <div id="opcao-3" class="card"><span class="card-name">Iogurte + aveia</span><span class="card-kcal">≈ 210 kcal</span></div>
+        <div id="opcoes-fundo" class="cena-fundo" style="background: var(--sand)">
+          <div id="opcoes-luz" class="luz"></div>
+          <div class="vinheta" ></div>
+        </div>
+        <div id="opcoes-conteudo" class="conteudo" data-layout-allow-overlap>
+          <div style="display: flex; justify-content: space-between; align-items: center">
+            <div id="opcoes-kicker" class="kicker"><span class="kicker-traco" id="opcoes-traco"></span>3 opções</div>
+            <div id="opcoes-nota" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 54px; color: var(--clay-dark)">60 min antes</div>
+          </div>
+          <div id="opcao-1" class="card" data-layout-allow-overlap><span class="card-name">Banana + pasta de amendoim</span><span class="card-kcal">≈ 230 kcal</span></div>
+          <div id="opcao-2" class="card" data-layout-allow-overlap><span class="card-name">Tapioca com ovo</span><span class="card-kcal">≈ 260 kcal</span></div>
+          <div id="opcao-3" class="card" data-layout-allow-overlap><span class="card-name">Iogurte + aveia</span><span class="card-kcal">≈ 210 kcal</span></div>
+        </div>
       </div>
       <script>
         (() => {
           const tl = gsap.timeline({ paused: true });
           const reveal = { opacity: 0, y: 40, filter: "blur(8px)" };
           const visivel = { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "expo.out" };
-          tl.fromTo("#opcoes-root", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0);
-          tl.fromTo("#opcoes-kicker", reveal, visivel, 0.2);
-          tl.fromTo("#opcao-1", { ...reveal, y: 60 }, visivel, 0.5);
-          tl.fromTo("#opcao-2", { ...reveal, y: 60 }, visivel, 1.0);
-          tl.fromTo("#opcao-3", { ...reveal, y: 60 }, visivel, 1.5);
+          // Quebra o texto em palavras mascaradas (revelação editorial)
+          const dividir = (sel) => {
+            const el = document.querySelector(sel);
+            const palavras = el.textContent.trim().split(/\s+/);
+            el.innerHTML = palavras.map((w) => `<span class="palavra"><span>${w}</span></span>`).join(" ");
+            return el.querySelectorAll(".palavra > span");
+          };
+          const subir = (alvos, t) =>
+            tl.fromTo(alvos, { yPercent: 115, rotation: 6 }, { yPercent: 0, rotation: 0, duration: 0.85, ease: "expo.out", stagger: 0.07 }, t);
+          const desenhar = (sel, t, dur = 1.2) => {
+            document.querySelectorAll(sel).forEach((p) => {
+              const L = p.getTotalLength();
+              tl.fromTo(p, { strokeDasharray: L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: dur, ease: "power2.inOut" }, t);
+            });
+          };
+          const luz = (sel, dur) =>
+            tl.fromTo(sel, { x: -120, y: -40 }, { x: 140, y: 80, duration: dur, ease: "sine.inOut" }, 0);
+          const sair = (sel, t) =>
+            tl.to(sel, { y: -90, opacity: 0, filter: "blur(12px)", scale: 0.97, duration: 0.6, ease: "power2.in" }, t);
+          const entrar = (sel) =>
+            tl.fromTo(sel, { y: 110, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, 0);
+
+          entrar("#opcoes-root");
+          luz("#opcoes-luz", 5);
+          tl.fromTo("#opcoes-traco", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "expo.out" }, 0.3);
+          tl.fromTo("#opcoes-kicker", reveal, visivel, 0.3);
+          tl.fromTo("#opcoes-nota", reveal, visivel, 0.45);
+          ["#opcao-1", "#opcao-2", "#opcao-3"].forEach((id, i) => {
+            tl.fromTo(id, { ...reveal, y: 60, scale: 0.98 }, { ...visivel, scale: 1 }, 0.6 + i * 0.5);
+          });
+          sair("#opcoes-conteudo", 4.45);
           window.__timelines["opcoes"] = tl;
         })();
       </script>

@@ -34,9 +34,26 @@ Antes de mexer em um projeto, entre na pasta dele e use as skills instaladas lá
 
 **Movimento:**
 - Entrada padrão ("reveal"): sobe 40 px + fade + desfoque 8→0 px, 0,9 s, curva `bezier(0.16, 1, 0.3, 1)` (GSAP: `expo.out`).
+- Títulos: palavra por palavra saindo de uma máscara (0,07 s entre palavras), com quebra de linha balanceada.
 - Listas: um item a cada 0,5–0,6 s.
-- Transições entre cenas: fade (0,5 s) ou slide de baixo (0,6 s). Nunca zoom brusco.
-- Sempre uma textura de grão sutil (opacidade ~0,07) por cima.
+- Transição entre cenas: **soft rise** (0,7 s) — a cena que sai sobe e desfoca, a que entra vem de baixo — com um vazamento de luz quente sobre o corte. Nunca zoom brusco.
+- Sempre: fundo "vivo" (luz suave que respira + vinheta) e grão de filme (~0,07) por cima.
+
+**Peças de acabamento (Remotion: `remotion/src/components/`)** — reutilize em vez de recriar:
+| Componente | O que faz |
+| --- | --- |
+| `Backdrop` | fundo com luz que respira e vinheta (`escuro` para cenas oliva) |
+| `WordReveal` / `TextoComDestaque` | título palavra a palavra / com trecho sublinhado à mão |
+| `Kicker` | rótulo em caixa alta com traço que se desenha |
+| `GhostWord` | palavra gigante translúcida ao fundo do gancho |
+| `LineIcon` + `icones` | ícones de traço que se desenham (halter, folha, tigela, salvar) |
+| `Anel` | anel de calorias com fatias por macro |
+| `Chrome` | moldura: @perfil, "01 / 04" e barra de progresso |
+| `softRise` / `Vazamentos` | transição da marca e luz quente nos cortes |
+| `Trilha` | música opcional com fade (prop `musica`, arquivo em `public/`) |
+
+No HyperFrames, os mesmos efeitos estão em `hyperframes/index.html` (moldura, luz, grão) e nos helpers
+`dividir`/`subir`/`desenhar`/`entrar`/`sair` dentro de cada arquivo de `compositions/`.
 
 **Formato:** vertical 1080×1920, 30 fps. Área segura: 96 px nas laterais, 220 px no topo, 320 px na base
 (a interface do Reels/TikTok cobre essas áreas).

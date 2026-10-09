@@ -1,185 +1,219 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
-import { fade } from "@remotion/transitions/fade";
 import { colors, ease, fonts, safe } from "../brand";
+import { montarCenas } from "../cenas";
+import { Backdrop } from "../components/Backdrop";
+import { Chrome } from "../components/Chrome";
+import { TextoComDestaque } from "../components/Destaque";
+import { GhostWord } from "../components/GhostWord";
 import { Grain } from "../components/Grain";
 import { Kicker } from "../components/Kicker";
+import { Vazamentos } from "../components/LightLeak";
+import { LineIcon, icones } from "../components/LineIcon";
 import { Reveal } from "../components/Reveal";
+import { softRise } from "../components/SoftRise";
+import { Trilha } from "../components/Trilha";
+import { WordReveal } from "../components/WordReveal";
 import type { TreinoProps } from "../data/treino";
 
 // Duração de cada cena em segundos (a lista cresce com o nº de exercícios)
-export const treinoTiming = (n: number) => ({
-  intro: 3,
-  lista: 1.5 + n * 0.6 + 2,
-  dica: 3,
-  cta: 2.5,
-  transicao: 0.5,
-});
+const duracoes = (p: TreinoProps) => [3.4, 1.6 + p.exercicios.length * 0.55 + 2.2, 3.6, 3];
+const TRANSICAO = 0.7;
 
-export const treinoDuration = (p: TreinoProps, fps: number) => {
-  const t = treinoTiming(p.exercicios.length);
-  return Math.round((t.intro + t.lista + t.dica + t.cta - 3 * t.transicao) * fps);
-};
+export const treinoDuration = (p: TreinoProps, fps: number) => montarCenas(duracoes(p), TRANSICAO, fps).total;
 
-const Fundo: React.FC<{ tom?: string; children: React.ReactNode }> = ({
-  tom = colors.cream,
+const Cena: React.FC<{ children: React.ReactNode; justify?: React.CSSProperties["justifyContent"] }> = ({
   children,
+  justify = "center",
 }) => (
-  <AbsoluteFill
-    style={{
-      backgroundColor: tom,
-      padding: `${safe.top}px ${safe.x}px ${safe.bottom}px`,
-      justifyContent: "center",
-    }}
-  >
+  <AbsoluteFill style={{ padding: `${safe.top}px ${safe.x}px ${safe.bottom}px`, justifyContent: justify }}>
     {children}
   </AbsoluteFill>
 );
 
-const Intro: React.FC<TreinoProps> = ({ titulo, subtitulo }) => {
+const titulo: React.CSSProperties = {
+  fontFamily: fonts.display,
+  fontStyle: "italic",
+  fontWeight: 500,
+  color: colors.ink,
+  lineHeight: 0.98,
+  letterSpacing: -2,
+};
+
+const Intro: React.FC<TreinoProps> = ({ titulo: texto, subtitulo }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   return (
-    <Fundo>
-      <Reveal>
-        <Kicker>Treino do dia</Kicker>
-      </Reveal>
-      <Reveal delay={0.25}>
+    <AbsoluteFill>
+      <Backdrop tom={colors.cream} />
+      <GhostWord text="treino" color={colors.sand} />
+      <Cena>
+        <LineIcon path={icones.halter} color={colors.clay} size={110} delay={0.1} />
+        <div style={{ height: 40 }} />
+        <Kicker delay={0.2}>
+          <Reveal delay={0.3} distance={16}>Treino do dia</Reveal>
+        </Kicker>
+        <WordReveal text={texto} delay={0.45} style={{ ...titulo, fontSize: 168, marginTop: 34 }} />
         <div
           style={{
-            fontFamily: fonts.display,
-            fontStyle: "italic",
-            fontWeight: 500,
-            fontSize: 150,
-            lineHeight: 1.0,
-            color: colors.ink,
-            marginTop: 30,
+            height: 2,
+            backgroundColor: colors.clay,
+            marginTop: 56,
+            width: `${interpolate(frame, [1.0 * fps, 2.0 * fps], [0, 100], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+              easing: ease.inOut,
+            })}%`,
           }}
-        >
-          {titulo}
+        />
+        <Reveal delay={1.3} distance={24}>
+          <div style={{ fontFamily: fonts.body, fontWeight: 300, fontSize: 46, color: colors.muted, marginTop: 40 }}>
+            {subtitulo}
+          </div>
+        </Reveal>
+      </Cena>
+    </AbsoluteFill>
+  );
+};
+
+const Linha: React.FC<{ indice: number; nome: string; series: string; delay: number }> = ({
+  indice,
+  nome,
+  series,
+  delay,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const opts = { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: ease.out } as const;
+  return (
+    <div style={{ position: "relative", padding: "30px 0" }}>
+      <Reveal delay={delay} distance={26}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 34 }}>
+          <span style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: 64, color: colors.clay, width: 72 }}>
+            {String(indice + 1).padStart(2, "0")}
+          </span>
+          <span style={{ fontFamily: fonts.body, fontWeight: 500, fontSize: 48, color: colors.ink, flex: 1, letterSpacing: -0.5 }}>
+            {nome}
+          </span>
+          <span
+            style={{
+              fontFamily: fonts.body,
+              fontWeight: 500,
+              fontSize: 34,
+              color: colors.ink,
+              border: `1.5px solid ${colors.clay}`,
+              borderRadius: 999,
+              padding: "10px 24px",
+              fontVariantNumeric: "tabular-nums",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {series}
+          </span>
         </div>
       </Reveal>
       <div
         style={{
-          height: 2,
-          backgroundColor: colors.clay,
-          marginTop: 50,
-          width: `${interpolate(frame, [0.7 * fps, 1.7 * fps], [0, 100], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-            easing: ease.inOut,
-          })}%`,
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          height: 1.5,
+          backgroundColor: `${colors.clay}66`,
+          width: `${interpolate(frame, [(delay + 0.1) * fps, (delay + 0.9) * fps], [0, 100], opts)}%`,
         }}
       />
-      <Reveal delay={0.9}>
-        <div style={{ fontFamily: fonts.body, fontWeight: 300, fontSize: 46, color: colors.muted, marginTop: 40 }}>
-          {subtitulo}
-        </div>
-      </Reveal>
-    </Fundo>
+    </div>
   );
 };
 
 const Lista: React.FC<TreinoProps> = ({ exercicios }) => (
-  <Fundo tom={colors.sand}>
-    <Reveal>
-      <Kicker>Exercícios</Kicker>
-    </Reveal>
-    <div style={{ marginTop: 50 }}>
-      {exercicios.map((ex, i) => (
-        <Reveal key={ex.nome} delay={0.4 + i * 0.6} distance={30}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: 36,
-              padding: "34px 0",
-              borderBottom: `1.5px solid ${colors.clay}55`,
-            }}
-          >
-            <span style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: 64, color: colors.clay, width: 70 }}>
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <span style={{ fontFamily: fonts.body, fontWeight: 500, fontSize: 50, color: colors.ink, flex: 1 }}>
-              {ex.nome}
-            </span>
-            <span style={{ fontFamily: fonts.body, fontWeight: 300, fontSize: 44, color: colors.muted }}>
-              {ex.series}
-            </span>
+  <AbsoluteFill>
+    <Backdrop tom={colors.sand} />
+    <Cena>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Kicker delay={0.1}>
+          <Reveal delay={0.2} distance={16}>Exercícios</Reveal>
+        </Kicker>
+        <Reveal delay={0.3} distance={16}>
+          <span style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: 54, color: colors.clayDark }}>
+            {exercicios.length} movimentos
+          </span>
+        </Reveal>
+      </div>
+      <div style={{ marginTop: 40 }}>
+        {exercicios.map((ex, i) => (
+          <Linha key={ex.nome} indice={i} nome={ex.nome} series={ex.series} delay={0.5 + i * 0.55} />
+        ))}
+      </div>
+    </Cena>
+  </AbsoluteFill>
+);
+
+const Dica: React.FC<TreinoProps> = ({ dica, dicaDestaque }) => (
+  <AbsoluteFill>
+    <Backdrop tom={colors.olive} escuro />
+    <Cena>
+      <Reveal distance={20}>
+        <div style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: 300, lineHeight: 0.6, color: colors.clay, height: 150 }}>
+          “
+        </div>
+      </Reveal>
+      <Kicker color={colors.sand} delay={0.2}>
+        <Reveal delay={0.3} distance={16}>Dica de execução</Reveal>
+      </Kicker>
+      <TextoComDestaque
+        texto={dica}
+        destaque={dicaDestaque}
+        cor={colors.clay}
+        delay={0.5}
+        style={{ ...titulo, color: colors.cream, fontSize: 112, lineHeight: 1.06, marginTop: 36, letterSpacing: -1 }}
+      />
+    </Cena>
+  </AbsoluteFill>
+);
+
+const Cta: React.FC<TreinoProps> = () => (
+  <AbsoluteFill>
+    <Backdrop tom={colors.cream} />
+    <Cena>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+        <LineIcon path={icones.salvar} color={colors.clay} size={120} delay={0.1} duration={1} />
+        <WordReveal text="Salve para o próximo treino" delay={0.3} style={{ ...titulo, fontSize: 132, marginTop: 50, lineHeight: 1.04 }} />
+        <Reveal delay={1.1} distance={20}>
+          <div style={{ fontFamily: fonts.body, fontWeight: 300, fontSize: 40, color: colors.muted, marginTop: 50 }}>
+            e mande para quem treina com você
           </div>
         </Reveal>
-      ))}
-    </div>
-  </Fundo>
-);
-
-const Dica: React.FC<TreinoProps> = ({ dica }) => (
-  <Fundo tom={colors.olive}>
-    <Reveal>
-      <Kicker color={colors.sand}>Dica</Kicker>
-    </Reveal>
-    <Reveal delay={0.3}>
-      <div
-        style={{
-          fontFamily: fonts.display,
-          fontStyle: "italic",
-          fontSize: 110,
-          lineHeight: 1.08,
-          color: colors.cream,
-          marginTop: 30,
-        }}
-      >
-        “{dica}”
       </div>
-    </Reveal>
-  </Fundo>
-);
-
-const Cta: React.FC<TreinoProps> = ({ handle }) => (
-  <Fundo>
-    <div style={{ textAlign: "center" }}>
-      <Reveal>
-        <div style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: 120, color: colors.ink, lineHeight: 1.05 }}>
-          Salve para o
-          <br />
-          próximo treino
-        </div>
-      </Reveal>
-      <Reveal delay={0.5}>
-        <div style={{ marginTop: 60 }}>
-          <Kicker color={colors.clay}>{handle}</Kicker>
-        </div>
-      </Reveal>
-    </div>
-  </Fundo>
+    </Cena>
+  </AbsoluteFill>
 );
 
 export const TreinoDoDia: React.FC<TreinoProps> = (props) => {
   const { fps } = useVideoConfig();
-  const t = treinoTiming(props.exercicios.length);
-  const transicao = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: Math.round(t.transicao * fps) })} />;
+  const c = montarCenas(duracoes(props), TRANSICAO, fps);
+  const transicao = (
+    <TransitionSeries.Transition presentation={softRise()} timing={linearTiming({ durationInFrames: c.transicao, easing: ease.inOut })} />
+  );
+  const cenas = [Intro, Lista, Dica, Cta];
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.cream }}>
       <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={Math.round(t.intro * fps)} premountFor={fps}>
-          <Intro {...props} />
-        </TransitionSeries.Sequence>
-        {transicao}
-        <TransitionSeries.Sequence durationInFrames={Math.round(t.lista * fps)} premountFor={fps}>
-          <Lista {...props} />
-        </TransitionSeries.Sequence>
-        {transicao}
-        <TransitionSeries.Sequence durationInFrames={Math.round(t.dica * fps)} premountFor={fps}>
-          <Dica {...props} />
-        </TransitionSeries.Sequence>
-        {transicao}
-        <TransitionSeries.Sequence durationInFrames={Math.round(t.cta * fps)} premountFor={fps}>
-          <Cta {...props} />
-        </TransitionSeries.Sequence>
+        {cenas.map((C, i) => (
+          <React.Fragment key={i}>
+            {i > 0 ? transicao : null}
+            <TransitionSeries.Sequence durationInFrames={c.frames[i]} premountFor={fps}>
+              <C {...props} />
+            </TransitionSeries.Sequence>
+          </React.Fragment>
+        ))}
       </TransitionSeries>
+      <Vazamentos inicios={c.inicios} duracao={c.transicao} />
+      <Chrome handle={props.handle} rotulo="Treino" inicios={c.inicios} escuras={[2]} />
       <Grain />
+      <Trilha arquivo={props.musica} />
     </AbsoluteFill>
   );
 };
