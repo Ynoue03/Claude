@@ -6,3 +6,6 @@ out/
 modelos/**/*.mp4
 modelos/**/*.mov
 modelos/**/*.webm
+
+# áudio gerado por episódio da arena (o padrão em mp3 vai para o git)
+remotion/public/audio/arena/*.wav

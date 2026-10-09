@@ -91,6 +91,9 @@ python3 scripts/analisar-modelo.py modelos/referencia.mp4
 scripts/masterizar.sh remotion/out/treino.mp4      # gera treino-master.mp4
 python3 audio/gerar.py                              # regenera trilhas e efeitos
 
+# ANIME PIXEL ARENA (pixel art, 90 s) — detalhes em remotion/src/arena/LEIA-ME.md
+scripts/arena.sh [episodio.json] [nome]           # simulação → áudio → vídeo → master
+
 # HyperFrames
 cd hyperframes
 npm run dev          # preview/Studio
