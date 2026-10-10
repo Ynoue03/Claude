@@ -89,7 +89,9 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
   **evitam o corpo a corpo**: buscam o ponto mais seguro de onde ainda alcançam o alvo, recuam quando alguém chega
   perto e atacam de longe; com PV baixo usam cura.
 - **Foco no campeão (versão 2+):** os lutadores preferem atacar o campeão, **com força proporcional ao nível dele**:
-  `focoCampeao: "auto"` = 2,5 × (nível do campeão − 2), calibrado para ele vencer ~50% das vezes.
+  `focoCampeao: "forte"` (a partir do episódio 12) = 0,31 × PV máximo do campeão − 4,35. Os lutadores evitam alvos
+  com muito PV, então o foco cresce com os PV dele; calibrado para o campeão vencer ~35–40% em qualquer nível.
+  (Nos episódios 6–11 era `"auto"` = 2,5 × (nível − 2), que ficou fraco: o Korrin no nível 7 vencia 100%.)
 - **Foco no chefe:** nos episódios com chefe, os heróis preferem atacar o chefe (`focoChefe` 1,25).
 - Nada é coordenado entre lutadores.
 
@@ -204,7 +206,9 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 - Topo: retrato de vitória, nome, espécie e classe, "NÍVEL a → b" com o número novo piscando em dourado.
 - Atributos com valor e modificador; o que aumentou ganha "+N" em verde.
 - Combate: PV com o dado girando e a rolagem, CA, ataque, CD, espaços de magia (novos em verde).
-- Poderes: os novos por último, em verde, com "NOVO!" e descrição curta. Itens com ícones (o do baú com "NOVO!").
+- Poderes: os novos por último, em verde, com "NOVO!" e descrição curta (na versão 3, os 8 poderes antigos mais recentes,
+  sem os superados).
+- **Itens:** cada item que o campeão está usando aparece com ícone, nome e a descrição do poder (o do baú com "NOVO!").
 - História de 3–4 linhas em português, terceira pessoa, sem marcar gênero, com o que aconteceu na luta.
 - Rodapé: "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!" e "CRIADO POR @autor" se veio de comentário.
 
@@ -251,7 +255,7 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 
 1. Criar `remotion/src/arena/episodios/epNN.json` com `numero`, `seed: ""`, `perfil: "@SuaArenaD20"`,
    `lutadores` (comentários ou vazio), `campeaoAnterior` (o `campeao.json` do anterior), `textos`, `versao: 3`,
-   `focoCampeao: "auto"`, `centro: "livre"`, `arena` (`"calabouco"` ou `"floresta"`; com chefe vira caverna sozinho)
+   `focoCampeao: "forte"`, `centro: "livre"`, `arena` (`"calabouco"` ou `"floresta"`; com chefe vira caverna sozinho)
    e `audio: "arena/epNN.wav"`.
 2. Rodar `scripts/arena.sh remotion/src/arena/episodios/epNN.json`.
 
@@ -279,3 +283,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 16 | Episódios 9 e 10 | ep 9 no calabouço; ep 10 com o Minotauro na caverna + baú; poderes estendidos até o nível 10 (o Korrin chegou ao 6) |
 | 17 | Minotauro parecido com 2 modelos de pixel art | Minotauro redesenhado do zero no mesmo estilo (curvado, musculoso, chifres longos, machado de duas lâminas, cinto com rebites, tufos de pelo); quedas novas dos chefes; folhas de sprites em `arena-d20/chefes/` |
 | 18 | Episódio 11 | ep 11 na floresta: Korrin vence de novo (nível 7, 6 vitórias); o pergaminho (versão 3) passa a mostrar os 8 poderes antigos mais recentes, sem os superados |
+| 19 | Aumentar o foco no campeão; ep 12; descrição dos itens no pergaminho | `focoCampeao: "forte"` (pelos PV do campeão); itens com o poder escrito no pergaminho; ep 12 no calabouço: Korrin cai na 1ª rodada e o Orrin Ventolargo vence |

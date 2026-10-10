@@ -228,16 +228,21 @@ type Est = {
 // Foco automático: em 30 lutas por nível (campeã Yara, níveis 2–5) o campeão vence ~50% com
 // foco 0 / 2,5 / 5 / 7,5 → cresce 2,5 por nível acima do 2.
 export const focoPorNivel = (nivel: number) => Math.max(0, 2.5 * (nivel - 2));
+// "forte" (episódio 12+): cresce com os PV máximos do campeão, porque os lutadores evitam alvos com muito PV
+// (o foco precisa compensar isso). Calibrado para o campeão vencer ~35–40% em qualquer nível (60 lutas por campeão:
+// Yara nv 2, 3 e 5, Korrin nv 4 e 7 → 27–55%, média ~37%; com o "auto" o Korrin nv 7 vencia 100%).
+export const focoPorPv = (pvMax: number) => Math.max(0, 0.31 * pvMax - 4.35);
 
-export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number | "auto"; centro?: "altar" | "livre"; arena?: string; focoChefe?: number } = {}): Simulacao => {
+export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number | "auto" | "forte"; centro?: "altar" | "livre"; arena?: string; focoChefe?: number } = {}): Simulacao => {
   const geo = geoDe(opcoes.arena);
   const focoChefe = opcoes.focoChefe ?? 1.25;
   LIMITES = { ...geo.lim };
   altarAtivo = opcoes.centro !== "livre" && geo.w === 360;
   const versao = opcoes.versao ?? 1;
   // força da preferência por atacar o campeão: 1 = leve (padrão da versão 2); 0 = nenhuma;
-  // "auto" = cresce com o nível do campeão (calibrado para ele vencer ~50% das lutas)
-  const foco = opcoes.focoCampeao === "auto" ? focoPorNivel(lutadores.find((l) => l.campeao)?.nivel ?? 1) : opcoes.focoCampeao ?? (versao >= 2 ? 1 : 0);
+  // "auto" = cresce com o nível do campeão (episódios 6–11); "forte" = cresce com os PV dele (episódio 12+)
+  const camp = lutadores.find((l) => l.campeao);
+  const foco = opcoes.focoCampeao === "auto" ? focoPorNivel(camp?.nivel ?? 1) : opcoes.focoCampeao === "forte" ? (camp ? focoPorPv(camp.pvMax) : 0) : opcoes.focoCampeao ?? (versao >= 2 ? 1 : 0);
   const E: Est[] = lutadores.map((l) => {
     const n = l.nivel;
     const prof = proficiencia(n);

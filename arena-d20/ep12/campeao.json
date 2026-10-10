@@ -1,0 +1,91 @@
+{
+  "nome": "Orrin Ventolargo",
+  "especie": "ELFO",
+  "classe": "PATRULHEIRO",
+  "nivel": 2,
+  "atributos": {
+    "DES": 19,
+    "SAB": 17,
+    "CON": 18,
+    "FOR": 14,
+    "INT": 13,
+    "CAR": 12
+  },
+  "pvMax": 25,
+  "pvRolagens": [
+    "NV 1: d10 máximo = 10 +4 CON = 14 PV",
+    "NV 2: d10 = 7 +4 CON = +11 PV"
+  ],
+  "visual": {
+    "pele": "#e8c09a",
+    "cabelo": "#2a1e18",
+    "estiloCabelo": "rabo",
+    "barba": "",
+    "olho": "#3a6a9a",
+    "marca": "",
+    "roupa": "#4a6a3a",
+    "roupa2": "#9c2a2e",
+    "couro": "#6a4428",
+    "metal": "#a8b0bc",
+    "cabeca": "capuz",
+    "pluma": "",
+    "corpo": "couro",
+    "tabardo": false,
+    "ombreiras": false,
+    "capa": "#4a6a3a",
+    "peleOmbros": false,
+    "arma": "arcoLongo",
+    "escudo": "",
+    "brasao": "#3a5ac8",
+    "orbe": "",
+    "aljava": true,
+    "mascara": false,
+    "magia": "#a6d62a",
+    "altura": 1
+  },
+  "vitorias": 1,
+  "itens": [
+    "botasFirmes"
+  ],
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      6,
+      6,
+      3,
+      5
+    ],
+    [
+      5,
+      3,
+      6,
+      3
+    ],
+    [
+      5,
+      3,
+      3,
+      5
+    ],
+    [
+      6,
+      6,
+      5,
+      5
+    ],
+    [
+      6,
+      5,
+      5,
+      6
+    ],
+    [
+      3,
+      5,
+      1,
+      4
+    ]
+  ],
+  "antecedente": "+2 DES / +1 CON"
+}

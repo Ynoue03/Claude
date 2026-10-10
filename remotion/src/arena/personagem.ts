@@ -476,7 +476,7 @@ export type Episodio = {
   versao?: number;
   // força do foco dos lutadores no campeão (versão 2+): 1 = leve (padrão), 5 = forte, 0 = nenhum,
   // "auto" = cresce com o nível do campeão (2,5 por nível acima do 2)
-  focoCampeao?: number | "auto";
+  focoCampeao?: number | "auto" | "forte";
   chefe?: ChefeId | ""; // força um chefe (padrão: um a cada 10 episódios na versão 3+)
   focoChefe?: number; // quanto os heróis preferem atacar o chefe (padrão 1,25: o chefe vence ~30%)
   arena?: "calabouco" | "floresta" | "caverna"; // cenário (padrão: calabouço; caverna = arena 4× maior dos chefes)

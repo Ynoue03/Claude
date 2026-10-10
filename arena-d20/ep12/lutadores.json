@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Orrin Ventolargo",
+    "classe": "PATRULHEIRO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Kira Corvalho",
+    "classe": "MAGO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Tobias Cinzafria",
+    "classe": "FEITICEIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Vex Águaclara",
+    "classe": "BARDO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Lorcan Trovão",
+    "classe": "MONGE",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Rhea Pedraforte",
+    "classe": "CLERIGO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Korrin Mantonegro",
+    "classe": "BARBARO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Dax Ouroverde",
+    "classe": "LADINO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Yara Lunasombra",
+    "classe": "BRUXO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Elowen Gelomanto",
+    "classe": "DRUIDA",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Maeve Dentelobo",
+    "classe": "GUERREIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Borin Ventobravo",
+    "classe": "PALADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Oona Estrelagris",
+    "classe": "MONGE",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Azura Valeclaro",
+    "classe": "CLERIGO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Garruk Brumaclara",
+    "classe": "FEITICEIRO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Nessa Espinhadouro",
+    "classe": "BRUXO",
+    "especie": "HUMANO"
+  }
+]

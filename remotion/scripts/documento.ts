@@ -65,7 +65,7 @@ tabela(
     [`${V.duelo}–${V.vitoria}`, `${seg(V.duelo)}–${seg(V.vitoria)}`, `restam 2: tela **VS** (${seg(VS)}) com retratos, classe/NV, espécie, PV, CA, abates e itens; depois zoom 1,2× nos finalistas (na caverna: de 0,5× até 1×), trilha intensa, tremor nos especiais`],
     [`${V.vitoria}–${V.pergaminho}`, `${seg(V.vitoria)}–${seg(V.pergaminho)}`, "**VITÓRIA DE [NOME]!**, retrato sorrindo 2×, pose de vitória, confete, coluna de luz dourada, **SUBIU DE NÍVEL!** + NÍVEL a → b (se o chefe vence: **O [CHEFE] VENCEU!** + NENHUM HERÓI SOBREVIVEU)"],
     ["—", `${seg(BAU)}`, "**baú do campeão** (só versão 3, episódios múltiplos de 5, se um herói vence): entra depois da vitória e empurra o pergaminho; o campeão anda até o baú, abre, o item sobe girando com brilho e nome + poder"],
-    [`${V.pergaminho}–${V.cta}`, `${seg(V.pergaminho)}–${seg(V.cta)}`, "pergaminho que desenrola: retrato, nome, espécie · classe, NÍVEL a → **b** piscando, vitórias; atributos (2×3, ganhos em verde), PV com d20 girando e a rolagem, CA, ataque, CD, espaços de magia; poderes antigos em 2 colunas e os novos com **NOVO!** em verde; itens (ícones); história letra a letra; \"DEFENDE O TÍTULO NA PRÓXIMA BATALHA!\"; selo de cera com d20"],
+    [`${V.pergaminho}–${V.cta}`, `${seg(V.pergaminho)}–${seg(V.cta)}`, "pergaminho que desenrola: retrato, nome, espécie · classe, NÍVEL a → **b** piscando, vitórias; atributos (2×3, ganhos em verde), PV com d20 girando e a rolagem, CA, ataque, CD, espaços de magia; poderes antigos em 2 colunas e os novos com **NOVO!** em verde; itens com ícone, nome e descrição do poder; história letra a letra; \"DEFENDE O TÍTULO NA PRÓXIMA BATALHA!\"; selo de cera com d20"],
     [`${V.cta}–${V.fim}`, `${seg(V.cta)}–${seg(V.fim)}`, "CTA: fundo escuro, campeão 2× em pose de vitória com coroa, \"COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!\" (depois do · em dourado), d20 girando, @perfil"],
   ],
 );
@@ -95,7 +95,7 @@ tabela(
     ["`campeaoAnterior`", "`null` ou o `campeao.json` do episódio anterior (nível, atributos, PV, visual, vitórias, itens, coroa)"],
     ["`textos`", "`escolha`, `lutem`, `subiu`, `defende`, `cta`"],
     ["`versao`", "1 = regras dos eps. 1–3; 2 = nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão; **3 = baú, itens, chefes** (usar sempre)"],
-    ["`focoCampeao`", "`\"auto\"` (recomendado) = 2,5 × (nível do campeão − 2); ou número fixo"],
+    ["`focoCampeao`", "`\"forte\"` (recomendado, ep. 12+) = 0,31 × PV máximo do campeão − 4,35 (campeão vence ~35–40%); `\"auto\"` (eps. 6–11) = 2,5 × (nível − 2); ou número fixo"],
     ["`arena`", "`\"calabouco\"` ou `\"floresta\"`. A `\"caverna\"` é **só para luta com chefe** e é escolhida sozinha quando há chefe"],
     ["`centro`", "`\"livre\"` (recomendado): sem tablado nem altar d20 no meio"],
     ["`chefe` / `focoChefe`", "força um chefe; sem o campo, versão 3 tem chefe nos episódios 10, 20, 30… · `focoChefe` padrão 1,25"],
@@ -273,7 +273,7 @@ P("# 0 seed pelo ritmo (se vazia) → 1 simulação + FICHA → 2 áudio → 3 v
 P("# saída: remotion/out/arena-epNN-master.mp4 e arena-d20/epNN/ (FICHA.md, campeao.json, lutadores.json, sprites/)");
 P("```");
 P();
-P("Próximo episódio: copiar `arena-d20/epNN/campeao.json` para `campeaoAnterior`, `seed: \"\"`, `versao: 3`, `focoCampeao: \"auto\"`, `centro: \"livre\"`.");
+P("Próximo episódio: copiar `arena-d20/epNN/campeao.json` para `campeaoAnterior`, `seed: \"\"`, `versao: 3`, `focoCampeao: \"forte\"`, `centro: \"livre\"`.");
 P();
 
 // ───────── 13. nomes

@@ -1243,21 +1243,26 @@ const pergaminho = (ui: Ctx, r: Roteiro, v: number) => {
       quebrar(`- ${it.desc ?? ""}`.toUpperCase(), 236, "p").forEach((ln, i) => texto(ui, ln, 80, y + 9 + i * 7, { cor: "#3a6a2a", fonte: "p" }));
       y += 18 + (quebrar(`- ${it.desc ?? ""}`.toUpperCase(), 236, "p").length - 1) * 7;
     });
-    // itens mágicos: ícones lado a lado; o do baú com NOVO! e o poder
+    // itens mágicos: um por linha, com ícone, nome e o poder (o do baú com NOVO! em verde)
     const its = itens.filter((i) => i.tipo === "item");
     if (its.some(vis)) {
-      texto(ui, "ITENS", 42, y + 2, { cor: "#6a4428", fonte: "p" });
-      its.forEach((it, j) => vis(it) && desenharIcone(ui, it.texto as ItemId, 70 + j * 18, y - 2));
-      y += 18;
-      const novo = its.find((i) => i.novo && vis(i));
-      if (novo) {
-        const item = ITENS[novo.texto as ItemId];
-        texto(ui, "NOVO!", 42, y, { cor: "#ffffff", contorno: VERDE });
-        texto(ui, item.nome.toUpperCase(), 80, y, { cor: VERDE, contorno: brilho(novo) ? "#c8ffb0" : "" });
-        const lns = quebrar(`- ${item.poder}`.toUpperCase(), 236, "p");
-        lns.forEach((ln, k2) => texto(ui, ln, 80, y + 9 + k2 * 7, { cor: "#3a6a2a", fonte: "p" }));
-        y += 18 + (lns.length - 1) * 7;
+      texto(ui, "ITENS", 42, y + 1, { cor: "#6a4428", fonte: "p" });
+      y += 9;
+      for (const it of its) {
+        if (!vis(it)) continue;
+        const item = ITENS[it.texto as ItemId];
+        desenharIcone(ui, it.texto as ItemId, 42, y);
+        let xn = 62;
+        if (it.novo) {
+          texto(ui, "NOVO!", xn, y + 1, { cor: "#ffffff", contorno: VERDE });
+          xn += larguraTexto("NOVO!") + 5;
+        }
+        texto(ui, item.nome.toUpperCase(), xn, y + 1, { cor: it.novo ? VERDE : TINTA_P, contorno: it.novo && brilho(it) ? "#c8ffb0" : "" });
+        const lns = quebrar(item.poder.toUpperCase(), W - 62 - 40, "p");
+        lns.forEach((ln, k2) => texto(ui, ln, 62, y + 10 + k2 * 7, { cor: it.novo ? "#3a6a2a" : "#6a4428", fonte: "p" }));
+        y += Math.max(18, 11 + lns.length * 7);
       }
+      y += 2;
     }
     // história letra por letra
     const hist = itens.find((i) => i.tipo === "historia")!;
