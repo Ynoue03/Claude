@@ -4,6 +4,7 @@ import { Rng } from "./rng.ts";
 import { ARMAS, fmt, subirNivel } from "./personagem.ts";
 import type { Arma, Lutador, SubidaNivel } from "./personagem.ts";
 import { CLASSES, COR_DANO, espacos, mod, proficiencia } from "./regras.ts";
+import type { ItemId } from "./itens.ts";
 import type { Atributo, TipoDano } from "./regras.ts";
 
 // ───────────── geometria da arena (pixels da resolução interna 360×640) ─────────────
@@ -128,6 +129,7 @@ export type Batida =
       cond: { id: number; add?: string; del?: string }[];
       // quem derrubou o campeão sobe de nível na hora
       subiu?: { id: number; de: number; para: number; ganho: number; pvDepois: number; pvMax: number; rolagem: string };
+      itensPegos?: { id: number; itens: ItemId[] };
     }
   | { k: "estado"; cond: { id: number; add?: string; del?: string }[] };
 
@@ -154,7 +156,7 @@ export type Simulacao = {
   stats: Estatistica[];
   rodadas: number;
   // nível, PV máximo e atributos de cada um no fim da luta (+ subidas de nível durante ela)
-  evolucao: { nivel: number; pvMax: number; atributos: Record<Atributo, number>; pvRolagens: string[]; subidas: SubidaNivel[] }[];
+  evolucao: { nivel: number; pvMax: number; atributos: Record<Atributo, number>; pvRolagens: string[]; subidas: SubidaNivel[]; itens: ItemId[] }[];
 };
 
 // ───────────── estado de combate ─────────────
@@ -191,6 +193,11 @@ type Est = {
   conc: null | { tipo: "MARCA" | "BRUXARIA"; alvo: number };
   // condições
   escudo: boolean;
+  // itens mágicos (do baú, ou pegos de quem foi derrubado)
+  itens: Set<ItemId>;
+  itemUsado: Set<ItemId>;
+  invisivel: number; // turnos restantes
+  espadaTurno: boolean;
   lento: boolean;
   desvantagem: boolean;
   vantagemContra: boolean;
@@ -222,6 +229,10 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       at: { ...l.atributos },
       pvRolagens: [...l.pvRolagens],
       subidas: [],
+      itens: new Set(l.itens ?? []),
+      itemUsado: new Set(),
+      invisivel: 0,
+      espadaTurno: false,
       pv: l.pvMax,
       pvTemp: 0,
       vivo: true,
@@ -280,7 +291,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const m = (e: Est, a: Atributo) => mod(e.at[a]);
   const conj = (e: Est) => (CLASSES[e.l.classe].conjuracao ? m(e, CLASSES[e.l.classe].conjuracao!) : Math.max(m(e, "INT"), m(e, "SAB"), m(e, "CAR")));
   const cd = (e: Est) => 8 + e.prof + conj(e) + (e.inataAtiva ? 1 : 0);
-  const caAtual = (e: Est) => e.l.ca + (e.escudo ? 5 : 0);
+  const caAtual = (e: Est) => e.l.ca + (e.escudo ? 5 : 0) + (e.itens.has("armadura") ? 2 : 0);
   const armaCorpo = (e: Est): Arma => (e.l.arma.distancia ? { ...ARMAS.adaga, nome: e.l.classe === "PATRULHEIRO" ? "Espada Curta" : "Adaga", d: e.l.classe === "PATRULHEIRO" ? 6 : 4 } : e.l.arma);
   const modArma = (e: Est, a: Arma) => (a.atributo === "DES" ? Math.max(m(e, "DES"), m(e, "FOR")) : m(e, "FOR"));
   const podeCorpo = (e: Est) => e.vivo;
@@ -354,6 +365,14 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       res.textos.push("IMPLACÁVEL!");
       log(`  ${alvo.l.nome}: Resistência Implacável, fica com 1 PV`);
     }
+    // Elmo da Última Chance: engana a morte uma vez
+    if (alvo.pv <= 0 && alvo.itens.has("elmo") && !alvo.itemUsado.has("elmo")) {
+      alvo.itemUsado.add("elmo");
+      alvo.pv = 1;
+      res.textos.push("ENGANOU A MORTE!");
+      log(`  ${alvo.l.nome}: o Elmo da Última Chance engana a morte, volta com 1 PV`);
+      batida.especial = 3;
+    }
     if (alvo.pv <= 0) {
       alvo.pv = 0;
       alvo.vivo = false;
@@ -369,8 +388,38 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       if (batida.especial < 2) batida.especial = 2;
       // derrubou o campeão: sobe um nível na hora
       if (versao >= 2 && alvo.l.campeao && fonte.id !== alvo.id && fonte.vivo) subirNaLuta(fonte, batida);
+      // quem derruba o portador pega os itens dele
+      if (alvo.itens.size && fonte.id !== alvo.id && fonte.vivo) {
+        const pegos = [...alvo.itens].filter((it) => !fonte.itens.has(it));
+        pegos.forEach((it) => fonte.itens.add(it));
+        alvo.itens.clear();
+        if (pegos.length) {
+          batida.itensPegos = { id: fonte.id, itens: pegos };
+          log(`  ⚑ ${fonte.l.nome} pega os itens de ${alvo.l.nome}: ${pegos.join(", ")}`);
+        }
+      }
+      // Machado Ceifador: cura ao derrubar
+      if (fonte.vivo && fonte.id !== alvo.id && fonte.itens.has("machado") && fonte.pv < fonte.pvMax) {
+        const r = rng.roll(`${fonte.l.nome} · Machado Ceifador (1d8)`, 1, 8);
+        const antes = fonte.pv;
+        fonte.pv = Math.min(fonte.pvMax, fonte.pv + r.total);
+        const cura = novoRes(fonte, "cura");
+        cura.cura = fonte.pv - antes;
+        cura.pvDepois = fonte.pv;
+        cura.textos.push("CEIFADOR");
+        batida.resultados.push(cura);
+        log(`  ${fonte.l.nome}: Machado Ceifador recupera ${cura.cura} PV`);
+      }
     } else {
       alvo.stats.menorPv = Math.min(alvo.stats.menorPv, alvo.pv);
+      // Capa das Sombras: some por 2 turnos ao chegar na metade dos PV
+      if (alvo.itens.has("capa") && !alvo.itemUsado.has("capa") && alvo.pv <= alvo.pvMax / 2) {
+        alvo.itemUsado.add("capa");
+        alvo.invisivel = 2;
+        batida.cond.push({ id: alvo.id, add: "INV" });
+        res.textos.push("INVISÍVEL!");
+        log(`  ${alvo.l.nome}: a Capa das Sombras deixa invisível por 2 turnos`);
+      }
       if (alvo.conc && dano > 0) {
         const cdC = Math.max(10, Math.floor(dano / 2));
         const profC = CLASSES[alvo.l.classe].salvaguardas.includes("CON") ? alvo.prof : 0;
@@ -443,6 +492,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     let v = 0,
       d = 0;
     if (alvo.vantagemContra) v++;
+    if (a.invisivel > 0) v++; // invisível ataca com vantagem…
+    if (alvo.invisivel > 0) d++; // …e é atacado com desvantagem
     if (magia && a.inataAtiva) v++;
     if (a.desvantagem) d++;
     if (distancia && ameacas(a).length > 0) d++;
@@ -484,7 +535,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     const bonus = op.bonusAcerto;
     let d = rolarD20(a, `ataque (${op.nome}) contra ${alvo.l.nome}`, vant);
     let total = d.v + bonus;
-    const critMin = op.critMin ?? 20;
+    const critMin = (op.critMin ?? 20) - (a.itens.has("luvas") ? 1 : 0);
     let critico = d.v >= critMin;
     let falha = d.v === 1;
     // Escudo (mago): reação que transforma acerto em erro
@@ -508,14 +559,31 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       falha = d.v === 1;
       acertou = !falha && (critico || total >= caAtual(alvo));
     }
+    // Escudo do Primeiro Golpe: bloqueia o primeiro ataque que causaria dano
+    let bloqueou = false;
+    if (acertou && alvo.itens.has("escudo") && !alvo.itemUsado.has("escudo")) {
+      alvo.itemUsado.add("escudo");
+      acertou = false;
+      critico = false;
+      bloqueou = true;
+      log(`  ${alvo.l.nome}: o Escudo do Primeiro Golpe BLOQUEIA o ataque`);
+    }
     const res = novoRes(alvo, critico ? "critico" : acertou ? "acerto" : falha ? "falha" : "erro");
     if (insp) res.textos.push("INSPIRAÇÃO!");
+    if (bloqueou) res.textos.push("BLOQUEOU!");
     b.d20 = { v: d.v, cor: critico ? "critico" : falha ? "falha" : acertou ? "acerto" : "erro" };
     log(`  ${a.l.nome} → ${alvo.l.nome}: ${op.nome}, d20 ${d.dados.join("/")} ${fmt(bonus)} = ${total} vs CA ${caAtual(alvo)} → ${critico ? "CRÍTICO!" : acertou ? "acertou" : falha ? "FALHA (1 natural)" : "errou"}`);
     if (acertou) {
       const dn = rolarDano(a, op.nome, op.n, op.d, critico, op.gwf);
       let total2 = dn.total + op.bonusDano;
       let extraTxt = "";
+      // Lâmina Rubra: +1d6 no primeiro acerto do turno
+      if (a.itens.has("espada") && !a.espadaTurno) {
+        a.espadaTurno = true;
+        const f = rolarDano(a, "Lâmina Rubra", 1, 6, critico);
+        total2 += f.total;
+        extraTxt += ` + lâmina ${f.txt}=${f.total}`;
+      }
       // Ataque Furtivo
       if (op.furtivo) {
         const outroPerto = E.some((o) => o.vivo && o.id !== a.id && o.id !== alvo.id && dist(o.pos, alvo.pos) <= ALCANCE);
@@ -569,7 +637,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       aplicarDano(a, alvo, total2, op.tipo, op.rotulo ?? op.nome, res, b);
       op.extra?.(alvo, res, b);
     } else {
-      res.textos.push(falha ? "FALHA" : "ERROU");
+      if (!bloqueou) res.textos.push(falha ? "FALHA" : "ERROU");
       b.rolagem = `d20 = ${d.v}`;
     }
     if (b.especial === 3 || res.morreu) b.rolagem = b.rolagem || `d20 = ${d.v}`;
@@ -648,7 +716,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       const nPassos = Math.max(1, Math.ceil(seg / passo));
       for (let s = 1; s <= nPassos; s++) {
         const q = lerp(pts[i - 1], pts[i], s / nPassos);
-        if (!desengajar) {
+        if (!desengajar && !a.itens.has("botas")) {
           for (const o of inimigos(a)) {
             if (!o.reacao || naoProvocou.has(o.id) || !podeCorpo(o)) continue;
             if (dist(pos, o.pos) <= ALCANCE && dist(q, o.pos) > ALCANCE) {
@@ -715,8 +783,11 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
 
   // ─── escolha de alvo e posição ───
   const escolherAlvo = (a: Est, distancia: boolean): Est | undefined => {
-    const ini = inimigos(a);
-    if (!ini.length) return undefined;
+    const todos = inimigos(a);
+    if (!todos.length) return undefined;
+    // ninguém mira em quem está invisível (a não ser que só sobre ele)
+    const visiveis = todos.filter((o) => o.invisivel <= 0);
+    const ini = visiveis.length ? visiveis : todos;
     let melhor: Est | undefined;
     let ms = Infinity;
     for (const o of ini) {
@@ -750,7 +821,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     }
     return best;
   };
-  const velocidade = (a: Est) => (a.l.deslocamento - (a.lento ? 10 : 0) + (a.l.classe === "BARBARO" && a.nivel >= 5 ? 10 : 0) + (a.l.classe === "MONGE" && a.nivel >= 2 ? 10 : 0)) * PE;
+  const velocidade = (a: Est) => (a.l.deslocamento - (a.lento ? 10 : 0) + (a.l.classe === "BARBARO" && a.nivel >= 5 ? 10 : 0) + (a.l.classe === "MONGE" && a.nivel >= 2 ? 10 : 0) + (a.itens.has("botas") ? 10 : 0)) * PE;
 
   const pontoSeguro = (a: Est, alvo: Est | undefined): P => {
     const vel = velocidade(a);
@@ -794,6 +865,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     log(`[R${rodada}] Turno de ${a.l.nome} (${a.pv}/${a.pvMax} PV)`);
     // início do turno
     a.reacao = true;
+    a.espadaTurno = false;
     if (a.escudo) {
       a.escudo = false;
       batidas.push({ k: "estado", cond: [{ id: a.id, del: "ESC" }] });
@@ -956,6 +1028,16 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     return finalizar();
 
     function finalizar() {
+      // Arco Sussurrante: dispara sozinho no inimigo mais ferido
+      if (a.vivo && a.itens.has("arco")) {
+        const alvos = inimigos(a).filter((o) => o.invisivel <= 0);
+        const t = alvos.sort((x, y) => x.pv - y.pv)[0];
+        if (t) atacar(a, t, { nome: "ARCO SUSSURRANTE", n: 1, d: 6, bonusDano: 0, tipo: "perfurante", fx: "flecha", distancia: true, magia: false, bonusAcerto: a.prof + m(a, "DES"), rotulo: "Arco Sussurrante", especial: 0 }, batidas);
+      }
+      if (a.invisivel > 0) {
+        a.invisivel--;
+        if (a.invisivel === 0) batidas.push({ k: "estado", cond: [{ id: a.id, del: "INV" }] });
+      }
       // fim do turno: efeitos que duram "até o fim do próximo turno"
       if (a.lento) {
         a.lento = false;
@@ -1240,6 +1322,6 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     ordemQueda,
     stats: E.map((e) => e.stats),
     rodadas: rodada,
-    evolucao: E.map((e) => ({ nivel: e.nivel, pvMax: e.pvMax, atributos: e.at, pvRolagens: e.pvRolagens, subidas: e.subidas })),
+    evolucao: E.map((e) => ({ nivel: e.nivel, pvMax: e.pvMax, atributos: e.at, pvRolagens: e.pvRolagens, subidas: e.subidas, itens: [...e.itens] })),
   };
 };

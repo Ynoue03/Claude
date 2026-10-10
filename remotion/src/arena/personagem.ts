@@ -20,6 +20,7 @@ import {
   mod,
 } from "./regras.ts";
 import type { Ancestralidade, Atributo, ClasseId, EspecieId, Poder, TipoDano } from "./regras.ts";
+import type { ItemId } from "./itens.ts";
 
 export type Cabeca =
   | "nada"
@@ -131,6 +132,7 @@ export type Lutador = {
   descricao: string;
   campeao: boolean; // veio do episódio anterior (coroa)
   vitorias: number;
+  itens?: ItemId[]; // itens mágicos que já carrega
 };
 
 // ───────────── leitura simples da descrição de um comentário ─────────────
@@ -445,6 +447,7 @@ export type FichaCampeao = {
   ancestralidade?: string;
   visual: Visual;
   vitorias: number;
+  itens?: ItemId[];
   autor?: string;
   descricao?: string;
   rolagens?: number[][];
@@ -585,6 +588,7 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
       descricao: camp.descricao ?? "",
       campeao: true,
       vitorias: camp.vitorias,
+      itens: camp.itens ?? [],
     });
   }
   lutadores.forEach((l, i) => (l.id = i));
@@ -688,6 +692,7 @@ export const subirNivel = (l: Lutador, rng: Rng): SubidaNivel => {
     ancestralidade: l.ancestralidade?.nome,
     visual: l.visual,
     vitorias: l.vitorias + 1,
+    itens: l.itens ?? [],
     autor: l.autor,
     descricao: l.descricao,
     rolagens: l.rolagens,

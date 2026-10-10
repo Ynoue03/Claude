@@ -10,6 +10,7 @@ import { criarRoteiro, V, FPS, video } from "../src/arena/roteiro.ts";
 import { fmt, poderesAte } from "../src/arena/personagem.ts";
 import type { Episodio } from "../src/arena/personagem.ts";
 import { CLASSES, ESPECIES, espacos, mod, proficiencia } from "../src/arena/regras.ts";
+import { ITENS } from "../src/arena/itens.ts";
 
 const TIPO: Record<string, string> = { concussao: "concussão", eletrico: "elétrico", necrotico: "necrótico", psiquico: "psíquico", acido: "ácido" };
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -24,7 +25,7 @@ mkdirSync(join(raiz, "public/arena"), { recursive: true });
 const vs = r.congela.find((c) => c.tipo === "vs")!;
 writeFileSync(
   join(raiz, `public/arena/ep${nn}-sons.json`),
-  JSON.stringify({ fps: FPS, quadros: V.fim, arena: ep.arena ?? "calabouco", fases: { batalha: V.batalha, duelo: vs.v0, vitoria: V.vitoria, pergaminho: V.pergaminho, cta: V.cta }, sons: r.sons }),
+  JSON.stringify({ fps: FPS, quadros: V.fim, arena: ep.arena ?? "calabouco", fases: { batalha: V.batalha, duelo: vs.v0, vitoria: V.vitoria, bau: r.fases.bau, pergaminho: r.fases.pergaminho, cta: V.cta }, sons: r.sons }),
 );
 
 // ficha de texto
@@ -53,6 +54,7 @@ for (const l of L) {
   P(`- PV ${l.pvMax} (${l.pvRolagens.join("; ")}) · CA ${l.ca} (${l.caDesc}) · Deslocamento ${l.deslocamento} pés`);
   P(`- Arma: ${l.arma.nome} ${l.arma.n}d${l.arma.d} ${TIPO[l.arma.tipo] ?? l.arma.tipo} · Proficiência +${proficiencia(l.nivel)}${espacos(l.classe, l.nivel).length ? ` · Espaços de magia ${espacos(l.classe, l.nivel).join("/")}${l.classe === "MAGO" ? " (1 gasto na Armadura Arcana)" : ""}` : ""}`);
   P(`- Poderes: ${poderesAte(l).map((p) => p.nome).join(", ")}`);
+  if (l.itens?.length) P(`- Itens: ${l.itens.map((it) => `${ITENS[it].nome} (${ITENS[it].poder})`).join("; ")}`);
   P();
 }
 P(`## Ordem de iniciativa (d20 + DES)`);
@@ -83,6 +85,8 @@ if (r.sim.evolucao[campeao.id].subidas.length) P(`- Subiu um nível **durante a 
 P(`- Atributos: ${(["FOR", "DES", "CON", "INT", "SAB", "CAR"] as const).map((a) => `${a} ${s.atributosDepois[a]}${s.atributosDepois[a] > s.atributosAntes[a] ? ` (+${s.atributosDepois[a] - s.atributosAntes[a]})` : ""}`).join(" · ")}`);
 if (s.espacosDepois.length) P(`- Espaços de magia: ${s.espacosAntes.join("/")} → ${s.espacosDepois.join("/")}`);
 P(`- Poderes novos: ${s.poderesNovos.map((p) => `**${p.nome}** — ${p.desc}`).join("; ") || "—"}`);
+if (r.fases.bau >= 0) P(`- Baú do campeão (episódio ${ep.numero}): ${r.itemBau ? `**${ITENS[r.itemBau].nome}** — ${ITENS[r.itemBau].poder}` : "vazio (já tinha todos os itens)"}`);
+if (r.itensFinais.length) P(`- Itens que leva para o próximo episódio: ${r.itensFinais.map((it) => ITENS[it].nome).join(", ")}`);
 P(`- História: ${r.historia}`);
 P();
 P("Para o próximo episódio, copie o conteúdo de `campeao.json` para o campo `campeaoAnterior` do JSON do episódio.");

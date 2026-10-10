@@ -1,0 +1,211 @@
+// Itens mágicos do baú (episódios 5, 10, 15…): cada um tem um poder na luta.
+// O campeão guarda os itens enquanto vencer; quem derrubar o portador pega os itens dele.
+export type ItemId = "espada" | "armadura" | "elmo" | "botas" | "luvas" | "capa" | "arco" | "machado" | "escudo";
+
+export type Item = { id: ItemId; nome: string; poder: string; cor: string };
+
+export const ITENS: Record<ItemId, Item> = {
+  espada: { id: "espada", nome: "Lâmina Rubra", poder: "o primeiro acerto de cada turno causa +1d6 de dano", cor: "#e04a4a" },
+  armadura: { id: "armadura", nome: "Couraça do Bastião", poder: "+2 na CA", cor: "#9aa8c0" },
+  elmo: { id: "elmo", nome: "Elmo da Última Chance", poder: "engana a morte: quando cairia, volta com 1 PV (1× por luta)", cor: "#e8c040" },
+  botas: { id: "botas", nome: "Botas Ligeiras", poder: "+10 pés de deslocamento e não provoca ataque de oportunidade", cor: "#5ab0e0" },
+  luvas: { id: "luvas", nome: "Manoplas Certeiras", poder: "crítico com 1 número a menos no d20", cor: "#e09a40" },
+  capa: { id: "capa", nome: "Capa das Sombras", poder: "ao ficar com metade dos PV, fica invisível por 2 turnos", cor: "#8a5ae0" },
+  arco: { id: "arco", nome: "Arco Sussurrante", poder: "dispara sozinho uma flecha (1d6) a cada turno", cor: "#7ac050" },
+  machado: { id: "machado", nome: "Machado Ceifador", poder: "ao derrubar alguém, recupera 1d8 PV", cor: "#c0703a" },
+  escudo: { id: "escudo", nome: "Escudo do Primeiro Golpe", poder: "bloqueia o primeiro ataque que causaria dano", cor: "#5ad0a0" },
+};
+export const ITEM_IDS = Object.keys(ITENS) as ItemId[];
+
+// Ícones 16×16 em pixel art (. vazio, k contorno, a cor do item, b clara, c escura, m metal, w madeira, g ouro)
+const ICONES: Record<ItemId, string[]> = {
+  espada: [
+    "............kk..",
+    "...........kmbk.",
+    "..........kmbk..",
+    ".........kmbk...",
+    "........kmbk....",
+    ".......kmbk.....",
+    "......kmbk......",
+    "..k..kmbk.......",
+    "..kgkmbk........",
+    "...kgbk.........",
+    "...kagk.........",
+    "..kaakgk........",
+    ".kaak.kgk.......",
+    ".kak...k........",
+    "..k.............",
+    "................",
+  ],
+  armadura: [
+    "................",
+    "..kkk.....kkk...",
+    ".kmmmk...kmmmk..",
+    ".kmbmmkkkmmcmk..",
+    ".kmbmmmmmmmcmk..",
+    "..kkmbmmmmcmk...",
+    "...kmbmaamcmk...",
+    "...kmbaaaacmk...",
+    "...kmbmaamcmk...",
+    "...kmbmmmmcmk...",
+    "...kggggggggk...",
+    "...kmbmmmmcmk...",
+    "...kmbmmmmcmk...",
+    "....kmmmmmmk....",
+    ".....kkkkkk.....",
+    "................",
+  ],
+  elmo: [
+    "................",
+    ".......kk.......",
+    "......kaak......",
+    ".....kkaakk.....",
+    "....kmbmmmmk....",
+    "...kmbmmmmmck...",
+    "...kmbmmmmmck...",
+    "...kmbmmmmmck...",
+    "...kkkkkkkkkk...",
+    "...kmkbgkbgmk...",
+    "...kmkkkkkkmk...",
+    "...kmbmkkmmck...",
+    "...kmbmkkmmck...",
+    "....kmmkkmck....",
+    ".....kk..kk.....",
+    "................",
+  ],
+  botas: [
+    "................",
+    "................",
+    "...kkkk.........",
+    "...kabk.........",
+    "...kabk...kkkk..",
+    "...kabk...kabk..",
+    "...kabk...kabk..",
+    "...kgggk..kabk..",
+    "...kabck..kgggk.",
+    "...kabcck.kabck.",
+    "...kabcaak.kabcck",
+    "...kkkkkkk.kabcaak",
+    "...........kkkkkkk",
+    "................",
+    "................",
+    "................",
+  ],
+  luvas: [
+    "................",
+    "......kkkk......",
+    ".....kmbmmk.....",
+    "....kkmbmmkk....",
+    "...kmkmbmmkmk...",
+    "...kmkmbmmkmk...",
+    "...kmkmbmmkmkk..",
+    "...kmmmbmmmmmmk.",
+    "...kmmmmmmmmck..",
+    "...kmbmmmmmmck..",
+    "....kmbmmmmck...",
+    "....kggggggk....",
+    "....kaaaaaak....",
+    "....kaaaaaak....",
+    ".....kkkkkk.....",
+    "................",
+  ],
+  capa: [
+    "................",
+    ".....kkkkkk.....",
+    "....kggkkggk....",
+    "....kabbbbak....",
+    "...kabaaaaack...",
+    "...kabaaaaack...",
+    "..kabaaaaaaack..",
+    "..kabaaaaaaack..",
+    "..kabaacaaaack..",
+    ".kabaaacaaaaack.",
+    ".kabaaacaaaaack.",
+    ".kabaaacaaaaack.",
+    "kabaaaacaaaaaack",
+    "kkakkaakkaakkakk",
+    "..k...k...k..k..",
+    "................",
+  ],
+  arco: [
+    "................",
+    "......kk........",
+    ".....kwbk.......",
+    "....kwk.k.......",
+    "...kwk...k......",
+    "...kwk....k.....",
+    "..kwk......k....",
+    "..kak......k....",
+    "..kak......k....",
+    "..kwk......k....",
+    "...kwk....k.....",
+    "...kwk...k......",
+    "....kwk.k.......",
+    ".....kwbk.......",
+    "......kk........",
+    "................",
+  ],
+  machado: [
+    "................",
+    "........kkkk....",
+    ".......kmbmmk...",
+    "......kmbmmmmk..",
+    ".....kkmbmmmmck.",
+    "....kwkkmbmmck..",
+    "...kwk..kmmck...",
+    "..kwk....kkk....",
+    "..kwk...........",
+    ".kwk............",
+    ".kak............",
+    "kwk.............",
+    "kwk.............",
+    "kk..............",
+    "................",
+    "................",
+  ],
+  escudo: [
+    "................",
+    "..kkkkkkkkkkkk..",
+    "..kmmmmmmmmmmk..",
+    "..kmaaaaaaaamk..",
+    "..kmabaggaacmk..",
+    "..kmabaggaacmk..",
+    "..kmaggggggcmk..",
+    "..kmaggggggcmk..",
+    "..kmabaggaacmk..",
+    "...kmbaggacmk...",
+    "...kmaaaaacmk...",
+    "....kmaaacmk....",
+    ".....kmaamk.....",
+    "......kmmk......",
+    ".......kk.......",
+    "................",
+  ],
+};
+
+const clarear = (hex: string, k: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  const f = (v: number) => Math.max(0, Math.min(255, Math.round(k > 0 ? v + (255 - v) * k : v * (1 + k))));
+  return `rgb(${f((n >> 16) & 255)},${f((n >> 8) & 255)},${f(n & 255)})`;
+};
+
+// desenha o ícone de um item com o canto superior esquerdo em (x, y), ampliado `esc` vezes
+export const desenharIcone = (ctx: CanvasRenderingContext2D, id: ItemId, x: number, y: number, esc = 1) => {
+  const item = ITENS[id];
+  const pal: Record<string, string> = {
+    k: "#1a1014",
+    a: item.cor,
+    b: clarear(item.cor, 0.45),
+    c: clarear(item.cor, -0.35),
+    m: "#b8c0cc",
+    w: "#8a5c36",
+    g: "#e8c040",
+  };
+  ICONES[id].forEach((row, ry) =>
+    [...row].forEach((ch, rx) => {
+      if (ch === "." || rx > 15) return;
+      ctx.fillStyle = pal[ch] ?? "#fff";
+      ctx.fillRect(Math.round(x + rx * esc), Math.round(y + ry * esc), esc, esc);
+    }),
+  );
+};

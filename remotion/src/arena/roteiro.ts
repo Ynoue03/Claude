@@ -5,6 +5,8 @@ import type { Episodio, Lutador, SubidaNivel } from "./personagem.ts";
 import { simular } from "./combate.ts";
 import type { Batida, Efeito, P, Resultado, Simulacao } from "./combate.ts";
 import { CLASSES, ESPECIES, espacos } from "./regras.ts";
+import { ITEM_IDS } from "./itens.ts";
+import type { ItemId } from "./itens.ts";
 import type { TipoDano } from "./regras.ts";
 
 export const FPS = 30;
@@ -15,6 +17,14 @@ export const V = {
   pergaminho: 2040,
   cta: 2580,
   fim: 2700,
+};
+// Fases do vídeo. Nos episódios com baú (versão 3+, número múltiplo de 5) entra a cena do baú
+// depois da vitória e o pergaminho fica um pouco mais rápido.
+export const BAU = 120; // 4 s
+export type Fases = typeof V & { bau: number; ritmo: number; digitacao: number };
+export const fasesDe = (ep: Episodio): Fases => {
+  const temBau = (ep.versao ?? 1) >= 3 && ep.numero % 5 === 0;
+  return temBau ? { ...V, bau: V.pergaminho, pergaminho: V.pergaminho + BAU, ritmo: 0.7, digitacao: 2.4 } : { ...V, bau: -1, ritmo: 1, digitacao: 1.5 };
 };
 export const CUTIN = 18; // 0,6 s congelado
 export const VS = 48; // cut-in duplo do duelo
@@ -59,6 +69,9 @@ export type Roteiro = {
   historia: string;
   pergaminho: ItemPergaminho[];
   avisos: string[];
+  fases: Fases;
+  itemBau: ItemId | null; // item que o campeão achou no baú (null = sem baú ou baú vazio)
+  itensFinais: ItemId[]; // itens que o campeão leva para o próximo episódio
 };
 
 const dist = (a: P, b: P) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -311,10 +324,25 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   // nível ganho na luta (derrubou o campeão) + nível da vitória
   const ev = sim.evolucao[vencedor];
   const campeao = lutadores[vencedor];
-  const base = { ...campeao, nivel: ev.nivel, pvMax: ev.pvMax, atributos: ev.atributos, pvRolagens: ev.pvRolagens };
+  const base = { ...campeao, nivel: ev.nivel, pvMax: ev.pvMax, atributos: ev.atributos, pvRolagens: ev.pvRolagens, itens: ev.itens };
   const subida = combinarSubidas([...ev.subidas, subirNivel(base, rng)]);
+  // baú: o campeão acha um item que ainda não tem (rola d9 até sair um novo)
+  const fases = fasesDe(ep);
+  let itemBau: ItemId | null = null;
+  if (fases.bau >= 0) {
+    const faltam = ITEM_IDS.filter((i) => !ev.itens.includes(i));
+    for (let k = 0; k < 40 && faltam.length; k++) {
+      const d = rng.roll(`${campeao.nome} · baú do campeão (d${ITEM_IDS.length})`, 1, ITEM_IDS.length).total;
+      if (faltam.includes(ITEM_IDS[d - 1])) {
+        itemBau = ITEM_IDS[d - 1];
+        break;
+      }
+    }
+  }
+  const itensFinais = itemBau ? [...ev.itens, itemBau] : [...ev.itens];
+  subida.ficha.itens = itensFinais;
   const historia = escreverHistoria(campeao, sim, subida, ep.arena);
-  const pergaminho = montarPergaminho(campeao, subida, sim);
+  const pergaminho = montarPergaminho(campeao, subida, sim, fases, itensFinais, itemBau);
 
   const r: Roteiro = {
     ep,
@@ -335,6 +363,9 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
     sDuelo,
     finalistas,
     sons: [],
+    fases,
+    itemBau,
+    itensFinais,
     subida,
     historia,
     pergaminho,
@@ -441,17 +472,17 @@ const escreverHistoria = (c: Lutador, sim: Simulacao, sub: SubidaNivel, arena = 
 // ───────────── pergaminho: itens em sequência (o render e o áudio usam a mesma agenda) ─────────────
 export type ItemPergaminho = {
   v: number; // quadro do vídeo em que aparece
-  tipo: "titulo" | "atributo" | "combate" | "poder" | "historia" | "rodape";
+  tipo: "titulo" | "atributo" | "combate" | "poder" | "item" | "historia" | "rodape";
   texto: string;
   extra?: string; // "+1" em verde etc.
   novo?: boolean;
   desc?: string;
 };
-const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao): ItemPergaminho[] => {
+const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao, fases: Fases, itensC: ItemId[], itemBau: ItemId | null): ItemPergaminho[] => {
   const itens: ItemPergaminho[] = [];
-  let v = V.pergaminho + 34; // depois de desenrolar (1 s)
+  let v = fases.pergaminho + 34; // depois de desenrolar (1 s)
   const passo = (n: number) => {
-    v += n;
+    v += n * fases.ritmo;
     return v;
   };
   itens.push({ v, tipo: "titulo", texto: c.nome });
@@ -490,6 +521,8 @@ const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao): ItemPer
   for (const p of antigos.slice(0, 7)) itens.push({ v: passo(5), tipo: "poder", texto: p.nome });
   v += 8;
   for (const p of sub.poderesNovos) itens.push({ v: passo(22), tipo: "poder", texto: p.nome, novo: true, desc: p.desc });
+  // itens mágicos (o do baú por último, como NOVO!)
+  for (const it of itensC) itens.push({ v: passo(it === itemBau ? 22 : 8), tipo: "item", texto: it, novo: it === itemBau });
   itens.push({ v: passo(24), tipo: "historia", texto: "" });
   void sim;
   return itens;
@@ -555,6 +588,7 @@ const gerarSons = (r: Roteiro): SomEv[] => {
     if (algumAcerto || !g.d20) add(vImp, base, 0.9);
     else add(vImp - 2, "swing", 0.6);
     if (g.subiu) add(vImp + 12, "levelup", 0.9);
+    if (g.itensPegos) add(vImp + 16, "tesouro", 0.7);
     for (const x of g.resultados) {
       if (x.r === "critico") add(vImp, "sino", 1);
       if (x.r === "erro" || x.r === "falha") add(vImp + 2, "plim", 0.7);
@@ -580,8 +614,13 @@ const gerarSons = (r: Roteiro): SomEv[] => {
   // vitória e pergaminho
   add(V.vitoria, "fanfarra", 1);
   add(V.vitoria + 38, "brilho", 0.8);
-  add(V.pergaminho, "papel", 1);
-  add(V.pergaminho + 8, "levelup", 0.9);
+  if (r.fases.bau >= 0) {
+    add(r.fases.bau + 6, "queda", 0.9);
+    add(r.fases.bau + 38, "bau", 1);
+    if (r.itemBau) add(r.fases.bau + 46, "tesouro", 1);
+  }
+  add(r.fases.pergaminho, "papel", 1);
+  add(r.fases.pergaminho + 8, "levelup", 0.9);
   for (const it of r.pergaminho) {
     if (it.extra || it.novo) add(it.v, "plimSobe", 0.85);
     else if (it.tipo === "atributo" || it.tipo === "poder" || it.tipo === "combate") add(it.v, "tique", 0.4);

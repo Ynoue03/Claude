@@ -47,9 +47,29 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `focoCampeao` | preferência dos lutadores por atacar o campeão (versão 2+): `"auto"` (recomendado) cresce com o nível do campeão — `2,5 × (nível − 2)`, calibrado para ele vencer ~50% (30 lutas por nível com a Yara nos níveis 2–5); ou um número fixo: `1` = leve (padrão), `5` = forte |
 | `arena` | `"calabouco"` (padrão) ou `"floresta"` — clareira ao entardecer com lanternas, fogueiras, lagos e vaga-lumes; muda também o som ambiente |
 | `centro` | `"livre"` (recomendado para episódios novos): sem tablado de degraus e sem pedra d20 no meio, e sem obstáculo na luta. Sem o campo = com o tablado e o altar (episódios 1–6 reproduzem igual) |
+| `versao` `3` | tudo da versão 2 + **baú do campeão** e **itens mágicos** (abaixo). Use em episódios novos |
 | `audio` | WAV em `remotion/public/` (`arena/epNN.wav`); vazio = sem áudio |
 
 Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo ruivo com cajado e capa verde", "autor": "@fulana" }`.
+
+## Baú do campeão e itens (versão 3)
+
+Nos episódios **5, 10, 15…** entra uma cena de 4 s depois da vitória: o campeão abre um baú e acha um item que ainda
+não tem (d9, rerrola se repetir). O pergaminho fica um pouco mais rápido para caber nos 90 s. Os itens ficam na ficha
+(`campeao.json` → `itens`) e valem em todas as lutas seguintes. **Quem derrubar o portador pega os itens dele** na hora
+(aparece "PEGOU O ITEM!"), e se vencer leva para o próximo episódio.
+
+| Item | Poder na luta |
+| --- | --- |
+| Lâmina Rubra (espada) | o primeiro acerto de cada turno causa +1d6 de dano |
+| Couraça do Bastião (armadura) | +2 na CA |
+| Elmo da Última Chance (elmo) | engana a morte: quando cairia, volta com 1 PV (1× por luta) |
+| Botas Ligeiras (botas) | +10 pés de deslocamento e não provoca ataque de oportunidade |
+| Manoplas Certeiras (luvas) | crítico com 1 número a menos no d20 |
+| Capa das Sombras (capa) | ao ficar com metade dos PV, fica invisível por 2 turnos (ninguém mira nele; atacado com desvantagem, ataca com vantagem) |
+| Arco Sussurrante (arco) | dispara sozinho uma flecha (1d6) a cada turno |
+| Machado Ceifador (machado) | ao derrubar alguém, recupera 1d8 PV |
+| Escudo do Primeiro Golpe (escudo) | bloqueia o primeiro ataque que causaria dano |
 
 ## Nomes
 

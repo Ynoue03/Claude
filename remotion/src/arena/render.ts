@@ -12,6 +12,8 @@ import type { OpTexto } from "./fonte.ts";
 import { desenharEfeito, desenharD20, linhaPx } from "./efeitos.ts";
 import type { EfeitoAtivo } from "./efeitos.ts";
 import { hash3 } from "./rng.ts";
+import { ITENS, desenharIcone } from "./itens.ts";
+import type { ItemId } from "./itens.ts";
 import { novoCanvas } from "./pixel.ts";
 import { CLASSES, ESPECIES } from "./regras.ts";
 import type { Lutador } from "./personagem.ts";
@@ -341,7 +343,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     sombra(ctx, e.x, e.y, k * (e.anim === "derrota" && e.q >= 2 ? 1.4 : 1));
   }
   // coluna de luz dourada do vencedor (atrás)
-  if (v >= V.vitoria && v < V.pergaminho + 10) colunaLuz(ctx, estados[r.vencedor].x, estados[r.vencedor].y, v - V.vitoria);
+  if (v >= V.vitoria && v < r.fases.pergaminho + 10) colunaLuz(ctx, estados[r.vencedor].x, estados[r.vencedor].y, v - V.vitoria);
 
   // lutadores por profundidade
   ordem.sort((a, b) => a.e.y - b.e.y);
@@ -351,7 +353,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     const x = Math.round(e.x - PE_X),
       y = Math.round(e.y - PE_Y - e.caindo);
     const lum = luzEm(luzes, e.x, e.y - 20);
-    ctx.globalAlpha = e.alpha;
+    if (!e.morto && condicoesEm(r, i, s).includes("INV")) e.alpha *= Math.floor(v / 3) % 2 ? 0.25 : 0.4;
     ctx.globalAlpha = e.alpha * (0.28 + lum * 0.4);
     ctx.drawImage(contornoLuz(sp), x, y);
     ctx.globalAlpha = e.alpha;
@@ -396,10 +398,10 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   desenharTochas(ctx, s, arena);
   vinheta(ctx);
   // confete (no mundo, cai sobre todos)
-  if (v >= V.vitoria && v < V.pergaminho + 30) confete(ctx, v - V.vitoria);
+  if (v >= V.vitoria && v < r.fases.pergaminho + 30) confete(ctx, v - V.vitoria);
 
   // ── marcadores sobre os lutadores (não escurecem) ──
-  if (v >= V.batalha - 20 && v < V.pergaminho) {
+  if (v >= V.batalha - 20 && v < r.fases.pergaminho) {
     for (const { e, i } of ordem) {
       if (e.morto) continue;
       const l = r.lutadores[i];
@@ -440,6 +442,17 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
       texto(ctx, `NV ${g.subiu.de} → ${g.subiu.para} · +${g.subiu.ganho} PV`, clamp(b.x, 60, W - 60), yb + 10, { cor: "#6aff7a", contorno: TINTA, alinhar: "centro", fonte: "p", alpha: a });
       if (k < 30) colunaLuz(ctx, b.x, b.y, k + 20);
     }
+    if (g.itensPegos && pi >= 14 && pi < 64) {
+      const b = estados[g.itensPegos.id];
+      const k = pi - 14;
+      const a = k > 40 ? 1 - (k - 40) / 10 : 1;
+      const yb = b.y - PE_Y + alturaCabeca(r.lutadores[g.itensPegos.id]) - 44 - Math.min(8, k * 0.6);
+      const n = g.itensPegos.itens.length;
+      texto(ctx, n > 1 ? `PEGOU ${n} ITENS!` : "PEGOU O ITEM!", clamp(b.x, 60, W - 60), yb, { cor: "#ffd84a", contorno: TINTA, alinhar: "centro", alpha: a });
+      ctx.globalAlpha = a;
+      g.itensPegos.itens.forEach((it, j) => desenharIcone(ctx, it, Math.round(clamp(b.x, 60, W - 60) - (n * 17) / 2 + j * 17), Math.round(yb + 9)));
+      ctx.globalAlpha = 1;
+    }
     if (pi >= 0 && pi < 32) {
       g.resultados.forEach((res, k) => {
         const b = estados[res.alvo];
@@ -452,7 +465,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   let zoom = 1;
   let foco: P = { x: W / 2, y: H / 2 };
   const vsC = r.congela.find((c) => c.tipo === "vs")!;
-  if (v >= vsC.v0 + DUR_VS && v < V.pergaminho) {
+  if (v >= vsC.v0 + DUR_VS && v < r.fases.pergaminho) {
     const k = ease((v - vsC.v0 - DUR_VS) / 20);
     zoom = 1 + 0.2 * k;
     const [a, b] = r.finalistas.map((i) => estados[i]);
@@ -472,13 +485,14 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   }
 
   // ── interface ──
-  if (v < V.pergaminho) hud(ui, r, s, v, estados);
+  if (v < (r.fases.bau >= 0 ? r.fases.bau : r.fases.pergaminho)) hud(ui, r, s, v, estados);
   if (v < V.batalha + 10) intro(ui, r, v, estados);
   bannersCaiu(ui, r, v);
   if (congelado?.tipo === "cutin" && congelado.golpe) cutin(ui, r, congelado.golpe, dentro);
   if (congelado?.tipo === "vs") telaVs(ui, r, dentro, estados);
-  if (v >= V.vitoria && v < V.pergaminho + 6) vitoria(ui, r, v - V.vitoria);
-  if (v >= V.pergaminho - 4 && v < V.cta + 24) pergaminho(ui, r, v);
+  if (v >= V.vitoria && v < (r.fases.bau >= 0 ? r.fases.bau + 6 : r.fases.pergaminho + 6)) vitoria(ui, r, v - V.vitoria);
+  if (r.fases.bau >= 0 && v >= r.fases.bau && v < r.fases.pergaminho + 4) cenaBau(ui, r, v - r.fases.bau);
+  if (v >= r.fases.pergaminho - 4 && v < V.cta + 24) pergaminho(ui, r, v);
   if (v >= V.cta) cta(ui, r, v - V.cta);
   void CUTIN;
   void ALCANCE;
@@ -595,7 +609,7 @@ const barraPv = (ctx: Ctx, x: number, y: number, w: number, frac: number) => {
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.fillRect(x, y, Math.max(0, Math.round(w * clamp(frac, 0, 1))), 1);
 };
-const COR_COND: Record<string, string> = { FÚR: "#ff7a3a", MRC: "#b8f060", CNC: "#ffffff", ESC: "#7ae8f0", LNT: "#9ad8ff", ATD: "#ffd84a" };
+const COR_COND: Record<string, string> = { FÚR: "#ff7a3a", MRC: "#b8f060", CNC: "#ffffff", ESC: "#7ae8f0", LNT: "#9ad8ff", ATD: "#ffd84a", INV: "#c8a0ff" };
 const etiqueta = (ctx: Ctx, x: number, y: number, c: string) => {
   const w = larguraTexto(c, "p") + 2;
   ctx.fillStyle = TINTA;
@@ -635,7 +649,7 @@ const numerosFlutuantes = (ctx: Ctx, x: number, y: number, res: Golpe["resultado
   if (res.cura > 0) linhas.push({ t: `+${res.cura}`, cor: "#6aff7a", esc: 2 });
   for (const t of res.textos) {
     if (t === "CRÍTICO!") continue;
-    const cor = t === "ERROU" || t === "FALHA" ? "#c8c8d0" : t === "SALVOU" ? "#9ad8ff" : t === "IMPLACÁVEL!" ? "#ff9a4a" : t.startsWith("PERDEU") ? "#ffb0ff" : "#fff2a0";
+    const cor = t === "BLOQUEOU!" ? "#5ad0a0" : t === "ENGANOU A MORTE!" ? DOURADO : t === "INVISÍVEL!" ? "#c8a0ff" : t === "CEIFADOR" ? "#ff9a6a" : t === "ERROU" || t === "FALHA" ? "#c8c8d0" : t === "SALVOU" ? "#9ad8ff" : t === "IMPLACÁVEL!" ? "#ff9a4a" : t.startsWith("PERDEU") ? "#ffb0ff" : "#fff2a0";
     linhas.push({ t: t === "PERDEU CONCENTRAÇÃO" ? "PERDEU CONC." : t, cor, esc: 1 });
   }
   if (res.r === "buff" && g.fx === "marca") linhas.push({ t: "MARCADO", cor: "#b8f060", esc: 1 });
@@ -894,6 +908,7 @@ const telaVs = (ui: Ctx, r: Roteiro, k: number, estados: EstadoL[]) => {
     texto(ui, `PV ${e.pv}/${e.pvMax}`, tx, y0 + 78, { cor: "#6aff7a", contorno: TINTA });
     texto(ui, `CA ${l.ca}`, tx, y0 + 90, { cor: "#9ad8ff", contorno: TINTA });
     texto(ui, `ABATES ${r.sim.stats[i].abates}`, tx, y0 + 102, { cor: "#ff9a6a", contorno: TINTA });
+    itensEm(r, i, r.sDuelo).forEach((it, j) => desenharIcone(ui, it, tx + j * 17, y0 + 112));
     ui.restore();
   };
   ficha(ia, 188, -1);
@@ -1013,7 +1028,7 @@ const fita = (ui: Ctx, x: number, y: number, h: number) => {
 const pergaminho = (ui: Ctx, r: Roteiro, v: number) => {
   const l = r.lutadores[r.vencedor];
   const sub = r.subida;
-  const t = v - V.pergaminho;
+  const t = v - r.fases.pergaminho;
   // escurece o fundo
   ui.fillStyle = `rgba(6,4,10,${0.7 * clamp((t + 4) / 8, 0, 1) * (v > V.cta ? clamp(1 - (v - V.cta) / 20, 0, 1) : 1)})`;
   ui.fillRect(0, 0, W, H);
@@ -1103,12 +1118,28 @@ const pergaminho = (ui: Ctx, r: Roteiro, v: number) => {
       quebrar(`- ${it.desc ?? ""}`.toUpperCase(), 236, "p").forEach((ln, i) => texto(ui, ln, 80, y + 9 + i * 7, { cor: "#3a6a2a", fonte: "p" }));
       y += 18 + (quebrar(`- ${it.desc ?? ""}`.toUpperCase(), 236, "p").length - 1) * 7;
     });
+    // itens mágicos: ícones lado a lado; o do baú com NOVO! e o poder
+    const its = itens.filter((i) => i.tipo === "item");
+    if (its.some(vis)) {
+      texto(ui, "ITENS", 42, y + 2, { cor: "#6a4428", fonte: "p" });
+      its.forEach((it, j) => vis(it) && desenharIcone(ui, it.texto as ItemId, 70 + j * 18, y - 2));
+      y += 18;
+      const novo = its.find((i) => i.novo && vis(i));
+      if (novo) {
+        const item = ITENS[novo.texto as ItemId];
+        texto(ui, "NOVO!", 42, y, { cor: "#ffffff", contorno: VERDE });
+        texto(ui, item.nome.toUpperCase(), 80, y, { cor: VERDE, contorno: brilho(novo) ? "#c8ffb0" : "" });
+        const lns = quebrar(`- ${item.poder}`.toUpperCase(), 236, "p");
+        lns.forEach((ln, k2) => texto(ui, ln, 80, y + 9 + k2 * 7, { cor: "#3a6a2a", fonte: "p" }));
+        y += 18 + (lns.length - 1) * 7;
+      }
+    }
     // história letra por letra
     const hist = itens.find((i) => i.tipo === "historia")!;
     if (vis(hist)) {
       ui.fillStyle = "#a88a5a";
       ui.fillRect(40, y, W - 80, 1);
-      const nLetras = Math.floor((v - hist.v) * 1.5);
+      const nLetras = Math.floor((v - hist.v) * r.fases.digitacao);
       const linhas = quebrar(r.historia.toUpperCase(), W - 84, "g");
       let resta = nLetras;
       linhas.forEach((ln, i) => {
@@ -1152,3 +1183,122 @@ const cta = (ui: Ctx, r: Roteiro, t: number) => {
 
 export const _interno = { estado, golpeTxt } as { estado: typeof estado; golpeTxt: typeof golpeTxt };
 export type { Lutador, OpTexto };
+
+// itens que o lutador `i` carrega no instante de cena `s` (os do início + os que pegou de quem derrubou)
+const itensEm = (r: Roteiro, i: number, s: number): ItemId[] => {
+  const l = r.lutadores[i];
+  let lista: ItemId[] = [...(l.itens ?? [])];
+  for (const g of r.golpes) {
+    if (g.tImp > s) continue;
+    if (g.resultados.some((x) => x.alvo === i && x.morreu)) lista = [];
+    if (g.itensPegos?.id === i) lista = [...lista, ...g.itensPegos.itens];
+  }
+  return lista;
+};
+
+// ───────────── cena do baú (episódios 5, 10, 15…) ─────────────
+const desenharBau = (ui: Ctx, cx: number, cy: number, abre: number, esc: number) => {
+  // baú 22×16 com tampa que abre (abre 0..1), madeira, faixas e fecho dourados
+  const P = (x: number, y: number, w: number, h: number, cor: string) => {
+    ui.fillStyle = cor;
+    ui.fillRect(Math.round(cx + x * esc), Math.round(cy + y * esc), Math.round(w * esc), Math.round(h * esc));
+  };
+  P(-12, -1, 24, 11, TINTA);
+  P(-11, 0, 22, 9, "#8a5a32");
+  P(-11, 0, 22, 2, "#a8743e");
+  P(-11, 7, 22, 2, "#6a4426");
+  for (const x of [-11, -4, 3]) P(x, 0, 1, 9, "#5a3a22");
+  P(-9, 0, 2, 9, "#c8a03a");
+  P(7, 0, 2, 9, "#c8a03a");
+  // tampa: fechada (por cima) ou aberta (para trás)
+  const h = Math.round(6 * (1 - abre));
+  if (abre < 0.5) {
+    P(-12, -1 - h - 1, 24, h + 2, TINTA);
+    P(-11, -1 - h, 22, h, "#a8743e");
+    P(-11, -1 - h, 22, 1, "#c8905a");
+    P(-9, -1 - h, 2, h, "#e8c040");
+    P(7, -1 - h, 2, h, "#e8c040");
+    P(-2, -2, 4, 3, "#e8c040");
+    P(-1, -1, 2, 1, TINTA);
+  } else {
+    P(-12, -9, 24, 8, TINTA);
+    P(-11, -8, 22, 6, "#6a4426");
+    P(-11, -8, 22, 1, "#8a5a32");
+    P(-9, -8, 2, 6, "#c8a03a");
+    P(7, -8, 2, 6, "#c8a03a");
+    P(-10, -1, 20, 2, "#2a1a10"); // interior escuro
+  }
+};
+const cenaBau = (ui: Ctx, r: Roteiro, t: number) => {
+  const l = r.lutadores[r.vencedor];
+  const fade = clamp(t / 8, 0, 1) * (t > BAU_DUR - 4 ? clamp((BAU_DUR + 4 - t) / 8, 0, 1) : 1);
+  ui.fillStyle = `rgba(6,4,10,${0.93 * fade})`;
+  ui.fillRect(0, 0, W, H);
+  ui.globalAlpha = fade;
+  texto(ui, "BAÚ DO CAMPEÃO", W / 2, 96, { cor: DOURADO, contorno: TINTA, escala: 2, alinhar: "centro" });
+  texto(ui, `EPISÓDIO ${r.ep.numero}`, W / 2, 116, { cor: "#c8c0b8", contorno: TINTA, alinhar: "centro" });
+  // o campeão (2×) ao lado do baú
+  const sp = quadro(l, { anim: t < 34 ? "andar" : t < 50 ? "ataque" : "vitoria", q: t < 34 ? Math.floor(t / 3) % 6 : t < 50 ? Math.min(3, Math.floor((t - 34) / 4)) : Math.floor(t / 6) % 4, dir: t < 50 ? "E" : "S", expr: t < 46 ? "foco" : "vitoria", rasgado: false });
+  const px = 64 + Math.min(34, t) * 1.2;
+  ui.drawImage(sp, Math.round(px - 48), 300, 96, 128);
+  {
+    // baú: cai e quica, treme, abre
+    const cy = t < 10 ? 300 + (t / 10) ** 2 * 100 : t < 16 ? 400 - Math.sin(((t - 10) / 6) * Math.PI) * 8 : 400;
+    const treme = t >= 30 && t < 40 ? Math.round(Math.sin(t * 2.5) * 2) : 0;
+    const abre = clamp((t - 40) / 6, 0, 1);
+    // raios de luz saindo do baú
+    if (abre > 0) {
+      ui.save();
+      ui.globalCompositeOperation = "lighter";
+      for (let k = 0; k < 9; k++) {
+        const a = -Math.PI / 2 + (k - 4) * 0.22 + Math.sin(t * 0.05 + k) * 0.03;
+        const L = 70 + (k % 3) * 20;
+        ui.strokeStyle = `rgba(255,220,120,${0.22 * abre})`;
+        ui.lineWidth = 4;
+        ui.beginPath();
+        ui.moveTo(232, cy - 2);
+        ui.lineTo(232 + Math.cos(a) * L, cy - 2 + Math.sin(a) * L);
+        ui.stroke();
+      }
+      ui.restore();
+    }
+    desenharBau(ui, 232 + treme, cy, abre, 3);
+    // item sobe do baú
+    if (r.itemBau && t >= 46) {
+      const k = clamp((t - 46) / 16, 0, 1);
+      const iy = cy - 20 - ease(k) * 90;
+      const flut = Math.round(Math.sin(t * 0.15) * 2);
+      ui.save();
+      ui.globalCompositeOperation = "lighter";
+      ui.fillStyle = `rgba(255,230,140,${0.35 * k})`;
+      ui.beginPath();
+      ui.arc(232, iy + 24 + flut, 30, 0, Math.PI * 2);
+      ui.fill();
+      ui.restore();
+      desenharIcone(ui, r.itemBau, 232 - 24, Math.round(iy + flut), 3);
+      // brilhinhos
+      for (let j = 0; j < 8; j++) {
+        const a = t * 0.1 + j * 0.8;
+        ui.fillStyle = j % 2 ? "#fff2a0" : "#ffffff";
+        ui.fillRect(Math.round(232 + Math.cos(a) * 36), Math.round(iy + 24 + Math.sin(a) * 28), 1, 1);
+      }
+    }
+    // painel com o nome e o poder do item
+    if (t >= 60) {
+      const k = ease((t - 60) / 10);
+      const item = r.itemBau ? ITENS[r.itemBau] : null;
+      ui.globalAlpha = fade * k;
+      caixa(ui, 40, 448, W - 80, 64, "#2a1e2e", "#e8c060", 2);
+      if (item) {
+        texto(ui, "ITEM ENCONTRADO!", W / 2, 454, { cor: DOURADO, contorno: TINTA, alinhar: "centro" });
+        texto(ui, item.nome.toUpperCase(), W / 2, 466, { cor: item.cor, contorno: TINTA, alinhar: "centro" });
+        quebrar(item.poder.toUpperCase(), W - 100, "p").forEach((ln, j) => texto(ui, ln, W / 2, 480 + j * 7, { cor: "#ffffff", fonte: "p", alinhar: "centro" }));
+      } else {
+        texto(ui, "O BAÚ ESTÁ VAZIO...", W / 2, 466, { cor: "#c8c0b8", contorno: TINTA, alinhar: "centro" });
+        texto(ui, "JÁ TEM TODOS OS ITENS!", W / 2, 480, { cor: DOURADO, contorno: TINTA, alinhar: "centro", fonte: "p" });
+      }
+    }
+  }
+  ui.globalAlpha = 1;
+};
+const BAU_DUR = 120;

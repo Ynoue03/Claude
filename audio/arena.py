@@ -398,6 +398,25 @@ def sfx_tique(i):
     return norm(pulso(2200, 0.02, 0.5) * decai(int(0.02 * SR), 0.005), 0.35)
 
 
+def sfx_bau(i):
+    """Baú abrindo: rangido de madeira + estalo da tampa."""
+    n = int(0.6 * SR)
+    t = t_(0.6)
+    rangido = np.sign(np.sin(2 * np.pi * (180 + 90 * np.sin(2 * np.pi * 3 * t)) * t)) * np.exp(-t * 4) * 0.4
+    estalo = cat(np.zeros(int(0.32 * SR)), ruido(0.08, 170) * decai(int(0.08 * SR), 0.01))
+    estalo = cat(estalo, np.zeros(n - len(estalo)))
+    return norm(lp_fft(rangido, hi=2500) + estalo * 0.8, 0.6)
+
+
+def sfx_tesouro(i):
+    """Jingle de item encontrado: arpejo maior subindo + acorde brilhante."""
+    out = np.zeros(int(1.5 * SR))
+    for k, n in enumerate(["G5", "B5", "D6", "G6", "B6"]):
+        junta(out, pulso(hz(n), 0.1, 0.25) * env(int(0.1 * SR), a=0.002, d=0.09, s=0.3, r=0.01) * 0.6, k * 0.06)
+    junta(out, sum(pulso(hz(x), 1.0, 0.125) for x in ["G6", "B6", "D7"]) / 3 * decai(int(1.0 * SR), 0.4), 0.32)
+    return norm(out, 0.7)
+
+
 SFX = {
     "passo": sfx_passo,
     "queda": sfx_queda,
@@ -437,6 +456,8 @@ SFX = {
     "papel": sfx_papel,
     "plimSobe": sfx_plimsobe,
     "tique": sfx_tique,
+    "bau": sfx_bau,
+    "tesouro": sfx_tesouro,
 }
 # prioridade para o limite de efeitos simultâneos (maior = mais importante)
 PRIORIDADE = {"passo": 0, "tique": 1, "dado": 2, "conjura": 2, "swing": 3, "plim": 4, "hit": 5, "bip": 4}
