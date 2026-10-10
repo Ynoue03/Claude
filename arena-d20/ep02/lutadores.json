@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Tamsin",
+    "classe": "PATRULHEIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Yara",
+    "classe": "GUERREIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Azura",
+    "classe": "LADINO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Kael",
+    "classe": "DRUIDA",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Grom",
+    "classe": "MAGO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Elowen",
+    "classe": "BARDO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Ivo",
+    "classe": "BRUXO",
+    "especie": "TIEFLING"
+  },
+  {
+    "nome": "Runa",
+    "classe": "BARBARO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Orrin",
+    "classe": "MONGE",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Soren",
+    "classe": "CLERIGO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Doran",
+    "classe": "FEITICEIRO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Nessa",
+    "classe": "BRUXO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Dax",
+    "classe": "BARDO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Wren",
+    "classe": "PALADINO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Hale",
+    "classe": "PATRULHEIRO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Garruk",
+    "classe": "PALADINO",
+    "especie": "ELFO"
+  }
+]
