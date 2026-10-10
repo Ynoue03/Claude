@@ -656,7 +656,7 @@ export const fmt = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
 // ───────────── poderes e subida de nível ─────────────
 export const poderesAte = (l: Pick<Lutador, "classe" | "especie" | "nivel">): Poder[] => {
   const out: Poder[] = [...TRACOS_ESPECIE[l.especie]];
-  for (let n = 1; n <= Math.min(5, l.nivel); n++) out.push(...PODERES[l.classe][n - 1]);
+  for (let n = 1; n <= Math.min(PODERES[l.classe].length, l.nivel); n++) out.push(...PODERES[l.classe][n - 1]);
   return out;
 };
 
@@ -701,7 +701,7 @@ export const subirNivel = (l: Lutador, rng: Rng): SubidaNivel => {
   const dv = CLASSES[l.classe].dv;
   const r = rng.roll(`${l.nome} · PV do nível ${para} (d${dv})`, 1, dv);
   const atributosDepois = { ...l.atributos };
-  if (para === 4 || para === 8 || para === 12 || para === 16 || para === 19) {
+  if ((PODERES[l.classe][para - 1] ?? []).some((p) => p.nome === "Aumento de Atributo") || para === 12 || para === 16 || para === 19) {
     const [p1, p2] = CLASSES[l.classe].prioridade;
     if (atributosDepois[p1] <= 18) atributosDepois[p1] += 2;
     else {
@@ -717,7 +717,7 @@ export const subirNivel = (l: Lutador, rng: Rng): SubidaNivel => {
   const pvDepois = l.pvMax + ganho;
   // o Aumento de Atributo mostra o que foi aplicado de fato (+2 no principal, ou +1/+1 se ele já estava no máximo)
   const ganhos = ATRIBUTOS.filter((a) => atributosDepois[a] > l.atributos[a]).map((a) => `+${atributosDepois[a] - l.atributos[a]} em ${a}`);
-  const poderesNovos = (para <= 5 ? PODERES[l.classe][para - 1] : []).map((p) => (p.nome === "Aumento de Atributo" ? { ...p, desc: ganhos.length ? ganhos.join(", ") : "atributos já no máximo" } : p));
+  const poderesNovos = (PODERES[l.classe][para - 1] ?? []).map((p) => (p.nome === "Aumento de Atributo" ? { ...p, desc: ganhos.length ? ganhos.join(", ") : "atributos já no máximo" } : p));
   const linha = `NV ${para}: d${dv} = ${r.total} ${fmt(conDepois)} CON${anao ? " +1 Robustez Anã" : ""} = +${ganho} PV`;
   const ficha: FichaCampeao = {
     nome: l.nome,

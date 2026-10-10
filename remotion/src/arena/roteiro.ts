@@ -4,7 +4,7 @@ import { gerarLutadores, subirNivel, poderesAte, combinarSubidas } from "./perso
 import type { Episodio, Lutador, SubidaNivel } from "./personagem.ts";
 import { simular } from "./combate.ts";
 import type { Batida, Efeito, P, Resultado, Simulacao } from "./combate.ts";
-import { CLASSES, ESPECIES, espacos } from "./regras.ts";
+import { CLASSES, ESPECIES, espacos, proficiencia } from "./regras.ts";
 import { ITEM_IDS, podeUsar, tipoDe } from "./itens.ts";
 import { CHEFES, chefeDoEpisodio } from "./chefes.ts";
 import type { ItemId } from "./itens.ts";
@@ -514,8 +514,8 @@ const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao, fases: F
     const md = Math.floor((depois - 10) / 2);
     itens.push({ v: passo(9), tipo: "atributo", texto: `${a} ${depois} (${md >= 0 ? "+" : ""}${md})`, extra: depois > antes ? `+${depois - antes}` : undefined });
   }
-  const pb = sub.para >= 5 ? 3 : 2;
-  const pbAntes = sub.de >= 5 ? 3 : 2;
+  const pb = proficiencia(sub.para);
+  const pbAntes = proficiencia(sub.de);
   const conj = CLASSES[c.classe].conjuracao;
   itens.push({ v: passo(16), tipo: "combate", texto: `PV ${sub.pvDepois}`, extra: `+${sub.pvGanho}`, desc: sub.rolagensTxt.join(" · ") });
   itens.push({ v: passo(30), tipo: "combate", texto: `CA ${c.ca}` });

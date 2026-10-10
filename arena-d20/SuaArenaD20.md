@@ -94,6 +94,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Crítico Aprimorado** (crítico com 19 ou 20)
 - NV 4: **Aumento de Atributo** (+2 em FOR)
 - NV 5: **Ataque Extra** (dois ataques por ação)
+- NV 6: **Aumento de Atributo** (+2 no atributo principal)
+- NV 7: **Estilo de Luta Extra** (aprende uma segunda técnica)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Indomável** (rerrola uma salvaguarda que falhou); **Mestre Tático** (empurra, atrasa ou derruba ao acertar)
+- NV 10: **Guerreiro Heroico** (Inspiração Heroica a cada turno)
 
 **Bárbaro** — espaços de magia por nível: — · — · — · — · —
 - NV 1: **Fúria (2×)** (+2 de dano e resiste a golpes); **Defesa sem Armadura** (CA 10 + DES + CON)
@@ -101,6 +106,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Frenesi** (ataque extra de bônus em fúria); **Fúria 3×** (uma fúria a mais por dia)
 - NV 4: **Aumento de Atributo** (+2 em FOR)
 - NV 5: **Ataque Extra** (dois ataques por ação); **Movimento Rápido** (+10 pés de deslocamento)
+- NV 6: **Mente Implacável** (em fúria, não fica com medo nem encantado); **Fúria 4×** (uma fúria a mais por dia)
+- NV 7: **Instinto Selvagem** (vantagem na iniciativa); **Salto Instintivo** (anda meio deslocamento ao entrar em fúria)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Golpe Brutal** (troca a vantagem por +1d10 e um efeito no golpe)
+- NV 10: **Retaliação** (revida quem o fere de perto)
 
 **Paladino** — espaços de magia por nível: 2 · 2 · 3 · 3 · 4/2
 - NV 1: **Cura pelas Mãos** (reserva de cura (5 × nível)); **Magias de 1º círculo** (dois espaços de magia)
@@ -108,6 +118,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Canalizar Divindade** (poder sagrado do juramento); **Juramento Sagrado** (escolhe o seu juramento)
 - NV 4: **Aumento de Atributo** (+2 em FOR)
 - NV 5: **Ataque Extra** (dois ataques por ação)
+- NV 6: **Aura de Proteção** (+CAR nas salvaguardas de quem está perto)
+- NV 7: **Aura do Juramento** (dom do juramento em volta de si)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Magias de 3º círculo** (espaços de 3º círculo); **Abjurar Inimigos** (deixa inimigos com medo)
+- NV 10: **Aura de Coragem** (ninguém perto fica com medo)
 
 **Patrulheiro** — espaços de magia por nível: 2 · 2 · 3 · 3 · 4/2
 - NV 1: **Marca do Caçador** (+1d6 no alvo marcado); **Magias de 1º círculo** (dois espaços de magia)
@@ -115,6 +130,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Presa do Caçador** (dano extra em quem já está ferido)
 - NV 4: **Aumento de Atributo** (+2 em DES)
 - NV 5: **Ataque Extra** (dois ataques por ação)
+- NV 6: **Andarilho** (+10 pés de deslocamento)
+- NV 7: **Táticas Defensivas** (dom do caçador para se proteger)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Magias de 3º círculo** (espaços de 3º círculo); **Especialização** (dobra a proficiência em perícias)
+- NV 10: **Incansável** (PV temporários e menos cansaço)
 
 **Ladino** — espaços de magia por nível: — · — · — · — · —
 - NV 1: **Ataque Furtivo 1d6** (dano extra com vantagem)
@@ -122,6 +142,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Ataque Furtivo 2d6** (o furtivo dobra); **Mira Firme** (vantagem parado no lugar)
 - NV 4: **Aumento de Atributo** (+2 em DES)
 - NV 5: **Ataque Furtivo 3d6** (o furtivo cresce de novo); **Esquiva Sobrenatural** (corta pela metade um golpe)
+- NV 6: **Especialização** (dobra a proficiência em perícias)
+- NV 7: **Ataque Furtivo 4d6** (o furtivo cresce de novo); **Evasão** (nenhum dano em área ao passar na salvaguarda)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Ataque Furtivo 5d6** (o furtivo cresce de novo); **Poder do Arquétipo** (segundo dom do arquétipo)
+- NV 10: **Aumento de Atributo** (+2 no atributo principal)
 
 **Monge** — espaços de magia por nível: — · — · — · — · —
 - NV 1: **Artes Marciais (d6)** (golpe extra desarmado); **Defesa sem Armadura** (CA 10 + DES + SAB)
@@ -129,6 +154,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Defletir Ataques** (reduz o dano recebido)
 - NV 4: **Aumento de Atributo** (+2 em DES)
 - NV 5: **Golpe Atordoante** (atordoa com um golpe); **Ataque Extra** (dois ataques por ação); **Artes Marciais d8** (golpes mais fortes)
+- NV 6: **Golpes Empoderados** (golpes desarmados de energia); **Poder da Tradição** (segundo dom da tradição)
+- NV 7: **Evasão** (nenhum dano em área ao passar na salvaguarda)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Movimento Acrobático** (corre por paredes e água)
+- NV 10: **Foco Exaltado** (rajada e defesa mais fortes); **Autorrestauração** (livra-se de condições ruins)
 
 **Mago** — espaços de magia por nível: 2 · 3 · 4/2 · 4/3 · 4/3/2
 - NV 1: **Raio de Fogo** (1d10 de fogo); **Mísseis Mágicos** (três dardos que nunca erram); **Onda Trovejante** (2d8 trovejante em volta); **Escudo** (+5 de CA como reação); **Armadura Arcana** (CA 13 + DES)
@@ -136,6 +166,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Raio Ardente** (três raios de fogo (2º)); **Escola de Evocação** (magias de dano mais seguras)
 - NV 4: **Aumento de Atributo** (+2 em INT)
 - NV 5: **Bola de Fogo e Relâmpago** (8d6 em área (3º))
+- NV 6: **Truque Potente** (truques causam metade do dano mesmo se falharem); **Magias de 3º círculo** (espaços de 3º círculo)
+- NV 7: **Magias de 4º círculo** (espaços de 4º círculo)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Magias de 5º círculo** (espaços de 5º círculo)
+- NV 10: **Evocação Fortalecida** (+INT no dano das evocações)
 
 **Feiticeiro** — espaços de magia por nível: 2 · 3 · 4/2 · 4/3 · 4/3/2
 - NV 1: **Raio de Fogo** (1d10 de fogo); **Raio de Gelo** (1d8 de frio e deixa lento); **Orbe Cromático** (3d8 do elemento escolhido); **Feitiçaria Inata** (vantagem nas magias por 1 min)
@@ -143,6 +178,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Raio Ardente** (três raios de fogo (2º)); **Feitiçaria Dracônica** (escamas e resistência)
 - NV 4: **Aumento de Atributo** (+2 em CAR)
 - NV 5: **Bola de Fogo** (8d6 de fogo em área (3º))
+- NV 6: **Afinidade Elemental** (+CAR no dano do elemento do dragão); **Magias de 3º círculo** (espaços de 3º círculo)
+- NV 7: **Feitiçaria Encarnada** (Feitiçaria Inata mais forte); **Magias de 4º círculo** (espaços de 4º círculo)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Magias de 5º círculo** (espaços de 5º círculo)
+- NV 10: **Metamagia Extra** (mais uma forma de moldar magias)
 
 **Bruxo** — espaços de magia por nível: 1 · 2 · 0/2 · 0/2 · 0/0/2
 - NV 1: **Rajada Mística** (1d10 de energia); **Bruxaria** (+1d6 necrótico no alvo)
@@ -150,6 +190,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Pacto** (dádiva do patrono); **Magias de 2º círculo** (espaços de pacto mais fortes)
 - NV 4: **Aumento de Atributo** (+2 em CAR)
 - NV 5: **Toque Vampírico** (rouba vida pelo toque (3º))
+- NV 6: **Dom do Patrono** (segundo dom do patrono)
+- NV 7: **Magias de 4º círculo** (espaços de pacto de 4º círculo)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Magias de 5º círculo** (espaços de pacto de 5º círculo); **Contatar Patrono** (conversa com o patrono)
+- NV 10: **Proteção do Patrono** (terceiro dom do patrono)
 
 **Clérigo** — espaços de magia por nível: 2 · 3 · 4/2 · 4/3 · 4/3/2
 - NV 1: **Chama Sagrada** (1d8 radiante, salvaguarda de DES); **Raio Guia** (4d6 radiante e dá vantagem); **Palavra Curativa** (cura à distância); **Curar Ferimentos** (cura pelo toque)
@@ -157,6 +202,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Arma Espiritual** (uma arma de luz luta junto (2º)); **Domínio Divino** (escolhe o seu domínio)
 - NV 4: **Aumento de Atributo** (+2 em SAB)
 - NV 5: **Guardiões Espirituais** (espíritos ferem quem chega perto (3º))
+- NV 6: **Poder do Domínio** (segundo dom do domínio); **Centelha 2×** (Canalizar Divindade duas vezes)
+- NV 7: **Golpes Abençoados** (+1d8 radiante nos truques ou armas); **Magias de 4º círculo** (espaços de 4º círculo)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Magias de 5º círculo** (espaços de 5º círculo)
+- NV 10: **Intervenção Divina** (pede um milagre ao seu deus)
 
 **Druida** — espaços de magia por nível: 2 · 3 · 4/2 · 4/3 · 4/3/2
 - NV 1: **Produzir Chama** (1d8 de fogo à distância); **Chicote de Espinhos** (1d6 e puxa o alvo); **Onda Trovejante** (2d8 trovejante em volta); **Palavra Curativa** (cura à distância)
@@ -164,6 +214,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Raio Lunar** (coluna de luz prateada (2º)); **Círculo Druídico** (escolhe o seu círculo)
 - NV 4: **Aumento de Atributo** (+2 em SAB)
 - NV 5: **Convocar Relâmpagos** (raios caem do céu (3º))
+- NV 6: **Poder do Círculo** (segundo dom do círculo); **Magias de 3º círculo** (espaços de 3º círculo)
+- NV 7: **Fúria Elemental** (+1d8 elemental nos truques ou golpes); **Magias de 4º círculo** (espaços de 4º círculo)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Magias de 5º círculo** (espaços de 5º círculo)
+- NV 10: **Dom do Círculo** (terceiro dom do círculo)
 
 **Bardo** — espaços de magia por nível: 2 · 3 · 4/2 · 4/3 · 4/3/2
 - NV 1: **Inspiração de Bardo (d6)** (um dado extra para quem inspira); **Zombaria Viciosa** (dano psíquico e desvantagem); **Sussurros Dissonantes** (3d6 psíquico, o alvo foge); **Palavra Curativa** (cura à distância); **Onda Trovejante** (2d8 trovejante em volta)
@@ -171,6 +226,11 @@ do próximo); nenhuma regra muda por causa do tempo.
 - NV 3: **Colégio do Bardo** (escolhe a sua tradição); **Despedaçar** (3d8 trovejante em área (2º))
 - NV 4: **Aumento de Atributo** (+2 em CAR)
 - NV 5: **Inspiração d8** (o dado de inspiração cresce)
+- NV 6: **Poder do Colégio** (segundo dom do colégio); **Magias de 3º círculo** (espaços de 3º círculo)
+- NV 7: **Magias de 4º círculo** (espaços de 4º círculo)
+- NV 8: **Aumento de Atributo** (+2 no atributo principal)
+- NV 9: **Especialização** (dobra a proficiência em perícias); **Magias de 5º círculo** (espaços de 5º círculo)
+- NV 10: **Segredos Mágicos** (aprende magias de outras listas); **Inspiração d10** (o dado de inspiração cresce)
 
 ### Espécies
 

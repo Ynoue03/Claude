@@ -156,21 +156,23 @@ export const nomeCompleto = (p: number) => {
 };
 export const TOTAL_NOMES = () => NOMES.length * SOBRENOMES.length;
 
-// Espaços de magia por nível [1º, 2º, 3º]
-const SLOTS_COMPLETO = [[2], [3], [4, 2], [4, 3], [4, 3, 2]];
-const SLOTS_MEIO = [[2], [2], [3], [3], [4, 2]];
+// Espaços de magia por nível [1º, 2º, 3º, 4º, 5º] (níveis 1–10)
+const SLOTS_COMPLETO = [[2], [3], [4, 2], [4, 3], [4, 3, 2], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2]];
+const SLOTS_MEIO = [[2], [2], [3], [3], [4, 2], [4, 2], [4, 3], [4, 3], [4, 3, 2], [4, 3, 2]];
+export const NIVEL_MAX = 10; // até onde vão as tabelas de poderes e espaços
 export const espacos = (c: ClasseId, nivel: number): number[] => {
-  const n = Math.max(1, Math.min(5, nivel)) - 1;
+  const n = Math.max(1, Math.min(NIVEL_MAX, nivel)) - 1;
   if (["BARDO", "CLERIGO", "DRUIDA", "FEITICEIRO", "MAGO"].includes(c)) return [...SLOTS_COMPLETO[n]];
   if (c === "PALADINO" || c === "PATRULHEIRO") return [...SLOTS_MEIO[n]];
-  if (c === "BRUXO") return [[1], [2], [0, 2], [0, 2], [0, 0, 2]][n];
+  if (c === "BRUXO") return [[1], [2], [0, 2], [0, 2], [0, 0, 2], [0, 0, 2], [0, 0, 0, 2], [0, 0, 0, 2], [0, 0, 0, 0, 2], [0, 0, 0, 0, 2]][n];
   return [];
 };
 
-export const proficiencia = (nivel: number) => (nivel >= 5 ? 3 : 2);
+export const proficiencia = (nivel: number) => (nivel >= 9 ? 4 : nivel >= 5 ? 3 : 2);
 export const mod = (v: number) => Math.floor((v - 10) / 2);
 
-// Poderes por nível (o que aparece no pergaminho). desc = descrição curta para "NOVO!".
+// Poderes por nível 1–10 (o que aparece no pergaminho), progressão do SRD 5.2. desc = descrição curta para "NOVO!".
+// Do 6 em diante eles aparecem na ficha; na luta vale o efeito que já existia até o nível 5.
 export type Poder = { nome: string; desc: string };
 export const PODERES: Record<ClasseId, Poder[][]> = {
   BARBARO: [
@@ -179,6 +181,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Frenesi", desc: "ataque extra de bônus em fúria" }, { nome: "Fúria 3×", desc: "uma fúria a mais por dia" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em FOR" }],
     [{ nome: "Ataque Extra", desc: "dois ataques por ação" }, { nome: "Movimento Rápido", desc: "+10 pés de deslocamento" }],
+    [{ nome: "Mente Implacável", desc: "em fúria, não fica com medo nem encantado" }, { nome: "Fúria 4×", desc: "uma fúria a mais por dia" }],
+    [{ nome: "Instinto Selvagem", desc: "vantagem na iniciativa" }, { nome: "Salto Instintivo", desc: "anda meio deslocamento ao entrar em fúria" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Golpe Brutal", desc: "troca a vantagem por +1d10 e um efeito no golpe" }],
+    [{ nome: "Retaliação", desc: "revida quem o fere de perto" }],
   ],
   BARDO: [
     [{ nome: "Inspiração de Bardo (d6)", desc: "um dado extra para quem inspira" }, { nome: "Zombaria Viciosa", desc: "dano psíquico e desvantagem" }, { nome: "Sussurros Dissonantes", desc: "3d6 psíquico, o alvo foge" }, { nome: "Palavra Curativa", desc: "cura à distância" }, { nome: "Onda Trovejante", desc: "2d8 trovejante em volta" }],
@@ -186,6 +193,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Colégio do Bardo", desc: "escolhe a sua tradição" }, { nome: "Despedaçar", desc: "3d8 trovejante em área (2º)" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em CAR" }],
     [{ nome: "Inspiração d8", desc: "o dado de inspiração cresce" }],
+    [{ nome: "Poder do Colégio", desc: "segundo dom do colégio" }, { nome: "Magias de 3º círculo", desc: "espaços de 3º círculo" }],
+    [{ nome: "Magias de 4º círculo", desc: "espaços de 4º círculo" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Especialização", desc: "dobra a proficiência em perícias" }, { nome: "Magias de 5º círculo", desc: "espaços de 5º círculo" }],
+    [{ nome: "Segredos Mágicos", desc: "aprende magias de outras listas" }, { nome: "Inspiração d10", desc: "o dado de inspiração cresce" }],
   ],
   CLERIGO: [
     [{ nome: "Chama Sagrada", desc: "1d8 radiante, salvaguarda de DES" }, { nome: "Raio Guia", desc: "4d6 radiante e dá vantagem" }, { nome: "Palavra Curativa", desc: "cura à distância" }, { nome: "Curar Ferimentos", desc: "cura pelo toque" }],
@@ -193,6 +205,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Arma Espiritual", desc: "uma arma de luz luta junto (2º)" }, { nome: "Domínio Divino", desc: "escolhe o seu domínio" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em SAB" }],
     [{ nome: "Guardiões Espirituais", desc: "espíritos ferem quem chega perto (3º)" }],
+    [{ nome: "Poder do Domínio", desc: "segundo dom do domínio" }, { nome: "Centelha 2×", desc: "Canalizar Divindade duas vezes" }],
+    [{ nome: "Golpes Abençoados", desc: "+1d8 radiante nos truques ou armas" }, { nome: "Magias de 4º círculo", desc: "espaços de 4º círculo" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Magias de 5º círculo", desc: "espaços de 5º círculo" }],
+    [{ nome: "Intervenção Divina", desc: "pede um milagre ao seu deus" }],
   ],
   DRUIDA: [
     [{ nome: "Produzir Chama", desc: "1d8 de fogo à distância" }, { nome: "Chicote de Espinhos", desc: "1d6 e puxa o alvo" }, { nome: "Onda Trovejante", desc: "2d8 trovejante em volta" }, { nome: "Palavra Curativa", desc: "cura à distância" }],
@@ -200,6 +217,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Raio Lunar", desc: "coluna de luz prateada (2º)" }, { nome: "Círculo Druídico", desc: "escolhe o seu círculo" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em SAB" }],
     [{ nome: "Convocar Relâmpagos", desc: "raios caem do céu (3º)" }],
+    [{ nome: "Poder do Círculo", desc: "segundo dom do círculo" }, { nome: "Magias de 3º círculo", desc: "espaços de 3º círculo" }],
+    [{ nome: "Fúria Elemental", desc: "+1d8 elemental nos truques ou golpes" }, { nome: "Magias de 4º círculo", desc: "espaços de 4º círculo" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Magias de 5º círculo", desc: "espaços de 5º círculo" }],
+    [{ nome: "Dom do Círculo", desc: "terceiro dom do círculo" }],
   ],
   GUERREIRO: [
     [{ nome: "Estilo de Luta", desc: "técnica de combate preferida" }, { nome: "Retomar o Fôlego", desc: "cura 1d10 + nível" }],
@@ -207,6 +229,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Crítico Aprimorado", desc: "crítico com 19 ou 20" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em FOR" }],
     [{ nome: "Ataque Extra", desc: "dois ataques por ação" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Estilo de Luta Extra", desc: "aprende uma segunda técnica" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Indomável", desc: "rerrola uma salvaguarda que falhou" }, { nome: "Mestre Tático", desc: "empurra, atrasa ou derruba ao acertar" }],
+    [{ nome: "Guerreiro Heroico", desc: "Inspiração Heroica a cada turno" }],
   ],
   MONGE: [
     [{ nome: "Artes Marciais (d6)", desc: "golpe extra desarmado" }, { nome: "Defesa sem Armadura", desc: "CA 10 + DES + SAB" }],
@@ -214,6 +241,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Defletir Ataques", desc: "reduz o dano recebido" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em DES" }],
     [{ nome: "Golpe Atordoante", desc: "atordoa com um golpe" }, { nome: "Ataque Extra", desc: "dois ataques por ação" }, { nome: "Artes Marciais d8", desc: "golpes mais fortes" }],
+    [{ nome: "Golpes Empoderados", desc: "golpes desarmados de energia" }, { nome: "Poder da Tradição", desc: "segundo dom da tradição" }],
+    [{ nome: "Evasão", desc: "nenhum dano em área ao passar na salvaguarda" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Movimento Acrobático", desc: "corre por paredes e água" }],
+    [{ nome: "Foco Exaltado", desc: "rajada e defesa mais fortes" }, { nome: "Autorrestauração", desc: "livra-se de condições ruins" }],
   ],
   PALADINO: [
     [{ nome: "Cura pelas Mãos", desc: "reserva de cura (5 × nível)" }, { nome: "Magias de 1º círculo", desc: "dois espaços de magia" }],
@@ -221,6 +253,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Canalizar Divindade", desc: "poder sagrado do juramento" }, { nome: "Juramento Sagrado", desc: "escolhe o seu juramento" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em FOR" }],
     [{ nome: "Ataque Extra", desc: "dois ataques por ação" }],
+    [{ nome: "Aura de Proteção", desc: "+CAR nas salvaguardas de quem está perto" }],
+    [{ nome: "Aura do Juramento", desc: "dom do juramento em volta de si" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Magias de 3º círculo", desc: "espaços de 3º círculo" }, { nome: "Abjurar Inimigos", desc: "deixa inimigos com medo" }],
+    [{ nome: "Aura de Coragem", desc: "ninguém perto fica com medo" }],
   ],
   PATRULHEIRO: [
     [{ nome: "Marca do Caçador", desc: "+1d6 no alvo marcado" }, { nome: "Magias de 1º círculo", desc: "dois espaços de magia" }],
@@ -228,6 +265,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Presa do Caçador", desc: "dano extra em quem já está ferido" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em DES" }],
     [{ nome: "Ataque Extra", desc: "dois ataques por ação" }],
+    [{ nome: "Andarilho", desc: "+10 pés de deslocamento" }],
+    [{ nome: "Táticas Defensivas", desc: "dom do caçador para se proteger" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Magias de 3º círculo", desc: "espaços de 3º círculo" }, { nome: "Especialização", desc: "dobra a proficiência em perícias" }],
+    [{ nome: "Incansável", desc: "PV temporários e menos cansaço" }],
   ],
   LADINO: [
     [{ nome: "Ataque Furtivo 1d6", desc: "dano extra com vantagem" }],
@@ -235,6 +277,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Ataque Furtivo 2d6", desc: "o furtivo dobra" }, { nome: "Mira Firme", desc: "vantagem parado no lugar" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em DES" }],
     [{ nome: "Ataque Furtivo 3d6", desc: "o furtivo cresce de novo" }, { nome: "Esquiva Sobrenatural", desc: "corta pela metade um golpe" }],
+    [{ nome: "Especialização", desc: "dobra a proficiência em perícias" }],
+    [{ nome: "Ataque Furtivo 4d6", desc: "o furtivo cresce de novo" }, { nome: "Evasão", desc: "nenhum dano em área ao passar na salvaguarda" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Ataque Furtivo 5d6", desc: "o furtivo cresce de novo" }, { nome: "Poder do Arquétipo", desc: "segundo dom do arquétipo" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
   ],
   FEITICEIRO: [
     [{ nome: "Raio de Fogo", desc: "1d10 de fogo" }, { nome: "Raio de Gelo", desc: "1d8 de frio e deixa lento" }, { nome: "Orbe Cromático", desc: "3d8 do elemento escolhido" }, { nome: "Feitiçaria Inata", desc: "vantagem nas magias por 1 min" }],
@@ -242,6 +289,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Raio Ardente", desc: "três raios de fogo (2º)" }, { nome: "Feitiçaria Dracônica", desc: "escamas e resistência" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em CAR" }],
     [{ nome: "Bola de Fogo", desc: "8d6 de fogo em área (3º)" }],
+    [{ nome: "Afinidade Elemental", desc: "+CAR no dano do elemento do dragão" }, { nome: "Magias de 3º círculo", desc: "espaços de 3º círculo" }],
+    [{ nome: "Feitiçaria Encarnada", desc: "Feitiçaria Inata mais forte" }, { nome: "Magias de 4º círculo", desc: "espaços de 4º círculo" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Magias de 5º círculo", desc: "espaços de 5º círculo" }],
+    [{ nome: "Metamagia Extra", desc: "mais uma forma de moldar magias" }],
   ],
   BRUXO: [
     [{ nome: "Rajada Mística", desc: "1d10 de energia" }, { nome: "Bruxaria", desc: "+1d6 necrótico no alvo" }],
@@ -249,6 +301,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Pacto", desc: "dádiva do patrono" }, { nome: "Magias de 2º círculo", desc: "espaços de pacto mais fortes" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em CAR" }],
     [{ nome: "Toque Vampírico", desc: "rouba vida pelo toque (3º)" }],
+    [{ nome: "Dom do Patrono", desc: "segundo dom do patrono" }],
+    [{ nome: "Magias de 4º círculo", desc: "espaços de pacto de 4º círculo" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Magias de 5º círculo", desc: "espaços de pacto de 5º círculo" }, { nome: "Contatar Patrono", desc: "conversa com o patrono" }],
+    [{ nome: "Proteção do Patrono", desc: "terceiro dom do patrono" }],
   ],
   MAGO: [
     [{ nome: "Raio de Fogo", desc: "1d10 de fogo" }, { nome: "Mísseis Mágicos", desc: "três dardos que nunca erram" }, { nome: "Onda Trovejante", desc: "2d8 trovejante em volta" }, { nome: "Escudo", desc: "+5 de CA como reação" }, { nome: "Armadura Arcana", desc: "CA 13 + DES" }],
@@ -256,6 +313,11 @@ export const PODERES: Record<ClasseId, Poder[][]> = {
     [{ nome: "Raio Ardente", desc: "três raios de fogo (2º)" }, { nome: "Escola de Evocação", desc: "magias de dano mais seguras" }],
     [{ nome: "Aumento de Atributo", desc: "+2 em INT" }],
     [{ nome: "Bola de Fogo e Relâmpago", desc: "8d6 em área (3º)" }],
+    [{ nome: "Truque Potente", desc: "truques causam metade do dano mesmo se falharem" }, { nome: "Magias de 3º círculo", desc: "espaços de 3º círculo" }],
+    [{ nome: "Magias de 4º círculo", desc: "espaços de 4º círculo" }],
+    [{ nome: "Aumento de Atributo", desc: "+2 no atributo principal" }],
+    [{ nome: "Magias de 5º círculo", desc: "espaços de 5º círculo" }],
+    [{ nome: "Evocação Fortalecida", desc: "+INT no dano das evocações" }],
   ],
 };
 

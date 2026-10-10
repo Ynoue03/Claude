@@ -57,8 +57,10 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
   d8 Bardo, Bruxo, Clérigo, Druida, Ladino, Monge; d6 Feiticeiro, Mago).
 - **CA:** placas 18 · cota de malha 16 · brunea 14 + DES (máx. 2) · couro 11 + DES · couro batido 12 + DES ·
   bárbaro 10 + DES + CON · monge 10 + DES + SAB · armadura arcana 13 + DES · escudo +2.
-- **Proficiência:** +2 nos níveis 1–4, +3 no 5. **Truques** com 1 dado nos níveis 1–4 e 2 dados a partir do 5.
-- Poderes e espaços de magia **só os do nível** de cada um (tabela de poderes por nível 1–5 do SRD).
+- **Proficiência:** +2 nos níveis 1–4, +3 nos níveis 5–8, +4 nos níveis 9–10. **Truques** com 1 dado nos níveis 1–4 e 2 dados a partir do 5.
+- Poderes e espaços de magia **só os do nível** de cada um (tabela de poderes por nível do SRD, **até o nível 10**;
+  os poderes do 6 em diante aparecem na ficha e no pergaminho, e na luta vale o efeito que já existia até o nível 5).
+- Proficiência +4 a partir do nível 9.
 - Traços de espécie: Sortudo, Resistência Implacável, Surto de Adrenalina, Legado Infernal, Arma de Sopro,
   Resistência da Pedra, Robustez Anã, Inspiração Heroica, Astúcia Gnômica, Passo Élfico.
 - Toda rolagem fica gravada na FICHA para conferência.
@@ -95,7 +97,7 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 
 - **Só o vencedor sobe de nível**, depois da vitória: +1 nível; PV = dado de vida rolado + CON (mínimo 1), com a
   rolagem mostrada; poderes do novo nível; espaços de magia atualizados; **Aumento de Atributo no nível 4**
-  (+2 no atributo principal). Nos outros níveis os atributos não mudam.
+  (+2 no atributo principal; o Guerreiro também no 6 e o Ladino também no 10). Nos outros níveis os atributos não mudam.
 - **Quem derrubar o campeão ganha 1 nível na hora**, no meio da luta. Se esse lutador também vencer a arena, ganha
   mais 1 → **+2 níveis** no total.
 - O **campeão volta no episódio seguinte** como 1 dos 16, com nível, atributos, PV, poderes, itens e uma **coroa**.
@@ -274,3 +276,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 13 | Boss a cada 10 episódios (Minotauro, Beholder, dragão, hidra, grifo, gigantes), caverna 4× escura com tochas, 3 cajados, itens só da classe | chefes, caverna, cajados, itens por classe (Beholder → Quimera) |
 | 14 | Caverna só para luta com boss; câmera pega a arena toda; boss 3× maior; arquivo .md para recriar a arena | regras atuais + `SuaArenaD20.md` |
 | 15 | Arquivo .md com todas as regras da conversa | este arquivo |
+| 16 | Episódios 9 e 10 | ep 9 no calabouço; ep 10 com o Minotauro na caverna + baú; poderes estendidos até o nível 10 (o Korrin chegou ao 6) |

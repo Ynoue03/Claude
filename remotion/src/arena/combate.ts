@@ -264,7 +264,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       slots,
       prof,
       furia: 0,
-      furiaUsos: l.classe === "BARBARO" ? (n >= 3 ? 3 : 2) : 0,
+      furiaUsos: l.classe === "BARBARO" ? (n >= 6 ? 4 : n >= 3 ? 3 : 2) : 0,
       folego: l.classe === "GUERREIRO" ? 2 : 0,
       surto: l.classe === "GUERREIRO" && n >= 2 ? 1 : 0,
       curaMaos: l.classe === "PALADINO" ? 5 * n : 0,
@@ -515,7 +515,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     const novos = espacos(cl, e.nivel),
       antigos = espacos(cl, sub.de);
     novos.forEach((n, i) => (e.slots[i] = (e.slots[i] ?? 0) + n - (antigos[i] ?? 0)));
-    if (cl === "BARBARO" && e.nivel === 3) e.furiaUsos++;
+    if (cl === "BARBARO" && (e.nivel === 3 || e.nivel === 6)) e.furiaUsos++;
     if (cl === "GUERREIRO" && e.nivel === 2) e.surto = 1;
     if (cl === "PALADINO") e.curaMaos += 5;
     if (cl === "MONGE" && e.nivel >= 2) e.foco += e.nivel === 2 ? 2 : 1;

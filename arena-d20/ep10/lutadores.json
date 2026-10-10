@@ -1,0 +1,86 @@
+[
+  {
+    "nome": "Thorin Gelomanto",
+    "classe": "FEITICEIRO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Brann Dentelobo",
+    "classe": "PALADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Isolde Ventobravo",
+    "classe": "BARDO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Pike Estrelagris",
+    "classe": "DRUIDA",
+    "especie": "TIEFLING"
+  },
+  {
+    "nome": "Faelan Valeclaro",
+    "classe": "MONGE",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Lyra Brumaclara",
+    "classe": "MAGO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Edda Espinhadouro",
+    "classe": "LADINO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Nyx Solposto",
+    "classe": "GUERREIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Runa Asaprata",
+    "classe": "BRUXO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Grom Mantonegro",
+    "classe": "PATRULHEIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Kael Raizfunda",
+    "classe": "CLERIGO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Fenris Corvonegro",
+    "classe": "GUERREIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Korrin Mantonegro",
+    "classe": "BARBARO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Zara Ossovelho",
+    "classe": "BRUXO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Soren Rocharrubra",
+    "classe": "DRUIDA",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Liora Chamaviva",
+    "classe": "BARDO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Minotauro",
+    "chefe": "MINOTAURO"
+  }
+]
