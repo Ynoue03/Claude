@@ -6,3 +6,5 @@ out/
 modelos/**/*.mp4
 modelos/**/*.mov
 modelos/**/*.webm
+# ARENA D20: áudio gerado por audio/arena.py (regenerável)
+remotion/public/arena/*.wav

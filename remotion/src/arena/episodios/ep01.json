@@ -1,0 +1,15 @@
+{
+  "numero": 1,
+  "seed": "arena-d20-ep01-2",
+  "perfil": "@arenad20",
+  "lutadores": [],
+  "campeaoAnterior": null,
+  "textos": {
+    "escolha": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta": "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!"
+  },
+  "audio": "arena/ep01.wav"
+}

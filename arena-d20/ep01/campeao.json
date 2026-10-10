@@ -1,0 +1,88 @@
+{
+  "nome": "Wren",
+  "especie": "ORC",
+  "classe": "PALADINO",
+  "nivel": 2,
+  "atributos": {
+    "FOR": 19,
+    "CAR": 15,
+    "CON": 15,
+    "SAB": 13,
+    "DES": 11,
+    "INT": 11
+  },
+  "pvMax": 17,
+  "pvRolagens": [
+    "NV 1: d10 máximo = 10 +2 CON = 12 PV",
+    "NV 2: d10 = 3 +2 CON = +5 PV"
+  ],
+  "visual": {
+    "pele": "#6e7e60",
+    "cabelo": "#c8902e",
+    "estiloCabelo": "careca",
+    "barba": "",
+    "olho": "#3a6a9a",
+    "marca": "",
+    "roupa": "#5e3488",
+    "roupa2": "#6e2238",
+    "couro": "#7a5034",
+    "metal": "#a8b0bc",
+    "cabeca": "nada",
+    "pluma": "",
+    "corpo": "placas",
+    "tabardo": true,
+    "ombreiras": true,
+    "capa": "#e8e0d0",
+    "peleOmbros": false,
+    "arma": "martelo",
+    "escudo": "brasao",
+    "brasao": "#3a5ac8",
+    "orbe": "",
+    "aljava": false,
+    "mascara": false,
+    "magia": "#f0d060",
+    "altura": 1.04
+  },
+  "vitorias": 1,
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      1,
+      4,
+      3,
+      6
+    ],
+    [
+      6,
+      5,
+      4,
+      6
+    ],
+    [
+      1,
+      6,
+      4,
+      1
+    ],
+    [
+      6,
+      6,
+      1,
+      3
+    ],
+    [
+      5,
+      6,
+      3,
+      2
+    ],
+    [
+      3,
+      2,
+      6,
+      1
+    ]
+  ],
+  "antecedente": "+2 FOR / +1 CON"
+}
