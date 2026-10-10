@@ -1,7 +1,7 @@
 Crie um vídeo vertical de motion graphics em PIXEL ART chamado "ARENA D20",
 no estilo "battle royale automático" (FFA, todos contra todos) com REGRAS DE RPG DE MESA
 (5ª edição, System Reference Document 5.2) e SISTEMA DE NÍVEIS, com duração exata de 1:30 (90 s).
-Cada luta é decidida por dados de verdade: nada é roteirizado. Os 10 lutadores são aleatórios,
+Cada luta é decidida por dados de verdade: nada é roteirizado. Os 16 lutadores são aleatórios,
 todos começam no nível 1, e o campeão sobe de nível e termina com um pergaminho mostrando a ficha nova.
 
 ## Formato técnico
@@ -53,24 +53,38 @@ e alto nível de detalhe. Todos os sprites são desenhados do zero, nada copiado
   o nome do golpe e a rolagem em destaque (ex.: "RAIO DE FOGO · 1d10 = 10"). Depois o golpe é disparado.
 - Máximo de um cut-in a cada 4–5 s, para não cansar (prioridade: crítico > abate > recursos de classe).
 
-## Cenário (arena)
-- Mapa top-down estilo GBA/SNES: ilha de grama cercada por água animada, borda de terra/pedra,
-  árvores e tufos nos cantos, com o mesmo nível de detalhe dos sprites.
-- Centro: área de areia em formato de "pirâmide em degraus", cercada por um anel de blocos de pedra
-  com 4 tochas acesas (chamas animadas). Uma pedra central em forma de d20 (icosaedro) como obstáculo.
-- Cenário com saturação um pouco menor que a dos personagens, para eles se destacarem.
+## Cenário (arena): calabouço de pedra
+- Mapa top-down estilo GBA/SNES de uma **dungeon / calabouço**, ocupando a tela toda: um salão de pedra
+  retangular com chão de lajotas irregulares (rachaduras, musgo nas juntas, poças d'água refletindo o fogo,
+  manchas de sangue antigo), com o mesmo nível de detalhe dos sprites.
+- **Paredes** de blocos de pedra em volta do salão (vista de cima com a face da parede aparecendo embaixo),
+  com arcos, portões de ferro fechados (grade levadiça), correntes penduradas, crânios em nichos e
+  estandartes rasgados. A parede de cima fica atrás do HUD e a de baixo dentro da área segura inferior.
+- **Tochas** presas nas paredes e em braseiros de ferro no chão (8 a 10 no total), com chama animada de 4 quadros,
+  fagulhas subindo e fumaça leve. Cada tocha projeta uma **poça de luz quente** (laranja-âmbar) que tremula;
+  fora das poças de luz o salão fica em penumbra azul-esverdeada.
+- **Clima escuro, mas legível**: vinheta escura nas bordas, iluminação de ambiente fraca, e os personagens SEMPRE
+  bem visíveis (recebem a luz das tochas próximas + um contorno de luz sutil); efeitos de magia iluminam o
+  chão em volta enquanto duram (bola de fogo clareia a sala de laranja, raio pisca em branco).
+- **Centro**: um tablado de pedra em "pirâmide de degraus" (3 níveis baixos) com runas gravadas que brilham
+  fraco em azul, e um altar/pedra central em forma de d20 (icosaedro) como obstáculo.
+- Detalhes espalhados (sem atrapalhar a luta): ossos, barris e caixotes quebrados nos cantos, teias de aranha
+  nos cantos das paredes, ratos correndo de vez em quando, gotas pingando do teto nas poças, poeira no ar.
+- Cenário com saturação e brilho menores que os dos personagens, para eles se destacarem.
 
-## Lutadores (10 personagens ALEATÓRIOS de fantasia, gerados pelos dados)
-Nenhum personagem é pré-definido. A cada episódio, com a seed, sorteie 10 lutadores:
+## Lutadores (16 personagens ALEATÓRIOS de fantasia, gerados pelos dados)
+Nenhum personagem é pré-definido. A cada episódio, com a seed, sorteie 16 lutadores:
 - **Espécie** (SRD 5.2): Humano, Elfo, Anão, Halfling, Gnomo, Orc, Tiefling, Draconato, Golias.
   Traços visuais: elfo com orelhas longas; anão baixo e barbudo; halfling e gnomo baixos (gnomo com orelhas
   grandes); orc de pele verde-acinzentada com presas; tiefling de pele vermelha/roxa com chifres, cauda e
   olhos dourados; draconato com cabeça de dragão, dentes à mostra e escamas na cor da ancestralidade
   (vermelho, azul, branco, verde, negro, dourado, prateado, bronze); golias alto, de pele cinza com marcas.
 - **Classe** (todos começam no nível 1): Guerreiro, Bárbaro, Paladino, Patrulheiro, Ladino, Monge, Mago,
-  Feiticeiro, Bruxo, Clérigo, Druida, Bardo. No máximo 2 da mesma classe por episódio.
+  Feiticeiro, Bruxo, Clérigo, Druida, Bardo. Todas as 12 classes aparecem pelo menos uma vez se possível;
+  no máximo 2 da mesma classe por episódio (12 + 4 repetidas = 16).
 - **Nome**: sorteado de uma lista de nomes de fantasia (Thorin, Lyra, Kael, Mirela, Bruk, Seraphine, Doran,
-  Vex, Elowen, Garruk, Isolde, Nyx, Zara, Ulric, Wren…), sem repetir no mesmo episódio.
+  Vex, Elowen, Garruk, Isolde, Nyx, Zara, Ulric, Wren, Tamsin, Orrin, Rhea, Borin, Cassia, Faelan, Grom, Liora,
+  Marek, Quill, Sable, Tobias, Yara, Azura…), sem repetir no mesmo episódio. Espécies também variadas (máx. 3 iguais).
 - **Cores e cabelo**: paletas medievais (carmesim, azul real, verde-floresta, púrpura, mostarda, vinho,
   ardósia); cabelo natural ou fantasia; estilo curto, longo, rabo, tranças, coque, moicano ou careca;
   barba opcional.
@@ -94,8 +108,8 @@ Nenhum personagem é pré-definido. A cada episódio, com a seed, sorteie 10 lut
 - **Personagens dos comentários (opcional)**: se receber uma lista "NOME + DESCRIÇÃO" de seguidores, use-os no
   lugar dos aleatórios. Classe, espécie, cores e arma saem da descrição; ATRIBUTOS, PV e GOLPES continuam sendo
   rolados nos dados. Mostre "CRIADO POR @autor" se ele vencer.
-- **Campeão do episódio anterior (opcional)**: se receber a ficha do último campeão, ele entra como 1 dos 10, com o
-  nível, os atributos, os PV e os poderes que já conquistou, e uma coroa pixel art em cima da cabeça. Os outros 9
+- **Campeão do episódio anterior (opcional)**: se receber a ficha do último campeão, ele entra como 1 dos 16, com o
+  nível, os atributos, os PV e os poderes que já conquistou, e uma coroa pixel art em cima da cabeça. Os outros 15
   são sempre nível 1.
 - **Balanceamento**: não há "personagem forte" escolhido a dedo. A diferença entre eles vem só dos dados
   (atributos, PV, acertos) e das regras de classe; qualquer um pode vencer. O vencedor NÃO pode ser forçado:
@@ -178,7 +192,7 @@ Robustez Anã (+1 PV por nível), Inspiração Heroica (humano rerrola um ataque
 
 ## HUD (topo, logo abaixo dos 220 px de área segura)
 - Título "ARENA D20 #N" e "RODADA X · VIVOS N".
-- Grade 2×5 com os 10 lutadores: mini retrato do rosto (16×16 px, com expressão que muda conforme os PV) + nome em
+- Grade 4×4 com os 16 lutadores: mini retrato do rosto (16×16 px, com expressão que muda conforme os PV) + nome em
   fonte pixel + "NV 1" + quadradinho na cor da classe + barra de PV em tempo real.
 - Eliminado: retrato em tons de cinza com "X", nome riscado, barra vazia.
 - Campeão que volta: "NV 2" (ou mais) em dourado e uma coroinha no retrato.
@@ -212,7 +226,7 @@ fitas vermelhas e um selo de cera com um d20) e mostra a ficha do campeão:
 - Texto em fonte pixel legível (mín. 7 px de altura na resolução interna), dentro da área segura.
 
 ## Roteiro (90 s)
-1. **0–5 s · INTRO**: os 10 caem na arena em círculo (com poeira), cada um faz sua pose de idle, com nome, classe
+1. **0–5 s · INTRO**: os 16 caem na arena em círculo (com poeira), cada um faz sua pose de idle, com nome, classe
    e "NV 1" embaixo; banner "ESCOLHA SEU CAMPEÃO!" com d20 nos cantos e contagem "3, 2, 1, LUTEM!".
 2. **5–56 s · BATALHA**: luta livre por rodadas; a cada eliminação, aviso "[NOME] CAIU!" com o mini retrato.
 3. **56–64 s · DUELO FINAL**: restam 2; cut-in duplo com os dois rostos se encarando ("VS") e as fichas resumidas
@@ -225,7 +239,8 @@ fitas vermelhas e um selo de cera com um d20) e mostra a ficha do campeão:
 Ajuste o ritmo dos turnos (nunca as regras) para a luta caber no tempo da batalha e do duelo final.
 
 ## Áudio (estilo jogo retrô 8/16 bits, trilha e efeitos sintetizados próprios)
-- Trilha chiptune de batalha (≈140–150 BPM) em loop; versão intensa no duelo final; jingle de vitória e jingle
+- Ambiente de calabouço por baixo de tudo: crepitar das tochas, gotas pingando, eco leve nos golpes.
+- Trilha chiptune de batalha (≈140–150 BPM, tom menor, clima de masmorra) em loop; versão intensa no duelo final; jingle de vitória e jingle
   de "level up" quando o pergaminho abre.
 - Efeitos: passos discretos, dado rolando, um som por tipo de golpe (corte, flecha, fogo, gelo, trovão, raio,
   luz sagrada, sombra, cura), "whoosh" + estalo no cut-in, "hit" ao levar dano, sino no crítico, "plim" no erro,
@@ -240,7 +255,7 @@ Ajuste o ritmo dos turnos (nunca as regras) para a luta caber no tempo da batalh
 - Dados editáveis em JSON, para novos episódios trocando só os dados:
   número do episódio, seed, lutadores (nome, descrição, @autor — vazio = aleatório), ficha do campeão anterior,
   textos dos banners e @perfil.
-- Ficha de texto do episódio: seed, fichas dos 10 no nível 1 (todas as rolagens de 4d6, PV, CA, arma), ordem de
+- Ficha de texto do episódio: seed, fichas dos 16 no nível 1 (todas as rolagens de 4d6, PV, CA, arma), ordem de
   iniciativa, log do combate rolagem por rolagem e a FICHA NOVA DO CAMPEÃO (nível, rolagem de PV, poderes novos e
   história), pronta para ele voltar no próximo episódio.
 - No fim da ficha, o crédito obrigatório do SRD:
