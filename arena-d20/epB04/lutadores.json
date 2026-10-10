@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Thorin Brasaviva",
+    "classe": "BARBARO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Brann Pedranegra",
+    "classe": "PALADINO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Isolde Galhoverde",
+    "classe": "DRUIDA",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Pike Serrabrava",
+    "classe": "BRUXO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Faelan Sombralonga",
+    "classe": "LADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Yara Ferrocinza",
+    "classe": "GUERREIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Lyra Torrealta",
+    "classe": "MAGO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Edda Folhaseca",
+    "classe": "MONGE",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Nyx Martelo",
+    "classe": "BARDO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Runa Rubrafonte",
+    "classe": "FEITICEIRO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Grom Fogaréu",
+    "classe": "CLERIGO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Kael Lagofundo",
+    "classe": "PATRULHEIRO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Fenris Marévoa",
+    "classe": "MONGE",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Zara Pontavento",
+    "classe": "PALADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Soren Penhasco",
+    "classe": "DRUIDA",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Liora Ventolargo",
+    "classe": "LADINO",
+    "especie": "TIEFLING"
+  }
+]

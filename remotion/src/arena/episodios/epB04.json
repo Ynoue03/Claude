@@ -1,0 +1,108 @@
+{
+  "numero": 4,
+  "serie": "B",
+  "seed": "arena-d20-epB04-2",
+  "perfil": "@SuaArenaD20",
+  "lutadores": [],
+  "campeaoAnterior": {
+    "nome": "Yara Ferrocinza",
+    "especie": "GOLIAS",
+    "classe": "GUERREIRO",
+    "nivel": 2,
+    "atributos": {
+      "FOR": 18,
+      "CON": 16,
+      "DES": 14,
+      "SAB": 14,
+      "CAR": 14,
+      "INT": 9
+    },
+    "pvMax": 19,
+    "pvRolagens": [
+      "NV 1: d10 máximo = 10 +3 CON = 13 PV",
+      "NV 2: d10 = 3 +3 CON = +6 PV"
+    ],
+    "visual": {
+      "pele": "#b4aca0",
+      "cabelo": "#c8902e",
+      "estiloCabelo": "rabo",
+      "barba": "",
+      "olho": "#5a5a6a",
+      "marca": "tatuagem",
+      "roupa": "#4e5a6a",
+      "roupa2": "#c09a2e",
+      "couro": "#3e2e26",
+      "metal": "#c0a060",
+      "cabeca": "elmoChifres",
+      "pluma": "#3a5ac8",
+      "corpo": "placas",
+      "tabardo": false,
+      "ombreiras": true,
+      "capa": "#4e5a6a",
+      "peleOmbros": false,
+      "arma": "montante",
+      "escudo": "",
+      "brasao": "#c83a3a",
+      "orbe": "",
+      "aljava": false,
+      "mascara": false,
+      "magia": "#e8701e",
+      "altura": 1.1
+    },
+    "vitorias": 1,
+    "itens": [],
+    "autor": "",
+    "descricao": "",
+    "rolagens": [
+      [
+        6,
+        2,
+        5,
+        4
+      ],
+      [
+        1,
+        3,
+        3,
+        3
+      ],
+      [
+        1,
+        6,
+        5,
+        3
+      ],
+      [
+        5,
+        3,
+        3,
+        6
+      ],
+      [
+        6,
+        3,
+        5,
+        5
+      ],
+      [
+        4,
+        6,
+        3,
+        4
+      ]
+    ],
+    "antecedente": "+2 FOR / +1 CON"
+  },
+  "textos": {
+    "escolha": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta": "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!"
+  },
+  "audio": "arena/epB04.wav",
+  "versao": 3,
+  "focoCampeao": "forte",
+  "arena": "floresta",
+  "centro": "livre"
+}
