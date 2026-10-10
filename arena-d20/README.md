@@ -9,7 +9,7 @@ O campeão sobe de nível e termina com o pergaminho da ficha nova.
 > Ele **não segue a identidade "quiet luxury"** do `CLAUDE.md`: tem estética própria de jogo retrô, pedida no briefing
 > (`briefings/2026-10-10-arena-d20.md`).
 
-> **Tudo para recriar a arena do zero:** [`SuaArenaD20.md`](SuaArenaD20.md) (gerado do código por
+> **Todas as regras combinadas:** [`REGRAS.md`](REGRAS.md) · **Tudo para recriar a arena do zero:** [`SuaArenaD20.md`](SuaArenaD20.md) (gerado do código por
 > `node scripts/documento.ts`, dentro de `remotion/`).
 
 ## Gerar um episódio
