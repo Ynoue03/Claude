@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anime Pixel Arena — preview</title>
+<style>
+  :root { --fundo: #120f22; --texto: #eae6ff; --borda: #4a4070; }
+  body { margin: 0; background: var(--fundo); color: var(--texto); font: 14px system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; gap: 12px; padding: 16px; box-sizing: border-box; }
+  canvas { width: min(360px, 92vw); aspect-ratio: 9 / 16; image-rendering: pixelated; border: 2px solid var(--borda); background: #000; }
+  .barra { display: flex; gap: 8px; align-items: center; width: min(360px, 92vw); }
+  input[type=range] { flex: 1; }
+  button { background: var(--borda); color: var(--texto); border: 0; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+</style>
+</head>
+<body>
+  <canvas id="tela" width="1080" height="1920"></canvas>
+  <div class="barra"><button id="play">▶</button><input id="tempo" type="range" min="0" max="2699" value="0"><span id="rotulo">0.0 s</span></div>
+  <small>Sem áudio · o render final (com áudio) é feito por <code>node renderizar.mjs</code></small>
+<script type="module">
+  // Preview do mesmo motor do render (sirva a pasta: python3 -m http.server e abra /preview.html)
+  import { simular } from './src/sim.mjs';
+  import { criarRenderizador } from './src/render.mjs';
+  const dados = await (await fetch(new URLSearchParams(location.search).get('dados') ?? 'dados/episodio-01.json')).json();
+  const sim = simular(dados), r = criarRenderizador(dados, sim);
+  const ctx = document.getElementById('tela').getContext('2d');
+  const img = ctx.createImageData(1080, 1920);
+  const tempo = document.getElementById('tempo'), rotulo = document.getElementById('rotulo');
+  let f = 0, tocando = false;
+  const desenha = () => { img.data.set(new Uint8ClampedArray(r.quadro(f).buffer)); ctx.putImageData(img, 0, 0); tempo.value = f; rotulo.textContent = (f / 30).toFixed(1) + ' s'; };
+  tempo.oninput = () => { f = +tempo.value; desenha(); };
+  document.getElementById('play').onclick = (e) => { tocando = !tocando; e.target.textContent = tocando ? '❚❚' : '▶'; };
+  let ult = 0;
+  const loop = (t) => { if (tocando && t - ult >= 33) { ult = t; f = (f + 1) % 2700; desenha(); } requestAnimationFrame(loop); };
+  desenha(); requestAnimationFrame(loop);
+</script>
+</body>
+</html>

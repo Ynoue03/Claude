@@ -1,0 +1,300 @@
+{
+ "quadro": {
+  "w": 64,
+  "h": 72,
+  "pe": {
+   "x": 32,
+   "y": 68
+  }
+ },
+ "animacoes": [
+  {
+   "anim": "idle",
+   "vista": "baixo",
+   "ferido": false,
+   "linha": 0,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "baixo",
+   "ferido": false,
+   "linha": 0,
+   "coluna": 4,
+   "quadros": 6
+  },
+  {
+   "anim": "derrota",
+   "vista": "baixo",
+   "ferido": false,
+   "linha": 0,
+   "coluna": 10,
+   "quadros": 4
+  },
+  {
+   "anim": "vitoria",
+   "vista": "baixo",
+   "ferido": false,
+   "linha": 0,
+   "coluna": 14,
+   "quadros": 4
+  },
+  {
+   "anim": "idle",
+   "vista": "esquerda",
+   "ferido": false,
+   "linha": 1,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "esquerda",
+   "ferido": false,
+   "linha": 1,
+   "coluna": 4,
+   "quadros": 6
+  },
+  {
+   "anim": "ataque",
+   "vista": "esquerda",
+   "ferido": false,
+   "linha": 1,
+   "coluna": 10,
+   "quadros": 4
+  },
+  {
+   "anim": "especial",
+   "vista": "esquerda",
+   "ferido": false,
+   "linha": 1,
+   "coluna": 14,
+   "quadros": 8
+  },
+  {
+   "anim": "dano",
+   "vista": "esquerda",
+   "ferido": false,
+   "linha": 1,
+   "coluna": 22,
+   "quadros": 2
+  },
+  {
+   "anim": "derrota",
+   "vista": "esquerda",
+   "ferido": false,
+   "linha": 1,
+   "coluna": 24,
+   "quadros": 4
+  },
+  {
+   "anim": "idle",
+   "vista": "direita",
+   "ferido": false,
+   "linha": 2,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "direita",
+   "ferido": false,
+   "linha": 2,
+   "coluna": 4,
+   "quadros": 6
+  },
+  {
+   "anim": "ataque",
+   "vista": "direita",
+   "ferido": false,
+   "linha": 2,
+   "coluna": 10,
+   "quadros": 4
+  },
+  {
+   "anim": "especial",
+   "vista": "direita",
+   "ferido": false,
+   "linha": 2,
+   "coluna": 14,
+   "quadros": 8
+  },
+  {
+   "anim": "dano",
+   "vista": "direita",
+   "ferido": false,
+   "linha": 2,
+   "coluna": 22,
+   "quadros": 2
+  },
+  {
+   "anim": "derrota",
+   "vista": "direita",
+   "ferido": false,
+   "linha": 2,
+   "coluna": 24,
+   "quadros": 4
+  },
+  {
+   "anim": "idle",
+   "vista": "cima",
+   "ferido": false,
+   "linha": 3,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "cima",
+   "ferido": false,
+   "linha": 3,
+   "coluna": 4,
+   "quadros": 6
+  },
+  {
+   "anim": "idle",
+   "vista": "baixo",
+   "ferido": true,
+   "linha": 4,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "baixo",
+   "ferido": true,
+   "linha": 4,
+   "coluna": 4,
+   "quadros": 6
+  },
+  {
+   "anim": "derrota",
+   "vista": "baixo",
+   "ferido": true,
+   "linha": 4,
+   "coluna": 10,
+   "quadros": 4
+  },
+  {
+   "anim": "vitoria",
+   "vista": "baixo",
+   "ferido": true,
+   "linha": 4,
+   "coluna": 14,
+   "quadros": 4
+  },
+  {
+   "anim": "idle",
+   "vista": "esquerda",
+   "ferido": true,
+   "linha": 5,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "esquerda",
+   "ferido": true,
+   "linha": 5,
+   "coluna": 4,
+   "quadros": 6
+  },
+  {
+   "anim": "ataque",
+   "vista": "esquerda",
+   "ferido": true,
+   "linha": 5,
+   "coluna": 10,
+   "quadros": 4
+  },
+  {
+   "anim": "especial",
+   "vista": "esquerda",
+   "ferido": true,
+   "linha": 5,
+   "coluna": 14,
+   "quadros": 8
+  },
+  {
+   "anim": "dano",
+   "vista": "esquerda",
+   "ferido": true,
+   "linha": 5,
+   "coluna": 22,
+   "quadros": 2
+  },
+  {
+   "anim": "derrota",
+   "vista": "esquerda",
+   "ferido": true,
+   "linha": 5,
+   "coluna": 24,
+   "quadros": 4
+  },
+  {
+   "anim": "idle",
+   "vista": "direita",
+   "ferido": true,
+   "linha": 6,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "direita",
+   "ferido": true,
+   "linha": 6,
+   "coluna": 4,
+   "quadros": 6
+  },
+  {
+   "anim": "ataque",
+   "vista": "direita",
+   "ferido": true,
+   "linha": 6,
+   "coluna": 10,
+   "quadros": 4
+  },
+  {
+   "anim": "especial",
+   "vista": "direita",
+   "ferido": true,
+   "linha": 6,
+   "coluna": 14,
+   "quadros": 8
+  },
+  {
+   "anim": "dano",
+   "vista": "direita",
+   "ferido": true,
+   "linha": 6,
+   "coluna": 22,
+   "quadros": 2
+  },
+  {
+   "anim": "derrota",
+   "vista": "direita",
+   "ferido": true,
+   "linha": 6,
+   "coluna": 24,
+   "quadros": 4
+  },
+  {
+   "anim": "idle",
+   "vista": "cima",
+   "ferido": true,
+   "linha": 7,
+   "coluna": 0,
+   "quadros": 4
+  },
+  {
+   "anim": "andar",
+   "vista": "cima",
+   "ferido": true,
+   "linha": 7,
+   "coluna": 4,
+   "quadros": 6
+  }
+ ]
+}

@@ -1,0 +1,74 @@
+{
+  "titulo": "ANIME PIXEL ARENA",
+  "seed": 2026,
+  "vencedor": null,
+  "perfil": "@animepixelarena",
+  "banner": {
+    "escolha": "CHOOSE YOUR FIGHTER!",
+    "luta": "FIGHT!",
+    "derrota": "{NOME} DEFEATED!",
+    "duelo": "FINAL DUEL",
+    "vencedor": "WINNER: {NOME}!",
+    "cta": ["Quem ganha na próxima?", "Comente seu favorito!"]
+  },
+  "lutadores": [
+    { "id": "naruto", "nome": "NARUTO", "anime": "Naruto", "hp": 110, "vel": 1.0, "dano": 1.0,
+      "golpes": [
+        { "nome": "SHADOW CLONE", "cor": "#F28C28", "efeito": "clones", "alcance": 30, "poder": 11 },
+        { "nome": "RASENGAN", "cor": "#2F8FE8", "efeito": "rasengan", "alcance": 26, "poder": 20, "especial": true } ] },
+    { "id": "sasuke", "nome": "SASUKE", "anime": "Naruto", "hp": 100, "vel": 1.08, "dano": 1.05,
+      "golpes": [
+        { "nome": "AMATERASU", "cor": "#2A1838", "cor2": "#9B4DDB", "efeito": "amaterasu", "alcance": 80, "poder": 9, "status": "BRN" },
+        { "nome": "CHIDORI", "cor": "#E8C21E", "efeito": "chidori", "alcance": 26, "poder": 21, "especial": true, "status": "PAR" } ] },
+    { "id": "goku", "nome": "GOKU", "anime": "Dragon Ball", "hp": 115, "vel": 1.0, "dano": 1.0,
+      "golpes": [
+        { "nome": "KAMEHAMEHA", "cor": "#2F7FE8", "efeito": "feixe", "alcance": 90, "poder": 12 },
+        { "nome": "SPIRIT BOMB", "cor": "#68C8F5", "efeito": "genki", "alcance": 90, "poder": 22, "especial": true } ] },
+    { "id": "vegeta", "nome": "VEGETA", "anime": "Dragon Ball", "hp": 110, "vel": 1.02, "dano": 1.04,
+      "golpes": [
+        { "nome": "GALICK GUN", "cor": "#8E3FD0", "efeito": "feixe", "alcance": 90, "poder": 12 },
+        { "nome": "FINAL FLASH", "cor": "#E8C21E", "efeito": "feixeGrande", "alcance": 100, "poder": 22, "especial": true } ] },
+    { "id": "luffy", "nome": "LUFFY", "anime": "One Piece", "hp": 120, "vel": 1.0, "dano": 0.96,
+      "golpes": [
+        { "nome": "GOMU GOMU PISTOL", "cor": "#D9302F", "efeito": "pistol", "alcance": 70, "poder": 11 },
+        { "nome": "GEAR SECOND", "cor": "#EE6FA0", "efeito": "gear", "alcance": 30, "poder": 20, "especial": true } ] },
+    { "id": "zoro", "nome": "ZORO", "anime": "One Piece", "hp": 115, "vel": 0.98, "dano": 1.03,
+      "golpes": [
+        { "nome": "ONIGIRI", "cor": "#2F9B4A", "efeito": "cortes", "alcance": 30, "poder": 12 },
+        { "nome": "SANTORYU", "cor": "#E9ECF2", "corTexto": "#1C1B24", "efeito": "cortesGrandes", "alcance": 34, "poder": 21, "especial": true } ] },
+    { "id": "ichigo", "nome": "ICHIGO", "anime": "Bleach", "hp": 110, "vel": 1.02, "dano": 1.03,
+      "golpes": [
+        { "nome": "GETSUGA TENSHO", "cor": "#1C1822", "cor2": "#D8262B", "efeito": "getsuga", "alcance": 85, "poder": 13, "especial": true } ] },
+    { "id": "tanjiro", "nome": "TANJIRO", "anime": "Demon Slayer", "hp": 105, "vel": 1.04, "dano": 1.0,
+      "golpes": [
+        { "nome": "WATER BREATHING", "cor": "#4FB8E8", "efeito": "agua", "alcance": 34, "poder": 12 },
+        { "nome": "HINOKAMI KAGURA", "cor": "#F0601E", "efeito": "fogoCorte", "alcance": 36, "poder": 21, "especial": true, "status": "BRN" } ] },
+    { "id": "zenitsu", "nome": "ZENITSU", "anime": "Demon Slayer", "hp": 95, "vel": 1.12, "dano": 1.06,
+      "golpes": [
+        { "nome": "THUNDERCLAP FLASH", "cor": "#E8C21E", "efeito": "relampago", "alcance": 80, "poder": 14, "especial": true, "status": "PAR" } ] },
+    { "id": "gojo", "nome": "GOJO", "anime": "Jujutsu Kaisen", "hp": 105, "vel": 1.0, "dano": 1.06,
+      "golpes": [
+        { "nome": "INFINITY", "cor": "#2FC9D8", "efeito": "infinito", "alcance": 30, "poder": 8 },
+        { "nome": "HOLLOW PURPLE", "cor": "#8A3FD8", "efeito": "roxo", "alcance": 100, "poder": 23, "especial": true } ] },
+    { "id": "itadori", "nome": "ITADORI", "anime": "Jujutsu Kaisen", "hp": 115, "vel": 1.06, "dano": 0.98,
+      "golpes": [
+        { "nome": "DIVERGENT FIST", "cor": "#3A7FE0", "efeito": "divergente", "alcance": 26, "poder": 12 },
+        { "nome": "BLACK FLASH", "cor": "#16141C", "cor2": "#D8262B", "efeito": "blackflash", "alcance": 28, "poder": 21, "especial": true } ] },
+    { "id": "deku", "nome": "DEKU", "anime": "My Hero Academia", "hp": 110, "vel": 1.04, "dano": 1.0,
+      "golpes": [
+        { "nome": "DETROIT SMASH", "cor": "#3FA85E", "efeito": "smash", "alcance": 30, "poder": 14, "especial": true } ] },
+    { "id": "bakugo", "nome": "BAKUGO", "anime": "My Hero Academia", "hp": 105, "vel": 1.06, "dano": 1.04,
+      "golpes": [
+        { "nome": "HOWITZER IMPACT", "cor": "#F07C1E", "efeito": "explosao", "alcance": 34, "poder": 14, "especial": true } ] },
+    { "id": "todoroki", "nome": "TODOROKI", "anime": "My Hero Academia", "hp": 110, "vel": 0.98, "dano": 1.0,
+      "golpes": [
+        { "nome": "ICE WALL", "cor": "#3FCFE0", "efeito": "gelo", "alcance": 80, "poder": 10, "status": "FRZ" },
+        { "nome": "FLASHFIRE", "cor": "#D9302F", "efeito": "fogo", "alcance": 85, "poder": 20, "especial": true, "status": "BRN" } ] },
+    { "id": "gon", "nome": "GON", "anime": "Hunter x Hunter", "hp": 110, "vel": 1.04, "dano": 1.0,
+      "golpes": [
+        { "nome": "JAJANKEN", "cor": "#E8C21E", "efeito": "jajanken", "alcance": 28, "poder": 14, "especial": true } ] },
+    { "id": "killua", "nome": "KILLUA", "anime": "Hunter x Hunter", "hp": 100, "vel": 1.14, "dano": 1.02,
+      "golpes": [
+        { "nome": "GODSPEED", "cor": "#2F7FE8", "efeito": "godspeed", "alcance": 34, "poder": 14, "especial": true, "status": "PAR" } ] }
+  ]
+}

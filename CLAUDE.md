@@ -6,6 +6,7 @@ Este repositório produz vídeos curtos de motion graphics com o Claude, em dois
 | -------------- | ----------------------------- | ------------------------------------------------------------------------ |
 | `remotion/`    | Remotion (React)              | **Templates em série** — mesmo vídeo, dados diferentes (treinos, receitas) |
 | `hyperframes/` | HyperFrames (HTML + GSAP)     | **Peças únicas e rápidas** — motion graphic de 8–15 s, dica, chamada, legenda em vídeo gravado |
+| `pixel-arena/` | Motor próprio (JS puro, pixel art) | **Série "ANIME PIXEL ARENA"** — battle royale automático de 90 s; novo episódio = novo JSON em `dados/` (ver `pixel-arena/README.md`) |
 
 Antes de mexer em um projeto, entre na pasta dele e use as skills instaladas lá
 (`remotion-best-practices` / `hyperframes`). Elas têm as regras técnicas de cada motor.
@@ -14,7 +15,7 @@ Antes de mexer em um projeto, entre na pasta dele e use as skills instaladas lá
 presets por nicho, catálogos de transições e efeitos sonoros, plano de edição e checklist de entrega.
 Não produza sem briefing e plano aprovados.
 
-## Identidade visual (vale para os dois motores)
+## Identidade visual (vale para `remotion/` e `hyperframes/`; `pixel-arena/` tem identidade retrô própria)
 
 **Clima:** calmo, limpo, editorial, "clean girl / quiet luxury". Nada de neon, glitch, cortes agressivos ou fontes pesadas.
 
@@ -90,6 +91,9 @@ python3 scripts/analisar-modelo.py modelos/referencia.mp4
 # Entrega (volume padrão das redes)
 scripts/masterizar.sh remotion/out/treino.mp4      # gera treino-master.mp4
 python3 audio/gerar.py                              # regenera trilhas e efeitos
+
+# Pixel Arena (render completo já sai masterizado)
+cd pixel-arena && node renderizar.mjs dados/episodio-01.json && node exportar-sprites.mjs
 
 # HyperFrames
 cd hyperframes
