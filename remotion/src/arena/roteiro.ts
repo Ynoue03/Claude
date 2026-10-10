@@ -8,7 +8,7 @@ import { CLASSES, ESPECIES, espacos, proficiencia } from "./regras.ts";
 import { ITEM_IDS, podeUsar, tipoDe } from "./itens.ts";
 import { CHEFES, chefeDoEpisodio } from "./chefes.ts";
 import type { ItemId } from "./itens.ts";
-import type { TipoDano } from "./regras.ts";
+import type { TipoDano, Poder } from "./regras.ts";
 
 export const FPS = 30;
 export const V = {
@@ -352,7 +352,7 @@ export const criarRoteiro = (ep0: Episodio): Roteiro => {
   const itensFinais = itemBau ? [...ev.itens, itemBau] : [...ev.itens];
   subida.ficha.itens = itensFinais;
   const historia = chefeVenceu ? historiaChefe(campeao, sim) : escreverHistoria(campeao, sim, subida, ep.arena, lutadores);
-  const pergaminho = montarPergaminho(campeao, subida, sim, fases, itensFinais, itemBau);
+  const pergaminho = montarPergaminho(campeao, subida, sim, fases, itensFinais, itemBau, ep.versao);
 
   const r: Roteiro = {
     ep,
@@ -498,7 +498,7 @@ export type ItemPergaminho = {
   novo?: boolean;
   desc?: string;
 };
-const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao, fases: Fases, itensC: ItemId[], itemBau: ItemId | null): ItemPergaminho[] => {
+const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao, fases: Fases, itensC: ItemId[], itemBau: ItemId | null, versao = 1): ItemPergaminho[] => {
   if (c.boss) return pergaminhoChefe(c, fases);
   const itens: ItemPergaminho[] = [];
   let v = fases.pergaminho + 34; // depois de desenrolar (1 s)
@@ -539,7 +539,10 @@ const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao, fases: F
   // poderes: antigos primeiro, os novos por último (verde, NOVO!)
   const antigos = poderesAte({ classe: c.classe, especie: c.especie, nivel: sub.de });
   v += 12;
-  for (const p of antigos.slice(0, 7)) itens.push({ v: passo(5), tipo: "poder", texto: p.nome });
+  // versão 3+: sem os poderes que já foram superados (Fúria 2× quando tem a 4×, Furtivo 1d6 quando tem 3d6…) nem o
+  // Aumento de Atributo, e os 8 mais recentes — em nível alto os primeiros 7 escondiam justamente os mais fortes
+  const mostrar = versao >= 3 ? ultimosPoderes(antigos, 8) : antigos.slice(0, 7);
+  for (const p of mostrar) itens.push({ v: passo(5), tipo: "poder", texto: p.nome });
   v += 8;
   for (const p of sub.poderesNovos) itens.push({ v: passo(22), tipo: "poder", texto: p.nome, novo: true, desc: p.desc });
   // itens mágicos (o do baú por último, como NOVO!)
@@ -569,6 +572,16 @@ const subidaVazia = (l: Lutador): SubidaNivel => ({
 const historiaChefe = (c: Lutador, sim: Simulacao) => {
   const st = sim.stats[c.id];
   return `Das profundezas da caverna, o ${c.nome} esmagou ${st.abates} heróis e ficou sozinho na arena. Nenhum herói saiu vivo desta vez.`;
+};
+const basePoder = (nome: string) =>
+  nome
+    .replace(/^Magias de \dº círculo$/, "Magias")
+    .replace(/\s*\(?(\d+×|\d*d\d+)\)?$/, "")
+    .trim();
+const ultimosPoderes = (lista: Poder[], n: number): Poder[] => {
+  const sem = lista.filter((p) => p.nome !== "Aumento de Atributo");
+  const unicos = sem.filter((p, i) => !sem.slice(i + 1).some((q) => basePoder(q.nome) === basePoder(p.nome)));
+  return unicos.slice(-n);
 };
 const pergaminhoChefe = (c: Lutador, fases: Fases): ItemPergaminho[] => {
   const itens: ItemPergaminho[] = [];
