@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Hale Corvalho",
+    "classe": "FEITICEIRO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Ulric Cinzafria",
+    "classe": "BARBARO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Talia Águaclara",
+    "classe": "MONGE",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Marek Trovão",
+    "classe": "CLERIGO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Bruk Pedraforte",
+    "classe": "PATRULHEIRO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Grom Rubrafonte",
+    "classe": "PALADINO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Ivo Ouroverde",
+    "classe": "LADINO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Wren Lunasombra",
+    "classe": "GUERREIRO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Vesna Gelomanto",
+    "classe": "MAGO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Quill Dentelobo",
+    "classe": "BRUXO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Seraphine Ventobravo",
+    "classe": "DRUIDA",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Juno Estrelagris",
+    "classe": "BARDO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Tamsin Valeclaro",
+    "classe": "DRUIDA",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Ash Brumaclara",
+    "classe": "BARDO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Sable Espinhadouro",
+    "classe": "FEITICEIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Doran Solposto",
+    "classe": "MAGO",
+    "especie": "TIEFLING"
+  }
+]
