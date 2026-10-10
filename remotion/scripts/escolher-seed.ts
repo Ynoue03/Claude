@@ -8,12 +8,13 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { criarRoteiro } from "../src/arena/roteiro.ts";
+import { codigoEp } from "../src/arena/personagem.ts";
 
 export const MIN_TURNOS = 35;
 const raiz = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const arq = resolve(raiz, process.argv[2] ?? "src/arena/episodios/ep01.json");
 const ep = JSON.parse(readFileSync(arq, "utf8"));
-const nn = String(ep.numero).padStart(2, "0");
+const nn = codigoEp(ep);
 for (let n = 1; n <= 200; n++) {
   const seed = `arena-d20-ep${nn}${n === 1 ? "" : `-${n}`}`;
   const r = criarRoteiro({ ...ep, seed });

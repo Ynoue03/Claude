@@ -8,7 +8,8 @@
 set -euo pipefail
 RAIZ="$(cd "$(dirname "$0")/.." && pwd)"
 EP="$(cd "$(dirname "${1:-$RAIZ/remotion/src/arena/episodios/ep01.json}")" && pwd)/$(basename "${1:-ep01.json}")"
-NN=$(python3 -c "import json;print(str(json.load(open('$EP'))['numero']).zfill(2))")
+# código do episódio: "07" na ordem A, "B01" nas outras (campo "serie" do JSON)
+NN=$(python3 -c "import json;e=json.load(open('$EP'));s=(e.get('serie') or 'A').upper();print(('' if s=='A' else s)+str(e['numero']).zfill(2))")
 CHROME_ARG=()
 [ -n "${CHROME:-}" ] && CHROME_ARG=(--browser-executable="$CHROME")
 

@@ -230,6 +230,14 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 - **Regra nova nunca muda episódio antigo:** tudo o que é novo fica atrás da `versao` ou de um campo novo do JSON, e
   os episódios antigos continuam gerando a mesma luta.
 
+## 18b. Ordens da série
+
+- A série tem **ordens**: tudo do episódio 1 ao 12 é a **ordem A**. A **ordem B** recomeça do episódio 1, com 16
+  lutadores novos no nível 1, sem campeão e com as regras atuais (versão 3, foco "forte", centro livre).
+- No vídeo aparece "ARENA D20 B #1"; os arquivos usam o código `B01` (`episodios/epB01.json`, `arena-d20/epB01/`).
+- Os nomes continuam **sem repetir entre as ordens** (a ordem A usa a sequência a partir do episódio 1, a B a partir do
+  61, a C do 121…). Baú (múltiplos de 5) e chefes (múltiplos de 10) contam pelo número do episódio dentro da ordem.
+
 ## 19. Versões das regras
 
 | Versão | O que liga | Episódios |
@@ -284,3 +292,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 17 | Minotauro parecido com 2 modelos de pixel art | Minotauro redesenhado do zero no mesmo estilo (curvado, musculoso, chifres longos, machado de duas lâminas, cinto com rebites, tufos de pelo); quedas novas dos chefes; folhas de sprites em `arena-d20/chefes/` |
 | 18 | Episódio 11 | ep 11 na floresta: Korrin vence de novo (nível 7, 6 vitórias); o pergaminho (versão 3) passa a mostrar os 8 poderes antigos mais recentes, sem os superados |
 | 19 | Aumentar o foco no campeão; ep 12; descrição dos itens no pergaminho | `focoCampeao: "forte"` (pelos PV do campeão); itens com o poder escrito no pergaminho; ep 12 no calabouço: Korrin cai na 1ª rodada e o Orrin Ventolargo vence |
+| 20 | O ep 12 é da ordem A; criar o ep 1 da ordem B | campo `serie`; ARENA D20 B #1 no calabouço, campeão Grom Rubrafonte |

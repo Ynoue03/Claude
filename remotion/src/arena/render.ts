@@ -20,6 +20,7 @@ import type { ItemId } from "./itens.ts";
 import { novoCanvas } from "./pixel.ts";
 import { CLASSES, ESPECIES } from "./regras.ts";
 import type { Lutador } from "./personagem.ts";
+import { rotuloEp } from "./personagem.ts";
 
 type Ctx = CanvasRenderingContext2D;
 const clamp = (x: number, a: number, b: number) => Math.max(a, Math.min(b, x));
@@ -730,7 +731,7 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
   ui.fillRect(28, y0 + 91, W - 56, 1);
   ui.fillStyle = "#8a6a3a";
   ui.fillRect(28, y0 + 1, W - 56, 1);
-  texto(ui, `ARENA D20 #${r.ep.numero}`, 34, y0 + 5, { cor: DOURADO, contorno: TINTA, escala: 2 });
+  texto(ui, `ARENA D20 ${rotuloEp(r.ep)}`, 34, y0 + 5, { cor: DOURADO, contorno: TINTA, escala: 2 });
   const vivos = r.morte.filter((m) => s < m).length;
   const iniciados = r.turnos.filter((t) => s >= t.t0);
   const rodada = v < V.batalha ? 0 : Math.max(1, ...iniciados.map((t) => t.rodada));
@@ -1369,7 +1370,7 @@ const cenaBau = (ui: Ctx, r: Roteiro, t: number) => {
   ui.fillRect(0, 0, W, H);
   ui.globalAlpha = fade;
   texto(ui, "BAÚ DO CAMPEÃO", W / 2, 96, { cor: DOURADO, contorno: TINTA, escala: 2, alinhar: "centro" });
-  texto(ui, `EPISÓDIO ${r.ep.numero}`, W / 2, 116, { cor: "#c8c0b8", contorno: TINTA, alinhar: "centro" });
+  texto(ui, `EPISÓDIO ${rotuloEp(r.ep).replace("#", "")}`, W / 2, 116, { cor: "#c8c0b8", contorno: TINTA, alinhar: "centro" });
   // o campeão (2×) ao lado do baú
   const sp = quadro(l, { anim: t < 34 ? "andar" : t < 50 ? "ataque" : "vitoria", q: t < 34 ? Math.floor(t / 3) % 6 : t < 50 ? Math.min(3, Math.floor((t - 34) / 4)) : Math.floor(t / 6) % 4, dir: t < 50 ? "E" : "S", expr: t < 46 ? "foco" : "vitoria", rasgado: false });
   const px = 64 + Math.min(34, t) * 1.2;

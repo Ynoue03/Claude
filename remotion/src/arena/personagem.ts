@@ -459,6 +459,7 @@ export type FichaCampeao = {
 
 export type Episodio = {
   numero: number;
+  serie?: string; // ordem da série: "A" (padrão, eps. 1–12…) ou "B", "C"… — cada ordem recomeça do episódio 1
   seed: string;
   perfil: string;
   lutadores: Pedido[]; // até 16; vazio = aleatório
@@ -494,7 +495,7 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
   const contEspecie: Record<string, number> = {};
   const usados = new Set<string>();
   // campeão que veio de antes de existir sobrenome ganha um (fixo e único) na primeira luta da versão 2
-  const nomeCampeao = camp ? ((ep.versao ?? 1) >= 2 && !camp.nome.includes(" ") ? `${camp.nome} ${nomeCompleto(TOTAL_NOMES() - 1 - ep.numero * 16).split(" ")[1]}` : camp.nome) : "";
+  const nomeCampeao = camp ? ((ep.versao ?? 1) >= 2 && !camp.nome.includes(" ") ? `${camp.nome} ${nomeCompleto(TOTAL_NOMES() - 1 - numeroGlobal(ep) * 16).split(" ")[1]}` : camp.nome) : "";
   if (camp) {
     contClasse[camp.classe] = 1;
     contEspecie[camp.especie] = 1;
@@ -528,7 +529,7 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
     }
     contEspecie[especie] = (contEspecie[especie] ?? 0) + 1;
     let nome = ped.nome?.trim();
-    if (!nome && (ep.versao ?? 1) >= 2) nome = nomeLivre(ep.numero, i, usados);
+    if (!nome && (ep.versao ?? 1) >= 2) nome = nomeLivre(numeroGlobal(ep), i, usados);
     else if (!nome) {
       const livres = NOMES.filter((n) => !usados.has(n));
       nome = rng.pick(livres);
@@ -633,6 +634,15 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
   return { lutadores, rng };
 };
 
+// Ordens da série: cada uma recomeça do episódio 1, mas os nomes continuam únicos entre as ordens — a ordem A usa a
+// sequência a partir do episódio 1, a B a partir do 61, a C do 121… (60 episódios × 16 nomes por ordem).
+export const EPISODIOS_POR_ORDEM = 60;
+export const ordemDe = (ep: { serie?: string }) => (ep.serie ?? "A").toUpperCase();
+export const numeroGlobal = (ep: { numero: number; serie?: string }) => (ordemDe(ep).charCodeAt(0) - 65) * EPISODIOS_POR_ORDEM + ep.numero;
+// "07" na ordem A (como sempre foi) e "B01" nas outras: nome dos arquivos do episódio
+export const codigoEp = (ep: { numero: number; serie?: string }) => `${ordemDe(ep) === "A" ? "" : ordemDe(ep)}${String(ep.numero).padStart(2, "0")}`;
+// "#7" na ordem A e "B #1" nas outras: como o episódio aparece no vídeo
+export const rotuloEp = (ep: { numero: number; serie?: string }) => `${ordemDe(ep) === "A" ? "" : `${ordemDe(ep)} `}#${ep.numero}`;
 // Nome e sobrenome do lutador `i` do episódio `numero`: sai de uma sequência única para a série inteira,
 // então nunca se repete entre episódios. Também não repete o primeiro nome de ninguém da mesma luta.
 const nomeLivre = (numero: number, i: number, usados: Set<string>): string => {

@@ -8,7 +8,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { criarRoteiro, V, FPS, video, motivoSubidas } from "../src/arena/roteiro.ts";
-import { fmt, poderesAte } from "../src/arena/personagem.ts";
+import { fmt, poderesAte, codigoEp, rotuloEp } from "../src/arena/personagem.ts";
 import type { Episodio } from "../src/arena/personagem.ts";
 import {
   CLASSES,
@@ -29,7 +29,7 @@ const TIPO: Record<string, string> = {
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..");
 const arq = process.argv[2] ?? "src/arena/episodios/ep01.json";
 const ep: Episodio = JSON.parse(readFileSync(resolve(raiz, arq), "utf8"));
-const nn = String(ep.numero).padStart(2, "0");
+const nn = codigoEp(ep);
 const r = criarRoteiro(ep);
 const L = r.lutadores;
 
@@ -60,7 +60,7 @@ const seg = (v: number) =>
 const linhas: string[] = [];
 const P = (s = "") => linhas.push(s);
 const campeao = L[r.vencedor];
-P(`# ARENA D20 #${ep.numero} — ficha do episódio`);
+P(`# ARENA D20 ${rotuloEp(ep)} — ficha do episódio`);
 P();
 P(`- **Seed:** \`${ep.seed}\` (mesma seed = mesma luta, rolagem por rolagem)`);
 P(
@@ -251,7 +251,7 @@ writeFileSync(
   ) + "\n",
 );
 console.log(
-  `✓ ARENA D20 #${ep.numero} · seed ${ep.seed} · ${campeao.boss ? "vitória do chefe" : "campeão"} ${campeao.nome}${campeao.boss ? "" : ` (${CLASSES[campeao.classe].nome})`} · ${r.sim.turnos.length} turnos`,
+  `✓ ARENA D20 ${rotuloEp(ep)} · seed ${ep.seed} · ${campeao.boss ? "vitória do chefe" : "campeão"} ${campeao.nome}${campeao.boss ? "" : ` (${CLASSES[campeao.classe].nome})`} · ${r.sim.turnos.length} turnos`,
 );
 if (r.avisos.length) console.log("  avisos:", r.avisos.join(" "));
 console.log(`  ${join(pasta, "FICHA.md")}`);

@@ -41,6 +41,7 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | Campo | O que é |
 | --- | --- |
 | `numero` | número do episódio (`ARENA D20 #N`) |
+| `serie` | ordem da série: sem o campo = **ordem A** (eps. 1–12…); `"B"`, `"C"`… recomeçam do episódio 1 sem campeão (`ARENA D20 B #1`). Arquivos com o código `B01` (`episodios/epB01.json` → `arena-d20/epB01/`, `out/arena-epB01-master.mp4`); os nomes continuam únicos entre as ordens (A usa a sequência do episódio 1, B do 61, C do 121…) |
 | `seed` | semente de todas as rolagens. Deixe `""` e o `scripts/arena.sh` escolhe sozinho (`remotion/scripts/escolher-seed.ts`): a primeira de `arena-d20-epNN`, `-2`, `-3`… com **pelo menos 35 turnos**, duelo final de 3 a 8 turnos e sem compressão — só ritmo, nunca o vencedor. Outra seed = outra luta (o vencedor **não** é escolhido: troque a seed para outro resultado) |
 | `perfil` | @ do CTA |
 | `lutadores` | até 16 itens `{ "nome", "descricao", "autor" }` vindos dos comentários. Vazio = aleatório. Classe, espécie, cores, cabelo e arma saem da descrição; atributos, PV e golpes continuam nos dados |

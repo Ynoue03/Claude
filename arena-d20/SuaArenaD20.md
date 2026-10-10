@@ -46,6 +46,7 @@ do próximo); nenhuma regra muda por causa do tempo.
 | Campo | O que é |
 | --- | --- |
 | `numero` | número do episódio (ARENA D20 #N) |
+| `serie` | ordem: sem o campo = A; `"B"`, `"C"`… recomeçam do 1 sem campeão (ARENA D20 B #1); arquivos com código `B01`; nomes únicos entre as ordens (A = sequência do ep. 1, B = do 61, C = do 121) |
 | `seed` | texto da seed; `""` = escolhida automaticamente pelo ritmo |
 | `perfil` | @ do CTA (`@SuaArenaD20`) |
 | `lutadores` | até 16 `{ nome, descricao, autor }` dos comentários; vazio = aleatórios. Classe, espécie, cores, cabelo e arma saem da descrição |
