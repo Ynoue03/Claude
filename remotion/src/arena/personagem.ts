@@ -472,6 +472,7 @@ export type Episodio = {
   // "auto" = cresce com o nível do campeão (2,5 por nível acima do 2)
   focoCampeao?: number | "auto";
   arena?: "calabouco" | "floresta"; // cenário (padrão: calabouço)
+  centro?: "altar" | "livre"; // "livre" = sem tablado de degraus e sem pedra d20 no meio (nem obstáculo)
 };
 
 export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng } => {

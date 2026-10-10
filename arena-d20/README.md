@@ -46,6 +46,7 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `versao` | `2` (padrão para episódios novos): nome **e sobrenome** que nunca se repetem na série, leve foco dos lutadores no campeão e **+1 nível na hora para quem derrubar o campeão** (vencendo, soma +2). Sem o campo = regras dos episódios 1–3 (reproduzem a mesma luta de antes) |
 | `focoCampeao` | preferência dos lutadores por atacar o campeão (versão 2+): `"auto"` (recomendado) cresce com o nível do campeão — `2,5 × (nível − 2)`, calibrado para ele vencer ~50% (30 lutas por nível com a Yara nos níveis 2–5); ou um número fixo: `1` = leve (padrão), `5` = forte |
 | `arena` | `"calabouco"` (padrão) ou `"floresta"` — clareira ao entardecer com lanternas, fogueiras, lagos e vaga-lumes; muda também o som ambiente |
+| `centro` | `"livre"` (recomendado para episódios novos): sem tablado de degraus e sem pedra d20 no meio, e sem obstáculo na luta. Sem o campo = com o tablado e o altar (episódios 1–6 reproduzem igual) |
 | `audio` | WAV em `remotion/public/` (`arena/epNN.wav`); vazio = sem áudio |
 
 Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo ruivo com cajado e capa verde", "autor": "@fulana" }`.

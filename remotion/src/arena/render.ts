@@ -271,7 +271,8 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha = 1;
   const arena = r.ep.arena ?? "calabouco";
-  ctx.drawImage(fundo(arena), 0, 0);
+  const comAltar = r.ep.centro !== "livre";
+  ctx.drawImage(fundo(arena, comAltar), 0, 0);
   const luzes: Luz[] = luzesTochas(s);
   const estados = r.lutadores.map((_, i) => estado(r, i, s, v));
 
@@ -324,7 +325,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     tmpLuzes.push(...dummy);
   }
   aplicarLuz(ctx, [...luzes, ...fxLuzes, ...tmpLuzes], AMBIENTE[arena]);
-  desenharAmbiente(ctx, s, arena);
+  desenharAmbiente(ctx, s, arena, comAltar);
 
   // caveirinhas de quem caiu
   r.morte.forEach((m, i) => {

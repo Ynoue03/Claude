@@ -13,6 +13,8 @@ export const CONTATO = 22;
 export const SEPARACAO = 18;
 export const LIMITES = { x0: 46, x1: 314, y0: 200, y1: 520 };
 export const ALTAR = { x: 180, y: 352, r: 24 };
+// Arenas com centro livre (sem tablado e sem pedra d20) não têm obstáculo; ligado/desligado no início de cada simulação.
+let altarAtivo = true;
 
 export type P = { x: number; y: number };
 const dist = (a: P, b: P) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -20,7 +22,7 @@ const lerp = (a: P, b: P, t: number): P => ({ x: a.x + (b.x - a.x) * t, y: a.y +
 const clampP = (p: P): P => {
   const q = { x: Math.max(LIMITES.x0, Math.min(LIMITES.x1, p.x)), y: Math.max(LIMITES.y0, Math.min(LIMITES.y1, p.y)) };
   const d = dist(q, ALTAR);
-  if (d < ALTAR.r + 8) {
+  if (altarAtivo && d < ALTAR.r + 8) {
     const a = Math.atan2(q.y - ALTAR.y, q.x - ALTAR.x || 0.01);
     q.x = ALTAR.x + Math.cos(a) * (ALTAR.r + 8);
     q.y = ALTAR.y + Math.sin(a) * (ALTAR.r + 8);
@@ -31,6 +33,7 @@ const compPath = (pts: P[]) => pts.slice(1).reduce((s, p, i) => s + dist(pts[i],
 
 // Caminho reto, desviando do altar central se precisar.
 const caminho = (a: P, b: P): P[] => {
+  if (!altarAtivo) return [a, b];
   const dx = b.x - a.x,
     dy = b.y - a.y;
   const L2 = dx * dx + dy * dy || 1;
@@ -201,7 +204,8 @@ type Est = {
 // foco 0 / 2,5 / 5 / 7,5 → cresce 2,5 por nível acima do 2.
 export const focoPorNivel = (nivel: number) => Math.max(0, 2.5 * (nivel - 2));
 
-export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number | "auto" } = {}): Simulacao => {
+export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number | "auto"; centro?: "altar" | "livre" } = {}): Simulacao => {
+  altarAtivo = opcoes.centro !== "livre";
   const versao = opcoes.versao ?? 1;
   // força da preferência por atacar o campeão: 1 = leve (padrão da versão 2); 0 = nenhuma;
   // "auto" = cresce com o nível do campeão (calibrado para ele vencer ~50% das lutas)
@@ -253,7 +257,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     return e;
   });
 
-  // posições iniciais: círculo em volta do tablado
+  // posições iniciais: círculo em volta do centro
   const N = E.length;
   const posIniciais: P[] = E.map((_, i) => {
     const a = -Math.PI / 2 + (i / N) * Math.PI * 2;
@@ -729,7 +733,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     }
     return melhor;
   };
-  const livre = (a: Est, p: P) => E.every((o) => !o.vivo || o.id === a.id || dist(o.pos, p) >= SEPARACAO) && dist(p, ALTAR) > ALTAR.r + 6;
+  const livre = (a: Est, p: P) => E.every((o) => !o.vivo || o.id === a.id || dist(o.pos, p) >= SEPARACAO) && (!altarAtivo || dist(p, ALTAR) > ALTAR.r + 6);
   const pontoContato = (a: Est, alvo: Est): P | undefined => {
     let best: P | undefined;
     let bd = Infinity;
