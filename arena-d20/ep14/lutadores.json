@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Hale Lâminarrubra",
+    "classe": "GUERREIRO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Ulric Brasaviva",
+    "classe": "MAGO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Pike Valeclaro",
+    "classe": "BARBARO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Talia Pedranegra",
+    "classe": "BRUXO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Marek Galhoverde",
+    "classe": "PALADINO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Bruk Serrabrava",
+    "classe": "DRUIDA",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Ivo Sombralonga",
+    "classe": "LADINO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Wren Torrealta",
+    "classe": "MONGE",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Vesna Folhaseca",
+    "classe": "CLERIGO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Quill Martelo",
+    "classe": "BARDO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Seraphine Rubrafonte",
+    "classe": "FEITICEIRO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Juno Fogaréu",
+    "classe": "PATRULHEIRO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Tamsin Lagofundo",
+    "classe": "LADINO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Ash Marévoa",
+    "classe": "MONGE",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Sable Pontavento",
+    "classe": "PALADINO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Doran Penhasco",
+    "classe": "CLERIGO",
+    "especie": "ANAO"
+  }
+]

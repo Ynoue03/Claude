@@ -1,0 +1,110 @@
+{
+  "numero": 14,
+  "seed": "arena-d20-ep14",
+  "perfil": "@SuaArenaD20",
+  "lutadores": [],
+  "campeaoAnterior": {
+    "nome": "Pike Valeclaro",
+    "especie": "HUMANO",
+    "classe": "BARBARO",
+    "nivel": 3,
+    "atributos": {
+      "FOR": 19,
+      "CON": 16,
+      "DES": 14,
+      "SAB": 14,
+      "CAR": 13,
+      "INT": 8
+    },
+    "pvMax": 32,
+    "pvRolagens": [
+      "NV 1: d12 máximo = 12 +3 CON = 15 PV",
+      "NV 2: d12 = 2 +3 CON = +5 PV",
+      "NV 3: d12 = 9 +3 CON = +12 PV"
+    ],
+    "visual": {
+      "pele": "#8e5a3a",
+      "cabelo": "#2a1e18",
+      "estiloCabelo": "rabo",
+      "barba": "",
+      "olho": "#8a5ab0",
+      "marca": "pintura",
+      "roupa": "#2c4a9a",
+      "roupa2": "#4e5a6a",
+      "couro": "#6a4428",
+      "metal": "#a8b0bc",
+      "cabeca": "elmoChifres",
+      "pluma": "",
+      "corpo": "colete",
+      "tabardo": false,
+      "ombreiras": false,
+      "capa": "",
+      "peleOmbros": true,
+      "arma": "machadoGrande",
+      "escudo": "",
+      "brasao": "#3a5ac8",
+      "orbe": "",
+      "aljava": false,
+      "mascara": false,
+      "magia": "#e8701e",
+      "altura": 1
+    },
+    "vitorias": 1,
+    "itens": [
+      "botasFirmes"
+    ],
+    "autor": "",
+    "descricao": "",
+    "rolagens": [
+      [
+        4,
+        2,
+        1,
+        2
+      ],
+      [
+        3,
+        5,
+        4,
+        4
+      ],
+      [
+        5,
+        3,
+        6,
+        2
+      ],
+      [
+        5,
+        4,
+        3,
+        6
+      ],
+      [
+        5,
+        6,
+        3,
+        2
+      ],
+      [
+        6,
+        5,
+        6,
+        3
+      ]
+    ],
+    "antecedente": "+2 FOR / +1 CON"
+  },
+  "textos": {
+    "escolha": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta": "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!"
+  },
+  "audio": "arena/ep14.wav",
+  "versao": 3,
+  "focoCampeao": "forte",
+  "centro": "livre",
+  "arena": "calabouco"
+}
