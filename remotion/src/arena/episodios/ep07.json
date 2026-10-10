@@ -1,0 +1,106 @@
+{
+  "numero": 7,
+  "seed": "arena-d20-ep07",
+  "perfil": "@SuaArenaD20",
+  "lutadores": [],
+  "campeaoAnterior": {
+    "nome": "Korrin Mantonegro",
+    "especie": "HUMANO",
+    "classe": "BARBARO",
+    "nivel": 2,
+    "atributos": {
+      "FOR": 19,
+      "CON": 17,
+      "DES": 15,
+      "SAB": 13,
+      "CAR": 13,
+      "INT": 12
+    },
+    "pvMax": 29,
+    "pvRolagens": [
+      "NV 1: d12 máximo = 12 +3 CON = 15 PV",
+      "NV 2: d12 = 11 +3 CON = +14 PV"
+    ],
+    "visual": {
+      "pele": "#e0a878",
+      "cabelo": "#5a3420",
+      "estiloCabelo": "curto",
+      "barba": "",
+      "olho": "#3a6a9a",
+      "marca": "pintura",
+      "roupa": "#c09a2e",
+      "roupa2": "#5e3488",
+      "couro": "#6a4428",
+      "metal": "#a8b0bc",
+      "cabeca": "nada",
+      "pluma": "",
+      "corpo": "colete",
+      "tabardo": false,
+      "ombreiras": false,
+      "capa": "",
+      "peleOmbros": true,
+      "arma": "machadoGrande",
+      "escudo": "",
+      "brasao": "#c83a3a",
+      "orbe": "",
+      "aljava": false,
+      "mascara": false,
+      "magia": "#e8701e",
+      "altura": 1
+    },
+    "vitorias": 1,
+    "autor": "",
+    "descricao": "",
+    "rolagens": [
+      [
+        6,
+        2,
+        1,
+        5
+      ],
+      [
+        2,
+        6,
+        5,
+        6
+      ],
+      [
+        6,
+        3,
+        2,
+        6
+      ],
+      [
+        5,
+        6,
+        3,
+        5
+      ],
+      [
+        4,
+        2,
+        6,
+        1
+      ],
+      [
+        5,
+        3,
+        5,
+        1
+      ]
+    ],
+    "antecedente": "+2 FOR / +1 CON"
+  },
+  "textos": {
+    "escolha": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta": "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!"
+  },
+  "audio": "arena/ep07.wav",
+  "versao": 2,
+  "focoCampeao": "auto",
+  "arena": "floresta",
+  "centro": "livre"
+}
