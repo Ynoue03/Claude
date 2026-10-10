@@ -1,0 +1,28 @@
+{
+  "semente": 1693993419,
+  "titulo": "ARENA D20 #1",
+  "perfil": "@arenad20",
+  "lutadores": [
+    {
+      "nome": "Bruna",
+      "descricao": "elfa ladina de capuz verde e cabelo ruivo",
+      "autor": "@exemplo1"
+    },
+    {
+      "nome": "Grumak",
+      "descricao": "meio-orc bárbaro com machado e cabelo moicano preto",
+      "autor": "@exemplo2"
+    },
+    {
+      "nome": "Seraphina",
+      "descricao": "clériga humana de manto branco com detalhes dourados",
+      "autor": "@exemplo3"
+    },
+    {
+      "nome": "Ignis",
+      "descricao": "draconato feiticeiro vermelho de manto preto",
+      "autor": "@exemplo4"
+    }
+  ],
+  "audio": "mix/batalha-001.wav"
+}

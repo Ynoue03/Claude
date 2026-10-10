@@ -1,0 +1,26 @@
+[
+  {
+    "nome": "Bruna",
+    "descricao": "elfa ladina de capuz verde e cabelo ruivo",
+    "autor": "@exemplo1",
+    "usado": "batalha-001"
+  },
+  {
+    "nome": "Grumak",
+    "descricao": "meio-orc bárbaro com machado e cabelo moicano preto",
+    "autor": "@exemplo2",
+    "usado": "batalha-001"
+  },
+  {
+    "nome": "Seraphina",
+    "descricao": "clériga humana de manto branco com detalhes dourados",
+    "autor": "@exemplo3",
+    "usado": "batalha-001"
+  },
+  {
+    "nome": "Ignis",
+    "descricao": "draconato feiticeiro vermelho de manto preto",
+    "autor": "@exemplo4",
+    "usado": "batalha-001"
+  }
+]

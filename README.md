@@ -4,6 +4,7 @@ Templates de vídeos verticais no estilo *aesthetic* para Reels/TikTok/Shorts, e
 
 - `remotion/` — templates **TreinoDoDia** e **ReceitaFit** (troque os dados, o vídeo se ajusta sozinho).
 - `hyperframes/` — peça **Pré-treino ideal** (motion graphic de 10 s em HTML + GSAP).
+- `arena-dnd/` — **Arena D20**: batalhas pixel art de RPG (regras D&D 5e / SRD 5.2) com personagens dos comentários. Identidade visual própria; ver `arena-dnd/README.md` ou `/nova-batalha`.
 - `CLAUDE.md` — identidade visual e regras que o Claude segue em todo vídeo.
 
 ## Como pedir um vídeo novo ao Claude
