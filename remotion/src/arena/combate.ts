@@ -1,8 +1,8 @@
 // Simulação da luta com as regras do SRD 5.2 (nível 1–5) + IA simples.
 // Saída: lista de turnos, cada um com "batidas" (mover, golpe) que o roteiro transforma em quadros.
 import { Rng } from "./rng.ts";
-import { ARMAS, fmt } from "./personagem.ts";
-import type { Arma, Lutador } from "./personagem.ts";
+import { ARMAS, fmt, subirNivel } from "./personagem.ts";
+import type { Arma, Lutador, SubidaNivel } from "./personagem.ts";
 import { CLASSES, COR_DANO, espacos, mod, proficiencia } from "./regras.ts";
 import type { Atributo, TipoDano } from "./regras.ts";
 
@@ -123,6 +123,8 @@ export type Batida =
       especial: 0 | 1 | 2 | 3; // candidato a cut-in: 3 crítico, 2 abate, 1 recurso, 0 não
       reacao: boolean;
       cond: { id: number; add?: string; del?: string }[];
+      // quem derrubou o campeão sobe de nível na hora
+      subiu?: { id: number; de: number; para: number; ganho: number; pvDepois: number; pvMax: number; rolagem: string };
     }
   | { k: "estado"; cond: { id: number; add?: string; del?: string }[] };
 
@@ -148,12 +150,19 @@ export type Simulacao = {
   ordemQueda: number[];
   stats: Estatistica[];
   rodadas: number;
+  // nível, PV máximo e atributos de cada um no fim da luta (+ subidas de nível durante ela)
+  evolucao: { nivel: number; pvMax: number; atributos: Record<Atributo, number>; pvRolagens: string[]; subidas: SubidaNivel[] }[];
 };
 
 // ───────────── estado de combate ─────────────
 type Est = {
   l: Lutador;
   id: number;
+  nivel: number; // pode subir no meio da luta (quem derruba o campeão)
+  pvMax: number;
+  at: Record<Atributo, number>;
+  pvRolagens: string[];
+  subidas: SubidaNivel[];
   pv: number;
   pvTemp: number;
   vivo: boolean;
@@ -188,7 +197,8 @@ type Est = {
 };
 
 
-export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
+export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number } = {}): Simulacao => {
+  const versao = opcoes.versao ?? 1;
   const E: Est[] = lutadores.map((l) => {
     const n = l.nivel;
     const prof = proficiencia(n);
@@ -196,6 +206,11 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     const e: Est = {
       l,
       id: l.id,
+      nivel: n,
+      pvMax: l.pvMax,
+      at: { ...l.atributos },
+      pvRolagens: [...l.pvRolagens],
+      subidas: [],
       pv: l.pvMax,
       pvTemp: 0,
       vivo: true,
@@ -241,8 +256,8 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
 
   // iniciativa
   const iniciativa = E.map((e) => {
-    const r = rng.roll(`${e.l.nome} · iniciativa`, 1, 20, mod(e.l.atributos.DES));
-    return { id: e.id, d20: r.dados[0], total: r.total, des: e.l.atributos.DES, desempate: rng.next() };
+    const r = rng.roll(`${e.l.nome} · iniciativa`, 1, 20, mod(e.at.DES));
+    return { id: e.id, d20: r.dados[0], total: r.total, des: e.at.DES, desempate: rng.next() };
   }).sort((a, b) => b.total - a.total || b.des - a.des || b.desempate - a.desempate);
 
   const turnos: Turno[] = [];
@@ -251,7 +266,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
   const inimigos = (e: Est) => E.filter((o) => o.vivo && o.id !== e.id);
 
   // ─── utilidades de regra ───
-  const m = (e: Est, a: Atributo) => mod(e.l.atributos[a]);
+  const m = (e: Est, a: Atributo) => mod(e.at[a]);
   const conj = (e: Est) => (CLASSES[e.l.classe].conjuracao ? m(e, CLASSES[e.l.classe].conjuracao!) : Math.max(m(e, "INT"), m(e, "SAB"), m(e, "CAR")));
   const cd = (e: Est) => 8 + e.prof + conj(e) + (e.inataAtiva ? 1 : 0);
   const caAtual = (e: Est) => e.l.ca + (e.escudo ? 5 : 0);
@@ -261,8 +276,8 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
   const adjacente = (a: Est, b: Est) => dist(a.pos, b.pos) <= ALCANCE;
   const ameacas = (e: Est) => inimigos(e).filter((o) => adjacente(e, o));
   const nomeArma = (a: Arma) => a.nome.toUpperCase();
-  const dadoMarcial = (e: Est) => (e.l.nivel >= 5 ? 8 : 6);
-  const truque = (e: Est) => (e.l.nivel >= 5 ? 2 : 1);
+  const dadoMarcial = (e: Est) => (e.nivel >= 5 ? 8 : 6);
+  const truque = (e: Est) => (e.nivel >= 5 ? 2 : 1);
   const ehDistancia = (e: Est) => CLASSES[e.l.classe].distancia || e.l.arma.distancia;
 
   let turnoAtual: Turno;
@@ -305,7 +320,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       dano = Math.floor(dano / 2);
       res.textos.push("RESISTE");
     }
-    if (alvo.pedra > 0 && alvo.reacao && dano >= 7 && alvo.pv - dano <= alvo.l.pvMax * 0.5) {
+    if (alvo.pedra > 0 && alvo.reacao && dano >= 7 && alvo.pv - dano <= alvo.pvMax * 0.5) {
       const r = rng.roll(`${alvo.l.nome} · Resistência da Pedra (1d12+CON)`, 1, 12, m(alvo, "CON"));
       const red = Math.max(0, r.total);
       alvo.pedra--;
@@ -341,6 +356,8 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       // concentração de quem caiu acaba; marcas nele somem
       if (alvo.conc) alvo.conc = null;
       if (batida.especial < 2) batida.especial = 2;
+      // derrubou o campeão: sobe um nível na hora
+      if (versao >= 2 && alvo.l.campeao && fonte.id !== alvo.id && fonte.vivo) subirNaLuta(fonte, batida);
     } else {
       alvo.stats.menorPv = Math.min(alvo.stats.menorPv, alvo.pv);
       if (alvo.conc && dano > 0) {
@@ -368,6 +385,31 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     res.pvTempDepois = alvo.pvTemp;
   };
 
+  const subirNaLuta = (e: Est, batida: Batida & { k: "golpe" }) => {
+    const base = { ...e.l, nivel: e.nivel, pvMax: e.pvMax, atributos: e.at, pvRolagens: e.pvRolagens };
+    const sub = subirNivel(base, rng);
+    const cl = e.l.classe;
+    e.nivel = sub.para;
+    e.pvMax = sub.pvDepois;
+    e.pv = Math.min(e.pvMax, e.pv + sub.pvGanho);
+    e.at = { ...sub.atributosDepois };
+    e.pvRolagens = [...(sub.ficha.pvRolagens ?? [])];
+    e.prof = proficiencia(e.nivel);
+    const novos = espacos(cl, e.nivel),
+      antigos = espacos(cl, sub.de);
+    novos.forEach((n, i) => (e.slots[i] = (e.slots[i] ?? 0) + n - (antigos[i] ?? 0)));
+    if (cl === "BARBARO" && e.nivel === 3) e.furiaUsos++;
+    if (cl === "GUERREIRO" && e.nivel === 2) e.surto = 1;
+    if (cl === "PALADINO") e.curaMaos += 5;
+    if (cl === "MONGE" && e.nivel >= 2) e.foco += e.nivel === 2 ? 2 : 1;
+    if (cl === "CLERIGO" && e.nivel === 2) e.centelha = 1;
+    e.subidas.push(sub);
+    const rol = `d${sub.dado} = ${sub.rolagem} ${fmt(sub.conMod)} CON`;
+    batida.subiu = { id: e.id, de: sub.de, para: sub.para, ganho: sub.pvGanho, pvDepois: e.pv, pvMax: e.pvMax, rolagem: rol };
+    batida.especial = 3;
+    log(`  ★ ${e.l.nome} derrubou o campeão e SOBE DE NÍVEL na hora: NV ${sub.de} → ${sub.para}, ${rol} = +${sub.pvGanho} PV (${e.pv}/${e.pvMax})${sub.poderesNovos.length ? `, ganha ${sub.poderesNovos.map((x) => x.nome).join(", ")}` : ""}`);
+  };
+
   const novoGolpe = (ator: Est, nome: string, tipo: TipoDano, fx: Efeito, corpo: boolean, magia: boolean, reacao = false): Batida & { k: "golpe" } => ({
     k: "golpe",
     ator: ator.id,
@@ -393,8 +435,8 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     if (magia && a.inataAtiva) v++;
     if (a.desvantagem) d++;
     if (distancia && ameacas(a).length > 0) d++;
-    if (a.l.classe === "BARBARO" && a.l.nivel >= 2 && !distancia) v++; // Ataque Descuidado
-    if (alvo.l.classe === "BARBARO" && alvo.l.nivel >= 2) v++; // ...e quem ataca o bárbaro descuidado também tem vantagem
+    if (a.l.classe === "BARBARO" && a.nivel >= 2 && !distancia) v++; // Ataque Descuidado
+    if (alvo.l.classe === "BARBARO" && alvo.nivel >= 2) v++; // ...e quem ataca o bárbaro descuidado também tem vantagem
     return v > 0 && d > 0 ? 0 : v > 0 ? 1 : d > 0 ? -1 : 0;
   };
 
@@ -435,7 +477,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     let critico = d.v >= critMin;
     let falha = d.v === 1;
     // Escudo (mago): reação que transforma acerto em erro
-    if (!critico && !falha && total >= caAtual(alvo) && total < caAtual(alvo) + 5 && alvo.l.classe === "MAGO" && alvo.reacao && alvo.slots[0] > 0 && alvo.pv <= alvo.l.pvMax) {
+    if (!critico && !falha && total >= caAtual(alvo) && total < caAtual(alvo) + 5 && alvo.l.classe === "MAGO" && alvo.reacao && alvo.slots[0] > 0 && alvo.pv <= alvo.pvMax) {
       alvo.slots[0]--;
       alvo.reacao = false;
       alvo.escudo = true;
@@ -467,7 +509,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       if (op.furtivo) {
         const outroPerto = E.some((o) => o.vivo && o.id !== a.id && o.id !== alvo.id && dist(o.pos, alvo.pos) <= ALCANCE);
         if (vant > 0 || outroPerto) {
-          const nd = Math.ceil(a.l.nivel / 2);
+          const nd = Math.ceil(a.nivel / 2);
           const f = rolarDano(a, "Ataque Furtivo", nd, 6, critico);
           total2 += f.total;
           extraTxt += ` + furtivo ${f.txt}=${f.total}`;
@@ -489,11 +531,11 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       }
       // Fúria
       if (a.furia > 0 && !op.distancia && !op.magia) {
-        total2 += a.l.nivel >= 9 ? 3 : 2;
+        total2 += a.nivel >= 9 ? 3 : 2;
         extraTxt += " + fúria 2";
       }
       // Destruição Divina (paladino nível 2+)
-      if (a.l.classe === "PALADINO" && a.l.nivel >= 2 && !op.distancia && !op.magia && a.slots.some((s) => s > 0) && (critico || alvo.pv <= 18)) {
+      if (a.l.classe === "PALADINO" && a.nivel >= 2 && !op.distancia && !op.magia && a.slots.some((s) => s > 0) && (critico || alvo.pv <= 18)) {
         const i = a.slots.findIndex((s) => s > 0);
         a.slots[i]--;
         const f = rolarDano(a, "Destruição Divina", 2 + i, 8, critico);
@@ -541,7 +583,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     log(`  ${a.l.nome}: ${op.nome} (CD ${CD} ${op.atributo}) → dano ${dn.dados.join("+")}${op.bonusDano ? fmt(op.bonusDano) : ""} = ${total}`);
     for (const alvo of alvos) {
       const mental = op.atributo === "INT" || op.atributo === "SAB" || op.atributo === "CAR";
-      const sentido = alvo.l.classe === "BARBARO" && alvo.l.nivel >= 2 && op.atributo === "DES"; // Sentido de Perigo
+      const sentido = alvo.l.classe === "BARBARO" && alvo.nivel >= 2 && op.atributo === "DES"; // Sentido de Perigo
       const vant = (alvo.l.especie === "GNOMO" && mental) || sentido ? 1 : 0;
       const profS = CLASSES[alvo.l.classe].salvaguardas.includes(op.atributo) ? alvo.prof : 0;
       const s = rolarD20(alvo, `salvaguarda de ${op.atributo} contra ${op.nome}`, vant);
@@ -563,14 +605,14 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
   const curar = (a: Est, alvo: Est, nome: string, valor: number, rol: string, fx: Efeito, batidas: Batida[], acaoBonus = true) => {
     const b = novoGolpe(a, nome, "cura", fx, false, true);
     const antes = alvo.pv;
-    alvo.pv = Math.min(alvo.l.pvMax, alvo.pv + valor);
+    alvo.pv = Math.min(alvo.pvMax, alvo.pv + valor);
     const res = novoRes(alvo, "cura");
     res.cura = alvo.pv - antes;
     res.pvDepois = alvo.pv;
     a.stats.curou += res.cura;
     b.rolagem = rol;
     b.resultados.push(res);
-    log(`  ${a.l.nome}: ${nome} ${rol} → +${res.cura} PV (${alvo.pv}/${alvo.l.pvMax})${acaoBonus ? " [ação bônus]" : ""}`);
+    log(`  ${a.l.nome}: ${nome} ${rol} → +${res.cura} PV (${alvo.pv}/${alvo.pvMax})${acaoBonus ? " [ação bônus]" : ""}`);
     batidas.push(b);
   };
 
@@ -624,10 +666,10 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
 
   const opArma = (a: Est, arma: Arma, reacao = false): OpAtaque => {
     const md = modArma(a, arma);
-    const estilo = (a.l.classe === "GUERREIRO" || (a.l.classe === "PALADINO" && a.l.nivel >= 2)) && !arma.distancia;
+    const estilo = (a.l.classe === "GUERREIRO" || (a.l.classe === "PALADINO" && a.nivel >= 2)) && !arma.distancia;
     const duelo = estilo && !arma.duasMaos;
     const gwf = estilo && arma.duasMaos;
-    const arquearia = a.l.classe === "PATRULHEIRO" && a.l.nivel >= 2 && arma.distancia ? 2 : 0;
+    const arquearia = a.l.classe === "PATRULHEIRO" && a.nivel >= 2 && arma.distancia ? 2 : 0;
     const monge = a.l.classe === "MONGE";
     const fx: Efeito = arma.distancia ? "flecha" : monge ? "soco" : arma.duasMaos ? "corteGrande" : arma.tipo === "perfurante" ? "estocada" : arma.tipo === "concussao" ? "impacto" : "corte";
     return {
@@ -640,7 +682,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       distancia: arma.distancia,
       magia: false,
       bonusAcerto: md + a.prof + arquearia,
-      critMin: a.l.classe === "GUERREIRO" && a.l.nivel >= 3 ? 19 : 20,
+      critMin: a.l.classe === "GUERREIRO" && a.nivel >= 3 ? 19 : 20,
       gwf,
       reacao,
       furtivo: a.l.classe === "LADINO",
@@ -671,6 +713,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       let s = distancia ? o.pv * 0.6 + d * 0.02 : d / 40 + o.pv * 0.35;
       if (o.pv <= 4) s -= 3;
       if (a.conc && a.conc.alvo === o.id) s -= 4;
+      if (versao >= 2 && o.l.campeao) s -= distancia ? 2 : 1.2; // leve foco no campeão
       s += rng.next() * 1.5;
       if (s < ms) {
         ms = s;
@@ -696,7 +739,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     }
     return best;
   };
-  const velocidade = (a: Est) => (a.l.deslocamento - (a.lento ? 10 : 0) + (a.l.classe === "BARBARO" && a.l.nivel >= 5 ? 10 : 0) + (a.l.classe === "MONGE" && a.l.nivel >= 2 ? 10 : 0)) * PE;
+  const velocidade = (a: Est) => (a.l.deslocamento - (a.lento ? 10 : 0) + (a.l.classe === "BARBARO" && a.nivel >= 5 ? 10 : 0) + (a.l.classe === "MONGE" && a.nivel >= 2 ? 10 : 0)) * PE;
 
   const pontoSeguro = (a: Est, alvo: Est | undefined): P => {
     const vel = velocidade(a);
@@ -737,7 +780,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
   const jogarTurno = (a: Est, rodada: number) => {
     const batidas: Batida[] = [];
     turnoAtual = { rodada, ator: a.id, batidas, log: [] };
-    log(`[R${rodada}] Turno de ${a.l.nome} (${a.pv}/${a.l.pvMax} PV)`);
+    log(`[R${rodada}] Turno de ${a.l.nome} (${a.pv}/${a.pvMax} PV)`);
     // início do turno
     a.reacao = true;
     if (a.escudo) {
@@ -751,17 +794,17 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     let bonusUsada = false;
     let acaoUsada = false;
     const cl = a.l.classe;
-    const pct = a.pv / a.l.pvMax;
+    const pct = a.pv / a.pvMax;
 
     // ── curas de emergência ──
     if (pct < 0.4) {
       if (cl === "GUERREIRO" && a.folego > 0) {
         a.folego--;
-        const r = rng.roll(`${a.l.nome} · Retomar o Fôlego (1d10+${a.l.nivel})`, 1, 10, a.l.nivel);
-        curar(a, a, "RETOMAR O FÔLEGO", r.total, `1d10+${a.l.nivel} = ${r.total}`, "cura", batidas);
+        const r = rng.roll(`${a.l.nome} · Retomar o Fôlego (1d10+${a.nivel})`, 1, 10, a.nivel);
+        curar(a, a, "RETOMAR O FÔLEGO", r.total, `1d10+${a.nivel} = ${r.total}`, "cura", batidas);
         bonusUsada = true;
       } else if (cl === "PALADINO" && a.curaMaos > 0) {
-        const v = Math.min(a.curaMaos, a.l.pvMax - a.pv);
+        const v = Math.min(a.curaMaos, a.pvMax - a.pv);
         a.curaMaos -= v;
         curar(a, a, "CURA PELAS MÃOS", v, `${v} PV da reserva`, "cura", batidas);
         bonusUsada = true;
@@ -838,7 +881,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       // atirador / conjurador
       const ameacado = ameacas(a).length > 0;
       const destino = pontoSeguro(a, alvo);
-      const desengaja = cl === "LADINO" && a.l.nivel >= 2 && ameacado && !bonusUsada;
+      const desengaja = cl === "LADINO" && a.nivel >= 2 && ameacado && !bonusUsada;
       if (desengaja) bonusUsada = true;
       const recua = ameacado && dist(destino, a.pos) > 4;
       mover(a, caminho(a.pos, destino), batidas, recua, false, desengaja);
@@ -919,7 +962,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
   const acaoCorpo = (a: Est, alvo: Est, batidas: Batida[], bonusUsada: boolean) => {
     const cl = a.l.classe;
     const arma = armaCorpo(a);
-    const ataques = a.l.nivel >= 5 && ["GUERREIRO", "BARBARO", "PALADINO", "PATRULHEIRO", "MONGE"].includes(cl) ? 2 : 1;
+    const ataques = a.nivel >= 5 && ["GUERREIRO", "BARBARO", "PALADINO", "PATRULHEIRO", "MONGE"].includes(cl) ? 2 : 1;
     // Arma de Sopro (draconato): substitui um ataque
     const cone = (centro: Est) => inimigos(a).filter((o) => dist(a.pos, o.pos) <= 64 && angulo(a.pos, centro.pos, o.pos) < Math.PI / 4);
     const anc = a.l.ancestralidade;
@@ -927,7 +970,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     if (a.sopro > 0 && anc && (cone(alvo).length >= 2 || rng.next() < 0.45)) {
       a.sopro--;
       usouSopro = true;
-      salvaguarda(a, cone(alvo), { nome: "ARMA DE SOPRO", n: a.l.nivel >= 5 ? 2 : 1, d: 10, tipo: anc.dano, fx: "sopro", atributo: "DES", metade: true, especial: 1, cdOverride: 8 + m(a, "CON") + a.prof }, batidas);
+      salvaguarda(a, cone(alvo), { nome: "ARMA DE SOPRO", n: a.nivel >= 5 ? 2 : 1, d: 10, tipo: anc.dano, fx: "sopro", atributo: "DES", metade: true, especial: 1, cdOverride: 8 + m(a, "CON") + a.prof }, batidas);
     }
     for (let i = usouSopro ? 1 : 0; i < ataques; i++) {
       const t = alvo.vivo ? alvo : ameacas(a)[0];
@@ -963,10 +1006,10 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       }
     }
     // Retomar o Fôlego se ficou ferido e ainda tem ação bônus
-    if (!bonusUsada && cl === "GUERREIRO" && a.folego > 0 && a.pv / a.l.pvMax < 0.5) {
+    if (!bonusUsada && cl === "GUERREIRO" && a.folego > 0 && a.pv / a.pvMax < 0.5) {
       a.folego--;
-      const r = rng.roll(`${a.l.nome} · Retomar o Fôlego (1d10+${a.l.nivel})`, 1, 10, a.l.nivel);
-      curar(a, a, "RETOMAR O FÔLEGO", r.total, `1d10+${a.l.nivel} = ${r.total}`, "cura", batidas);
+      const r = rng.roll(`${a.l.nome} · Retomar o Fôlego (1d10+${a.nivel})`, 1, 10, a.nivel);
+      curar(a, a, "RETOMAR O FÔLEGO", r.total, `1d10+${a.nivel} = ${r.total}`, "cura", batidas);
     }
   };
 
@@ -1048,16 +1091,16 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
         break;
       }
       case "BRUXO": {
-        const car = a.l.nivel >= 2 ? m(a, "CAR") : 0;
+        const car = a.nivel >= 2 ? m(a, "CAR") : 0;
         atacar(a, alvo, opMagia(a, "RAJADA MÍSTICA", 1, 10, "energia", "rajada", car), batidas);
-        if (a.l.nivel >= 5 && alvo.vivo) atacar(a, alvo, opMagia(a, "RAJADA MÍSTICA", 1, 10, "energia", "rajada", car), batidas);
+        if (a.nivel >= 5 && alvo.vivo) atacar(a, alvo, opMagia(a, "RAJADA MÍSTICA", 1, 10, "energia", "rajada", car), batidas);
         break;
       }
       case "CLERIGO": {
         if (a.centelha > 0 && alvo.pv <= 10) {
           a.centelha--;
           salvaguarda(a, [alvo], { nome: "CENTELHA DIVINA", n: 1, d: 8, bonusDano: conj(a), tipo: "radiante", fx: "chamaSagrada", atributo: "CON", metade: true, especial: 1 }, batidas);
-        } else if (a.slots[0] >= 2 || (a.slots[0] >= 1 && a.pv / a.l.pvMax > 0.6)) {
+        } else if (a.slots[0] >= 2 || (a.slots[0] >= 1 && a.pv / a.pvMax > 0.6)) {
           a.slots[0]--;
           atacar(
             a,
@@ -1159,7 +1202,7 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
       default: {
         const arma = a.l.arma.distancia ? a.l.arma : a.l.armaDistancia ?? a.l.arma;
         atacar(a, alvo, opArma(a, arma), batidas);
-        if (a.l.nivel >= 5 && cl === "PATRULHEIRO" && alvo.vivo) atacar(a, alvo, opArma(a, arma), batidas);
+        if (a.nivel >= 5 && cl === "PATRULHEIRO" && alvo.vivo) atacar(a, alvo, opArma(a, arma), batidas);
         break;
       }
     }
@@ -1186,5 +1229,6 @@ export const simular = (lutadores: Lutador[], rng: Rng): Simulacao => {
     ordemQueda,
     stats: E.map((e) => e.stats),
     rodadas: rodada,
+    evolucao: E.map((e) => ({ nivel: e.nivel, pvMax: e.pvMax, atributos: e.at, pvRolagens: e.pvRolagens, subidas: e.subidas })),
   };
 };

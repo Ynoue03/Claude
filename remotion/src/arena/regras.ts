@@ -132,6 +132,30 @@ export const NOMES = [
   "Runa", "Soren", "Talia", "Vesna", "Ash", "Kira", "Dax", "Oona",
 ];
 
+// Sobrenomes (episódios versão 2+: todo lutador tem nome e sobrenome, e a combinação nunca se repete)
+export const SOBRENOMES = [
+  "Pedraforte", "Valeclaro", "Corvonegro", "Brasaviva", "Martelo", "Ventolargo", "Lunasombra", "Espinhadouro",
+  "Rocharrubra", "Galhoverde", "Fogaréu", "Cinzafria", "Dentelobo", "Asaprata", "Montanegra", "Sombralonga",
+  "Marévoa", "Trovão", "Estrelagris", "Raizfunda", "Lâminarrubra", "Folhaseca", "Penhasco", "Ouroverde",
+  "Brumaclara", "Ossovelho", "Pedranegra", "Rubrafonte", "Corvalho", "Gelomanto", "Solposto", "Chamaviva",
+  "Serrabrava", "Lagofundo", "Águaclara", "Ventobravo", "Mantonegro", "Ferrocinza", "Torrealta", "Pontavento",
+];
+
+// Nome completo número `p` da série. Para p < NOMES × SOBRENOMES, cada p dá uma combinação diferente
+// (o resto de p escolhe o nome; o quociente desloca o sobrenome) e 16 valores seguidos de p têm 16 nomes
+// diferentes. Embaralhado com uma permutação fixa para não ficar em ordem alfabética.
+const perm = (n: number, salto: number) => Array.from({ length: n }, (_, i) => (i * salto) % n);
+const PERM_N = perm(48, 29);
+const PERM_S = perm(40, 23);
+export const nomeCompleto = (p: number) => {
+  const F = NOMES.length,
+    L = SOBRENOMES.length;
+  const r = p % F,
+    q = Math.floor(p / F);
+  return `${NOMES[PERM_N[r % PERM_N.length] % F]} ${SOBRENOMES[PERM_S[(q + r) % L]]}`;
+};
+export const TOTAL_NOMES = () => NOMES.length * SOBRENOMES.length;
+
 // Espaços de magia por nível [1º, 2º, 3º]
 const SLOTS_COMPLETO = [[2], [3], [4, 2], [4, 3], [4, 3, 2]];
 const SLOTS_MEIO = [[2], [2], [3], [3], [4, 2]];

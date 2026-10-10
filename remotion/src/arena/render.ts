@@ -151,10 +151,11 @@ const estado = (r: Roteiro, i: number, s: number, v: number): EstadoL => {
   const l = r.lutadores[i];
   const d = deriv(r);
   const pvK = valorEm(r.pv[i], s);
-  const pv = pvK?.pv ?? l.pvMax;
-  const baixo = pv / l.pvMax < 0.3;
+  const pvMax = valorEm(r.niveis[i], s)?.max ?? l.pvMax;
+  const pv = pvK?.pv ?? pvMax;
+  const baixo = pv / pvMax < 0.3;
   const p = posViva(r, i, s);
-  const st: EstadoL = { vis: true, x: p.x, y: p.y, dir: "S", anim: "idle", q: Math.floor(s / 8) % 4, expr: "foco", rasgado: baixo, flash: false, alpha: 1, pv, pvMax: l.pvMax, morto: false, caindo: 0 };
+  const st: EstadoL = { vis: true, x: p.x, y: p.y, dir: "S", anim: "idle", q: Math.floor(s / 8) % 4, expr: "foco", rasgado: baixo, flash: false, alpha: 1, pv, pvMax, morto: false, caindo: 0 };
   // intro: cai do alto
   if (v < V.batalha) {
     const tp = v - POUSO(i);
@@ -428,6 +429,15 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
       desenharD20(ctx, Math.round(sx), Math.round(a.y - 34), g.d20.v, dt, { acerto: "#5ac85a", erro: "#8a8a96", critico: DOURADO, falha: "#e04040" }[g.d20.cor], (n, x, y) => texto(ctx, n, x, y, { fonte: "p", cor: "#ffffff", contorno: TINTA, alinhar: "centro" }));
     }
     const pi = s - g.tImp;
+    if (g.subiu && pi >= 8 && pi < 60) {
+      const b = estados[g.subiu.id];
+      const k = pi - 8;
+      const a = k > 44 ? 1 - (k - 44) / 8 : 1;
+      const yb = b.y - PE_Y + alturaCabeca(r.lutadores[g.subiu.id]) - 30 - Math.min(10, k * 0.8);
+      if (Math.floor(k / 4) % 4 !== 3) texto(ctx, "SUBIU DE NÍVEL!", clamp(b.x, 60, W - 60), yb, { cor: DOURADO, contorno: TINTA, alinhar: "centro", alpha: a });
+      texto(ctx, `NV ${g.subiu.de} → ${g.subiu.para} · +${g.subiu.ganho} PV`, clamp(b.x, 60, W - 60), yb + 10, { cor: "#6aff7a", contorno: TINTA, alinhar: "centro", fonte: "p", alpha: a });
+      if (k < 30) colunaLuz(ctx, b.x, b.y, k + 20);
+    }
     if (pi >= 0 && pi < 32) {
       g.resultados.forEach((res, k) => {
         const b = estados[res.alvo];
@@ -662,7 +672,8 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
     const morto = s >= r.morte[i] + 10;
     const visivel = v >= POUSO(i);
     if (!visivel) return;
-    const frac = e.pv / l.pvMax;
+    const frac = e.pv / e.pvMax;
+    const nivel = valorEm(r.niveis[i], s)?.nivel ?? l.nivel;
     const expr: Expr = morto ? "derrota" : frac > 0.6 ? "neutra" : frac > 0.3 ? "foco" : "pvbaixo";
     if (ativos.has(i) && Math.floor(v / 3) % 2 === 0) {
       ui.fillStyle = DOURADO;
@@ -676,7 +687,7 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
       linhaPx(ui, x + 13, y + 2, x + 2, y + 13, "#e03a3a");
     }
     if (l.campeao) coroa(ui, x + 8, y + 1);
-    const nome = l.nome.toUpperCase();
+    const nome = l.nome.split(" ")[0].toUpperCase();
     texto(ui, nome.length > 9 ? nome.slice(0, 9) : nome, x + 19, y + 1, { cor: morto ? "#6a6470" : "#ffffff" });
     if (morto) {
       ui.fillStyle = "#c83a3a";
@@ -686,7 +697,7 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
     ui.fillRect(x + 19, y + 10, 5, 5);
     ui.fillStyle = morto ? "#5a5460" : CLASSES[l.classe].cor;
     ui.fillRect(x + 20, y + 11, 3, 3);
-    texto(ui, `NV${l.nivel}`, x + 26, y + 10, { fonte: "p", cor: l.nivel > 1 ? DOURADO : "#c8c0b8" });
+    texto(ui, `NV${nivel}`, x + 26, y + 10, { fonte: "p", cor: nivel > 1 ? DOURADO : "#c8c0b8" });
     barraPv(ui, x + 40, y + 11, 32, morto ? 0 : frac);
   });
 };
@@ -752,7 +763,8 @@ const bannersCaiu = (ui: Ctx, r: Roteiro, v: number) => {
     if (v >= V.vitoria) continue;
     const l = r.lutadores[m.id];
     const txt = `${l.nome.toUpperCase()} CAIU!`;
-    const w = larguraTexto(txt, "g", 2) + 30;
+    const escB = larguraTexto(txt, "g", 2) + 30 > W - 40 ? 1 : 2;
+    const w = larguraTexto(txt, "g", escB) + 30;
     const entra = dt < 6 ? (1 - dt / 6) * -w : dt > 40 ? ((dt - 40) / 6) * (W + 20) : 0;
     const x = Math.round(W / 2 - w / 2 + entra);
     const y = 478 - pilha * 24;
@@ -761,7 +773,7 @@ const bannersCaiu = (ui: Ctx, r: Roteiro, v: number) => {
     ui.drawImage(mini(l, "derrota", true), x + 4, y + 3);
     linhaPx(ui, x + 6, y + 5, x + 17, y + 16, "#e03a3a");
     linhaPx(ui, x + 17, y + 5, x + 6, y + 16, "#e03a3a");
-    texto(ui, txt, x + 24, y + 5, { cor: "#ffffff", contorno: TINTA, escala: 2 });
+    texto(ui, txt, x + 24, y + (escB === 2 ? 5 : 8), { cor: "#ffffff", contorno: TINTA, escala: escB });
     pilha++;
   }
 };
@@ -871,10 +883,13 @@ const telaVs = (ui: Ctx, r: Roteiro, k: number, estados: EstadoL[]) => {
       ui.restore();
     } else ui.drawImage(rt, px0, y0 + 4, 192, 128);
     const tx = lado < 0 ? 222 : 32;
-    texto(ui, l.nome.toUpperCase(), tx, y0 + 30, { cor: "#ffffff", contorno: TINTA, escala: 2 });
-    texto(ui, `${CLASSES[l.classe].nome.toUpperCase()} NV${l.nivel}`, tx, y0 + 50, { cor: DOURADO, contorno: TINTA });
-    texto(ui, ESPECIES[l.especie].nome.toUpperCase(), tx, y0 + 62, { cor: "#c8c0b8", contorno: TINTA });
-    texto(ui, `PV ${e.pv}/${l.pvMax}`, tx, y0 + 78, { cor: "#6aff7a", contorno: TINTA });
+    const [prim, ...resto] = l.nome.toUpperCase().split(" ");
+    texto(ui, prim, tx, y0 + 26, { cor: "#ffffff", contorno: TINTA, escala: 2 });
+    if (resto.length) texto(ui, resto.join(" "), tx, y0 + 43, { cor: "#ffffff", contorno: TINTA });
+    const nvAgora = valorEm(r.niveis[i], r.sDuelo)?.nivel ?? l.nivel;
+    texto(ui, `${CLASSES[l.classe].nome.toUpperCase()} NV${nvAgora}`, tx, y0 + 54, { cor: DOURADO, contorno: TINTA });
+    texto(ui, ESPECIES[l.especie].nome.toUpperCase(), tx, y0 + 65, { cor: "#c8c0b8", contorno: TINTA });
+    texto(ui, `PV ${e.pv}/${e.pvMax}`, tx, y0 + 78, { cor: "#6aff7a", contorno: TINTA });
     texto(ui, `CA ${l.ca}`, tx, y0 + 90, { cor: "#9ad8ff", contorno: TINTA });
     texto(ui, `ABATES ${r.sim.stats[i].abates}`, tx, y0 + 102, { cor: "#ff9a6a", contorno: TINTA });
     ui.restore();

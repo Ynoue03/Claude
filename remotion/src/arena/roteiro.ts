@@ -1,6 +1,6 @@
 // Roteiro: distribui os turnos da simulação no tempo do vídeo (90 s) sem mudar nenhuma regra.
 // Tempo de "cena" (s) = tempo do vídeo (v) menos os congelamentos (cut-ins e VS).
-import { gerarLutadores, subirNivel, poderesAte } from "./personagem.ts";
+import { gerarLutadores, subirNivel, poderesAte, combinarSubidas } from "./personagem.ts";
 import type { Episodio, Lutador, SubidaNivel } from "./personagem.ts";
 import { simular } from "./combate.ts";
 import type { Batida, Efeito, P, Resultado, Simulacao } from "./combate.ts";
@@ -46,6 +46,7 @@ export type Roteiro = {
   congela: Congela[];
   pos: Chave[][];
   pv: { f: number; pv: number; temp: number }[][];
+  niveis: { f: number; nivel: number; max: number }[][]; // nível e PV máximo ao longo da luta
   cond: { f: number; c: string; on: boolean }[][];
   morte: number[]; // cena
   danos: { f: number; id: number }[]; // quando cada um levou dano (para piscar/dor)
@@ -80,7 +81,7 @@ const natural = (b: Batida, posAtor: P, posAlvo: P | undefined) => {
 
 export const criarRoteiro = (ep: Episodio): Roteiro => {
   const { lutadores, rng } = gerarLutadores(ep);
-  const sim = simular(lutadores, rng);
+  const sim = simular(lutadores, rng, { versao: ep.versao });
   const N = lutadores.length;
   const avisos: string[] = [];
 
@@ -267,6 +268,12 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
     m.pts.forEach((p, i) => pos[m.ator].push({ f: m.t0 + (m.t1 - m.t0) * (L[i] / tot), x: p.x, y: p.y }));
   }
   const pv = lutadores.map((l) => [{ f: 0, pv: l.pvMax, temp: 0 }]);
+  const niveis = lutadores.map((l) => [{ f: 0, nivel: l.nivel, max: l.pvMax }]);
+  for (const g of golpes)
+    if (g.subiu) {
+      niveis[g.subiu.id].push({ f: g.tImp, nivel: g.subiu.para, max: g.subiu.pvMax });
+      pv[g.subiu.id].push({ f: g.tImp, pv: g.subiu.pvDepois, temp: 0 });
+    }
   const cond = lutadores.map(() => [] as { f: number; c: string; on: boolean }[]);
   const morte = lutadores.map(() => Infinity);
   const danos: { f: number; id: number }[] = [];
@@ -301,8 +308,11 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   const finalistas = [vencedor, sim.ordemQueda[sim.ordemQueda.length - 1]].filter((x) => x !== undefined && x >= 0);
 
   // ───── subida de nível, história e pergaminho ─────
+  // nível ganho na luta (derrubou o campeão) + nível da vitória
+  const ev = sim.evolucao[vencedor];
   const campeao = lutadores[vencedor];
-  const subida = subirNivel(campeao, rng);
+  const base = { ...campeao, nivel: ev.nivel, pvMax: ev.pvMax, atributos: ev.atributos, pvRolagens: ev.pvRolagens };
+  const subida = combinarSubidas([...ev.subidas, subirNivel(base, rng)]);
   const historia = escreverHistoria(campeao, sim, subida);
   const pergaminho = montarPergaminho(campeao, subida, sim);
 
@@ -316,6 +326,7 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
     congela,
     pos,
     pv,
+    niveis,
     cond,
     morte,
     danos,
@@ -419,8 +430,9 @@ const escreverHistoria = (c: Lutador, sim: Simulacao, sub: SubidaNivel): string 
   frases.push(`${origem}, ${c.nome} ${FEITO[c.classe]} e ${abates}.`);
   if (st.menorPv <= Math.max(3, c.pvMax * 0.3)) frases.push(`Resistiu com ${st.menorPv} PV quando tudo parecia perdido.`);
   else if (st.primeiroCritico) frases.push(`Acertou um crítico (${st.primeiroCritico}) que ficou na memória da arena.`);
+  if (sim.evolucao[c.id].subidas.length) frases.push(`Derrubou o campeão e subiu de nível ali mesmo, no meio da luta.`);
   if (st.golpeFinal) frases.push(`Golpe final: ${capital(st.golpeFinal.toLowerCase())}.`);
-  const novo = sub.poderesNovos[0];
+  const novo = sub.poderesNovos[sub.poderesNovos.length - 1];
   frases.push(novo ? `Agora, no nível ${sub.para}, domina: ${novo.nome}.` : `Agora, no nível ${sub.para}, volta mais forte.`);
   return frases.join(" ");
 };
@@ -452,7 +464,7 @@ const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao): ItemPer
   const pb = sub.para >= 5 ? 3 : 2;
   const pbAntes = sub.de >= 5 ? 3 : 2;
   const conj = CLASSES[c.classe].conjuracao;
-  itens.push({ v: passo(16), tipo: "combate", texto: `PV ${sub.pvDepois}`, extra: `+${sub.pvGanho}`, desc: `d${sub.dado} = ${sub.rolagem} ${sub.conMod >= 0 ? "+" : ""}${sub.conMod} CON${sub.anao ? " +1" : ""}` });
+  itens.push({ v: passo(16), tipo: "combate", texto: `PV ${sub.pvDepois}`, extra: `+${sub.pvGanho}`, desc: sub.rolagensTxt.join(" · ") });
   itens.push({ v: passo(30), tipo: "combate", texto: `CA ${c.ca}` });
   const atkAt = c.arma.atributo === "DES" ? Math.max(sub.atributosDepois.DES, sub.atributosDepois.FOR) : sub.atributosDepois.FOR;
   const atkAntesAt = c.arma.atributo === "DES" ? Math.max(sub.atributosAntes.DES, sub.atributosAntes.FOR) : sub.atributosAntes.FOR;
@@ -541,6 +553,7 @@ const gerarSons = (r: Roteiro): SomEv[] => {
     const algumAcerto = g.resultados.some((x) => x.dano > 0 || x.cura > 0 || x.r === "buff");
     if (algumAcerto || !g.d20) add(vImp, base, 0.9);
     else add(vImp - 2, "swing", 0.6);
+    if (g.subiu) add(vImp + 12, "levelup", 0.9);
     for (const x of g.resultados) {
       if (x.r === "critico") add(vImp, "sino", 1);
       if (x.r === "erro" || x.r === "falha") add(vImp + 2, "plim", 0.7);

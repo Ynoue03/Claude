@@ -13,6 +13,8 @@ import {
   ESPECIE_IDS,
   NOMES,
   PODERES,
+  TOTAL_NOMES,
+  nomeCompleto,
   TRACOS_ESPECIE,
   espacos,
   mod,
@@ -463,6 +465,9 @@ export type Episodio = {
     cta: string;
   };
   audio: string; // arquivo em public/ (vazio = sem áudio)
+  // 1 = regras dos episódios 1–3 (nome único, sem foco no campeão).
+  // 2 = nome e sobrenome que nunca se repetem, leve foco no campeão e +1 nível para quem derrubá-lo.
+  versao?: number;
 };
 
 export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng } => {
@@ -475,10 +480,12 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
   const contClasse: Record<string, number> = {};
   const contEspecie: Record<string, number> = {};
   const usados = new Set<string>();
+  // campeão que veio de antes de existir sobrenome ganha um (fixo e único) na primeira luta da versão 2
+  const nomeCampeao = camp ? ((ep.versao ?? 1) >= 2 && !camp.nome.includes(" ") ? `${camp.nome} ${nomeCompleto(TOTAL_NOMES() - 1 - ep.numero * 16).split(" ")[1]}` : camp.nome) : "";
   if (camp) {
     contClasse[camp.classe] = 1;
     contEspecie[camp.especie] = 1;
-    usados.add(camp.nome);
+    usados.add(nomeCampeao);
   }
   const fixas = pedidos.map((p) => (p.descricao ? lerClasse(sem(p.descricao)) : undefined));
   fixas.forEach((c) => c && (contClasse[c] = (contClasse[c] ?? 0) + 1));
@@ -508,7 +515,8 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
     }
     contEspecie[especie] = (contEspecie[especie] ?? 0) + 1;
     let nome = ped.nome?.trim();
-    if (!nome) {
+    if (!nome && (ep.versao ?? 1) >= 2) nome = nomeLivre(ep.numero, i, usados);
+    else if (!nome) {
       const livres = NOMES.filter((n) => !usados.has(n));
       nome = rng.pick(livres);
     }
@@ -552,7 +560,7 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
     const pos = rng.int(0, lutadores.length);
     lutadores.splice(pos, 0, {
       id: 0,
-      nome: camp.nome,
+      nome: nomeCampeao,
       especie: camp.especie,
       classe: camp.classe,
       nivel: camp.nivel,
@@ -576,6 +584,24 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
   }
   lutadores.forEach((l, i) => (l.id = i));
   return { lutadores, rng };
+};
+
+// Nome e sobrenome do lutador `i` do episódio `numero`: sai de uma sequência única para a série inteira,
+// então nunca se repete entre episódios. Também não repete o primeiro nome de ninguém da mesma luta.
+const nomeLivre = (numero: number, i: number, usados: Set<string>): string => {
+  const primeiros = new Set([...usados].map((n) => n.split(" ")[0]));
+  const testa = (p: number) => {
+    const n = nomeCompleto(p);
+    return !usados.has(n) && !primeiros.has(n.split(" ")[0]) ? n : "";
+  };
+  const n0 = testa((numero - 1) * 16 + i);
+  if (n0) return n0;
+  // colidiu com um nome vindo de comentário/campeão: usa a reserva no fim da sequência
+  for (let k = 0; k < 400; k++) {
+    const n = testa(TOTAL_NOMES() - 1 - numero * 16 - 8 - k * 97);
+    if (n) return n;
+  }
+  return nomeCompleto((numero - 1) * 16 + i);
 };
 
 export const fmt = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
@@ -602,7 +628,24 @@ export type SubidaNivel = {
   poderesNovos: Poder[];
   espacosAntes: number[];
   espacosDepois: number[];
+  rolagensTxt: string[]; // uma linha por nível ganho: "d10 = 6 +3 CON"
   ficha: FichaCampeao;
+};
+
+// Junta várias subidas seguidas (ex.: +1 por derrubar o campeão e +1 por vencer) numa só, para o pergaminho.
+export const combinarSubidas = (lista: SubidaNivel[]): SubidaNivel => {
+  const a = lista[0],
+    z = lista[lista.length - 1];
+  return {
+    ...z,
+    de: a.de,
+    pvAntes: a.pvAntes,
+    pvGanho: lista.reduce((s, x) => s + x.pvGanho, 0),
+    atributosAntes: a.atributosAntes,
+    espacosAntes: a.espacosAntes,
+    poderesNovos: lista.flatMap((x) => x.poderesNovos),
+    rolagensTxt: lista.flatMap((x) => x.rolagensTxt),
+  };
 };
 
 export const subirNivel = (l: Lutador, rng: Rng): SubidaNivel => {
@@ -625,7 +668,9 @@ export const subirNivel = (l: Lutador, rng: Rng): SubidaNivel => {
   const anao = l.especie === "ANAO" ? 1 : 0;
   const ganho = Math.max(1, r.total + conDepois) + anao + (conDepois - conAntes) * de;
   const pvDepois = l.pvMax + ganho;
-  const poderesNovos = para <= 5 ? PODERES[l.classe][para - 1] : [];
+  // o Aumento de Atributo mostra o que foi aplicado de fato (+2 no principal, ou +1/+1 se ele já estava no máximo)
+  const ganhos = ATRIBUTOS.filter((a) => atributosDepois[a] > l.atributos[a]).map((a) => `+${atributosDepois[a] - l.atributos[a]} em ${a}`);
+  const poderesNovos = (para <= 5 ? PODERES[l.classe][para - 1] : []).map((p) => (p.nome === "Aumento de Atributo" ? { ...p, desc: ganhos.length ? ganhos.join(", ") : "atributos já no máximo" } : p));
   const linha = `NV ${para}: d${dv} = ${r.total} ${fmt(conDepois)} CON${anao ? " +1 Robustez Anã" : ""} = +${ganho} PV`;
   const ficha: FichaCampeao = {
     nome: l.nome,
@@ -658,6 +703,7 @@ export const subirNivel = (l: Lutador, rng: Rng): SubidaNivel => {
     poderesNovos,
     espacosAntes: espacos(l.classe, de),
     espacosDepois: espacos(l.classe, para),
+    rolagensTxt: [`d${dv} = ${r.total} ${fmt(conDepois)} CON${anao ? " +1" : ""}`],
     ficha,
   };
 };

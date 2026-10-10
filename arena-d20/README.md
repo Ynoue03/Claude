@@ -43,9 +43,18 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `lutadores` | até 16 itens `{ "nome", "descricao", "autor" }` vindos dos comentários. Vazio = aleatório. Classe, espécie, cores, cabelo e arma saem da descrição; atributos, PV e golpes continuam nos dados |
 | `campeaoAnterior` | `null` ou o conteúdo de `arena-d20/epNN/campeao.json` do episódio anterior: entra como 1 dos 16, com nível, atributos, PV, poderes e coroa |
 | `textos` | banners: `escolha`, `lutem`, `subiu`, `defende`, `cta` (no CTA, o trecho depois de ` · ` sai em dourado) |
+| `versao` | `2` (padrão para episódios novos): nome **e sobrenome** que nunca se repetem na série, leve foco dos lutadores no campeão e **+1 nível na hora para quem derrubar o campeão** (vencendo, soma +2). Sem o campo = regras dos episódios 1–3 (reproduzem a mesma luta de antes) |
 | `audio` | WAV em `remotion/public/` (`arena/epNN.wav`); vazio = sem áudio |
 
 Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo ruivo com cajado e capa verde", "autor": "@fulana" }`.
+
+## Nomes
+
+Na versão 2, cada lutador sorteado recebe o nome número `(episódio − 1) × 16 + posição` de uma sequência fixa de
+48 nomes × 40 sobrenomes (`nomeCompleto` em `regras.ts`): as 1920 combinações são todas diferentes e cada luta tem 16
+primeiros nomes diferentes, então nenhum nome se repete por 120 episódios. Nomes vindos de comentários são usados como
+vieram; se algum coincidir com o sorteado, o sorteado troca por um da reserva no fim da sequência. O campeão antigo
+sem sobrenome ganha um, fixo, na primeira luta da versão 2 (Yara → Yara Rubrafonte).
 
 ## Onde está cada parte
 
