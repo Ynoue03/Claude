@@ -47,7 +47,7 @@ const pose = (anim: Anim, q: number): Pose => {
 // ───────────── paletas por chefe ─────────────
 type Pal = Record<string, string>;
 const PALETAS: Record<ChefeId, Pal> = {
-  MINOTAURO: { pelo: "#7a4a2e", pele: "#9a6444", chifre: "#e8dcc0", casco: "#2e2420", tanga: "#9c2a2e", metal: "#a8b0bc", madeira: "#6a4428", olho: "#ff4a3a", ouro: "#d8a838", boca: "#4a1a1a" },
+  MINOTAURO: { pelo: "#6a3e26", pele: "#94603e", focinho: "#b07a52", crina: "#5e6a2c", chifre: "#c8ccd4", casco: "#2e2424", cinto: "#3e3240", tanga: "#4e5a30", metal: "#a8b0bc", madeira: "#7a5232", olho: "#ff3a2a", ouro: "#d8a838", boca: "#3a1414", dente: "#f0ece0" },
   GRIFO: { pena: "#f0ece0", bico: "#e8b030", corpo: "#c09050", asa: "#8a5a32", garra: "#3a2e26", olho: "#e8c040", boca: "#5a2a1a", ponta: "#5a3a22" },
   HIDRA: { escama: "#3e8a4a", ventre: "#c8c080", espinho: "#2a5a3a", olho: "#ffd040", boca: "#8a2030", dente: "#f0ece0", escuro: "#1e3a28" },
   GIGANTE: { pele: "#c8946a", pelego: "#8a6a4a", couro: "#6a4428", barba: "#5a3a26", madeira: "#7a5232", olho: "#3a2a20", boca: "#5a2a24", corda: "#c8a060" },
@@ -81,56 +81,126 @@ const penas: OpForma["padrao"] = (x, y, tt) => (tt <= 1 && (x + y * 2) % 6 === 0
 
 // ───────────── desenhos ─────────────
 const minotauro = (P: Pinta, p: Pose) => {
+  // inspirado em minotauros de pixel art de ação: corpo curvado para a frente, ombros e trapézio enormes,
+  // cabeça baixa e projetada, chifres longos para a frente, tufos de pelo nas canelas e machado de duas lâminas
   const b = p.bob,
-    s = p.passo * 3;
-  const op = { linha: true, padrao: pelos };
-  // perna de trás, perna da frente (cascos)
-  P.ca(50 - s, 74 + b, 48 - s, 100, 6, "pelo", op);
-  P.el(48 - s, 102, 6, 3, "casco");
-  P.ca(62 + s, 74 + b, 64 + s, 100, 6.5, "pelo", op);
-  P.el(64 + s, 102, 6.5, 3, "casco");
-  // tanga
-  P.po([[42, 70 + b], [72, 70 + b], [70, 84 + b], [44, 84 + b]], "tanga", { linha: true });
-  // tronco musculoso
-  P.el(56 - p.recua, 56 + b, 17, 18, "pele", { linha: true });
-  P.el(60 - p.recua, 52 + b, 9, 7, "pele", { tom: tomVol(0.3) });
-  P.li(52 - p.recua, 50 + b, 52 - p.recua, 66 + b, P.m("pele"), 2);
-  // braço de trás
-  P.ca(46, 46 + b, 40, 66 + b, 5, "pele", { linha: true });
-  // machado grande (ergue e desce no golpe)
-  const ang = -1.6 + p.golpe * 2.6 - p.ruge * 0.6;
-  const hx = 70 + Math.cos(ang) * 6,
-    hy = 50 + b + Math.sin(ang) * 6;
-  const tx = hx + Math.cos(ang) * 44,
-    ty = hy + Math.sin(ang) * 44;
-  P.ca(hx - Math.cos(ang) * 8, hy - Math.sin(ang) * 8, tx, ty, 1.8, "madeira");
-  const nx = -Math.sin(ang),
-    ny = Math.cos(ang);
-  const lam = (k: number): [number, number] => [tx - Math.cos(ang) * 10 + nx * k * 12, ty - Math.sin(ang) * 10 + ny * k * 12];
-  P.po([[tx, ty], lam(1), [tx - Math.cos(ang) * 14, ty - Math.sin(ang) * 14], lam(-1)], "metal", { tom: tomVol(0.2), linha: true });
-  // braço da frente segurando
-  P.ca(64, 44 + b, hx, hy, 5.5, "pele", { linha: true });
-  P.el(hx, hy, 4, 4, "pele");
-  // cabeça de touro
-  const cx = 64 - p.recua + p.golpe * 3,
-    cy = 28 + b;
-  P.el(cx, cy, 11, 10, "pelo", op);
-  P.el(cx + 9, cy + 5, 7, 6, "pele", { tom: tomVol(0.2), linha: true }); // focinho
-  P.px(cx + 13, cy + 4, "casco", 1);
-  P.px(cx + 13, cy + 7, "casco", 1);
-  P.el(cx + 12, cy + 9, 2.5, 2.5, "ouro", { tom: tomFixo(1) }); // argola
-  P.px(cx + 12, cy + 9, "pele", 2);
-  if (p.boca > 0.4) P.po([[cx + 5, cy + 9], [cx + 15, cy + 9], [cx + 13, cy + 12 + p.boca * 3], [cx + 6, cy + 11]], "boca");
-  // chifres
-  P.ca(cx - 4, cy - 7, cx - 14, cy - 14, 2.6, "chifre", { tom: tomVol(0.2) });
-  P.ca(cx - 14, cy - 14, cx - 12, cy - 22, 1.8, "chifre", { tom: tomVol(0.2) });
-  P.ca(cx + 4, cy - 8, cx + 10, cy - 17, 2.6, "chifre", { tom: tomVol(0.2) });
-  P.ca(cx + 10, cy - 17, cx + 17, cy - 21, 1.8, "chifre", { tom: tomVol(0.2) });
-  // olho brilhando
-  P.px(cx + 4, cy - 1, "olho", 0);
-  P.px(cx + 5, cy - 1, "olho", 1);
-  P.px(cx + 4, cy - 3, "pelo", 3);
-  P.px(cx + 5, cy - 3, "pelo", 3);
+    s = p.passo * 3,
+    r = p.recua;
+  const lin = { linha: true };
+  // tufo de pelo desgrenhado (canelas)
+  const tufo = (x: number, y: number, rx: number, ry: number, escuro: boolean) => {
+    const pts: [number, number][] = [];
+    for (let k = 0; k < 14; k++) {
+      const a = (k / 14) * Math.PI * 2;
+      const f = k % 2 ? 0.62 : 1 + (k % 4 === 0 ? 0.18 : 0);
+      pts.push([x + Math.cos(a) * rx * f, y + Math.sin(a) * ry * f]);
+    }
+    P.po(pts, "crina", { linha: true, padrao: pelos, tom: tomVol(escuro ? -0.3 : 0) });
+  };
+  const musc = (x0: number, y0: number, x1: number, y1: number) => P.li(x0 - r, y0 + b, x1 - r, y1 + b, P.m("pele"), 3);
+  const brilho = (cx: number, cy: number, rx: number, ry: number) => P.el(cx - r, cy + b, rx, ry, "pele", { tom: tomFixo(0) });
+  // ── cabeça (calculada antes: o chifre de trás vai atrás do corpo)
+  const cx = 80 - r + p.golpe * 2,
+    cy = 36 + b - p.ruge * 5 + p.golpe * 2;
+  // chifre de trás
+  P.ca(cx - 3, cy - 8, cx - 2, cy - 15, 2.2, "chifre", { tom: tomVol(-0.4), linha: true });
+  P.ca(cx - 2, cy - 15, cx + 4, cy - 21, 1.5, "chifre", { tom: tomVol(-0.4) });
+  // ── perna de trás: coxa, canela com tufo de pelo, casco
+  P.ca(48 - r, 68 + b, 42 - s, 85, 8, "pele", { linha: true, tom: tomVol(-0.35) });
+  P.ca(42 - s, 85, 45 - s, 100, 5.5, "pele", { linha: true, tom: tomVol(-0.35) });
+  tufo(44 - s, 94, 8, 7, true);
+  P.el(46 - s, 102.5, 6.5, 2.8, "casco", lin);
+  // ── braço de trás (mais escuro, atrás do corpo)
+  P.ca(44 - r, 36 + b, 34 - r, 52 + b, 7, "pele", { linha: true, tom: tomVol(-0.45) });
+  P.ca(34 - r, 52 + b, 39 - r, 64 + b, 5.8, "pele", { linha: true, tom: tomVol(-0.45) });
+  P.el(40 - r, 67 + b, 5, 4.5, "pele", { linha: true, tom: tomVol(-0.45) });
+  // ── tronco: trapézio/costas, peito e barriga
+  P.el(50 - r, 36 + b, 19, 14, "pele", lin);
+  P.el(57 - r, 49 + b, 19, 16, "pele", lin);
+  P.el(57 - r, 61 + b, 13, 8, "pele", lin);
+  brilho(46, 30, 7, 4); // topo das costas
+  brilho(64, 45, 7, 5); // peitoral
+  musc(52, 40, 66, 38); // linha do peitoral
+  musc(58, 54, 66, 54); // abdômen
+  musc(58, 59, 65, 59);
+  musc(61, 52, 61, 64);
+  // ── cinto com rebites e tanga
+  P.po([[38 - r, 63 + b], [73 - r, 60 + b], [74 - r, 67 + b], [39 - r, 70 + b]], "cinto", lin);
+  for (const x of [43, 50, 57, 64, 70]) P.px(x - r, 65 + b - (x - 38) * 0.08, "metal", 0);
+  P.po([[55 - r, 61 + b], [60 - r, 61 + b], [60 - r, 67 + b], [55 - r, 67 + b]], "metal", { tom: tomVol(0.2), linha: true }); // fivela
+  P.po([[50 - r, 67 + b], [67 - r, 65 + b], [66 - r, 79 + b], [62 - r, 82 + b], [59 - r, 78 + b], [55 - r, 83 + b], [52 - r, 78 + b]], "tanga", lin);
+  // ── perna da frente
+  P.ca(62 - r, 68 + b, 69 + s, 85, 8.5, "pele", lin);
+  P.ca(69 + s, 85, 65 + s, 100, 6, "pele", lin);
+  tufo(66 + s, 94, 8.5, 7, false);
+  P.el(66 + s, 102.5, 7, 3, "casco", lin);
+  // ── pescoço e cabeça de touro
+  P.el(cx - 9, cy + 2, 10, 9, "pele", lin);
+  P.po([[cx - 13, cy - 2], [cx - 10, cy - 7], [cx - 7, cy - 3]], "pelo", lin); // orelha
+  P.el(cx, cy, 12.5, 11, "pelo", { linha: true, padrao: pelos });
+  P.el(cx + 11, cy + 6, 10, 7.5, "focinho", lin);
+  P.el(cx + 13, cy + 3, 5, 2.5, "focinho", { tom: tomFixo(0) }); // brilho do focinho
+  P.el(cx + 3, cy - 4, 7, 3, "pelo", { tom: tomFixo(2) }); // sobrancelha pesada
+  P.el(cx - 6, cy - 8, 9, 5, "crina", { linha: true, padrao: pelos }); // crina
+  P.po([[cx - 14, cy - 6], [cx - 9, cy - 13], [cx - 6, cy - 7]], "crina", lin);
+  P.po([[cx - 8, cy - 10], [cx - 2, cy - 15], [cx, cy - 9]], "crina", lin);
+  P.el(cx + 5, cy - 1, 1.8, 1.3, "olho", { tom: tomFixo(0) }); // olho vermelho
+  P.px(cx + 5, cy - 1, "olho", 0);
+  P.px(cx + 16, cy + 3, "casco", 1); // narina
+  P.px(cx + 17, cy + 4, "casco", 1);
+  P.el(cx + 15, cy + 11, 2.6, 2.6, "ouro", { tom: tomVol(0.3), linha: true }); // argola
+  P.px(cx + 15, cy + 11, "focinho", 2);
+  if (p.boca > 0.4) {
+    P.po([[cx + 6, cy + 10], [cx + 17, cy + 9], [cx + 15, cy + 12 + p.boca * 4], [cx + 7, cy + 12]], "boca", lin);
+    P.px(cx + 9, cy + 10, "dente", 0);
+    P.px(cx + 13, cy + 10, "dente", 0);
+  } else P.li(cx + 7, cy + 11, cx + 16, cy + 10, P.m("pelo"), 3);
+  // chifre da frente: sai para o lado, curva para a frente e para cima
+  P.ca(cx + 1, cy - 7, cx + 8, cy - 12, 3.6, "chifre", { tom: tomVol(0.1), linha: true });
+  P.ca(cx + 8, cy - 12, cx + 16, cy - 14, 2.8, "chifre", { tom: tomVol(0.1), linha: true });
+  P.ca(cx + 16, cy - 14, cx + 22, cy - 21, 1.8, "chifre", { tom: tomVol(0.1), linha: true });
+  P.li(cx + 5, cy - 12, cx + 6, cy - 8, P.m("chifre"), 3);
+  P.li(cx + 11, cy - 15, cx + 11, cy - 11, P.m("chifre"), 3);
+  // ── machado de duas lâminas (descansa na diagonal, ergue atrás e desce no golpe)
+  // parado: baixo, na frente da barriga; no ataque ergue por cima da cabeça (golpe < 1) e desce no impacto (golpe = 1)
+  const ang = p.golpe === 0 ? 0.5 - p.ruge * 2.2 : p.golpe >= 0.9 ? 0.35 : p.golpe >= 0.55 ? -0.2 : -1.0 - p.golpe * 2.6;
+  const hx = 68 - r,
+    hy = 60 + b;
+  const ux = Math.cos(ang),
+    uy = Math.sin(ang);
+  const nx = -uy,
+    ny = ux;
+  const L = 38;
+  P.ca(hx - ux * 10, hy - uy * 10, hx + ux * L, hy + uy * L, 1.9, "madeira", { linha: true });
+  for (const k of [1, -1]) {
+    const pt = (ao: number, fora: number): [number, number] => [hx + ux * (L - ao) + nx * k * fora, hy + uy * (L - ao) + ny * k * fora];
+    // lâmina em meia-lua: estreita junto do cabo, fio largo e curvo com duas pontas
+    P.po([pt(3, 2), pt(11, 2), pt(14, 6), pt(18, 14), pt(13, 15), pt(7, 16), pt(1, 15), pt(-4, 13), pt(0, 6)], "metal", { tom: tomVol(0.15), linha: true });
+    P.li(...pt(-2, 13), ...pt(5, 15), P.m("metal"), 0); // fio da lâmina
+    P.li(...pt(5, 15), ...pt(15, 13), P.m("metal"), 0);
+  }
+  P.el(hx + ux * (L - 7), hy + uy * (L - 7), 2.6, 2.6, "metal", { tom: tomFixo(2), linha: true });
+  // ── braço da frente: deltoide enorme, bíceps, antebraço com bracelete, punho no cabo
+  P.el(60 - r, 38 + b, 11, 10, "pele", lin);
+  brilho(57, 34, 5, 3);
+  P.ca(60 - r, 42 + b, 63 - r, 53 + b, 7, "pele", lin);
+  brilho(60, 46, 2.5, 4);
+  musc(56, 44, 60, 52);
+  P.ca(63 - r, 53 + b, hx, hy, 6, "pele", lin);
+  {
+    // bracelete: faixa atravessada no antebraço
+    const ax = 63 - r,
+      ay = 53 + b;
+    const dx = hx - ax,
+      dy = hy - ay,
+      dl = Math.hypot(dx, dy) || 1;
+    const [ex, ey] = [dx / dl, dy / dl];
+    const mx = ax + dx * 0.45,
+      my = ay + dy * 0.45;
+    P.po([[mx - ey * 6.5 - ex * 1.6, my + ex * 6.5 - ey * 1.6], [mx + ey * 6.5 - ex * 1.6, my - ex * 6.5 - ey * 1.6], [mx + ey * 6.5 + ex * 1.6, my - ex * 6.5 + ey * 1.6], [mx - ey * 6.5 + ex * 1.6, my + ex * 6.5 + ey * 1.6]], "cinto", lin);
+    P.px(mx, my, "metal", 0);
+  }
+  P.el(hx, hy, 5, 5, "pele", lin);
 };
 
 const grifo = (P: Pinta, p: Pose) => {
@@ -324,7 +394,7 @@ const dragao = (P: Pinta, p: Pose) => {
 const DESENHO: Record<ChefeId, (P: Pinta, p: Pose) => void> = { MINOTAURO: minotauro, GRIFO: grifo, HIDRA: hidra, GIGANTE: gigante, QUIMERA: quimera, DRAGAO: dragao };
 // onde fica a cabeça de cada um (para retrato, setas e textos)
 export const CABECA: Record<ChefeId, { x: number; y: number }> = {
-  MINOTAURO: { x: 66, y: 26 },
+  MINOTAURO: { x: 82, y: 34 },
   GRIFO: { x: 80, y: 38 },
   HIDRA: { x: 64, y: 28 },
   GIGANTE: { x: 60, y: 18 },
@@ -362,9 +432,19 @@ export const quadroChefe = (id: ChefeId, anim: Anim, q: number, dir: string, esc
     // derrota: tomba de lado
     const r = novoCanvas(w, h);
     const ctx = r.getContext("2d")!;
-    ctx.translate(CX * E, CY * E);
-    ctx.rotate(-p.caido * (Math.PI / 2) * 0.9);
-    ctx.drawImage(cv, -CX * E, -CY * E + p.caido * 8 * E);
+    const c = p.caido;
+    if (id === "MINOTAURO" || id === "GIGANTE") {
+      // quem anda em pé tomba de cara no chão, para a frente; o giro anda para trás e para cima para caber no quadro
+      ctx.translate((CX - 38 * c) * E, (CY - 44 * c) * E);
+      ctx.rotate(c * (Math.PI / 2) * 0.96);
+      ctx.drawImage(cv, -CX * E, -CY * E);
+    } else {
+      // quadrúpedes e voadores desabam de barriga: achatam, inclinam um pouco e afundam
+      ctx.translate(CX * E, (CY + 2 * c) * E);
+      ctx.rotate(c * 0.12);
+      ctx.scale(1 + 0.08 * c, 1 - 0.42 * c);
+      ctx.drawImage(cv, -CX * E, -CY * E);
+    }
     cv = r;
   }
   if (dir === "W") {
@@ -388,7 +468,7 @@ export const retratoChefe = (id: ChefeId): HTMLCanvasElement => {
   const cab = CABECA[id];
   const cv = novoCanvas(96, 64);
   const ctx = cv.getContext("2d")!;
-  ctx.drawImage(sp, Math.round(cab.x - 48), Math.round(cab.y - 26), 96, 64, 0, 0, 96, 64);
+  ctx.drawImage(sp, Math.round(Math.max(0, Math.min(CW - 96, cab.x - 48))), Math.round(Math.max(0, cab.y - 26)), 96, 64, 0, 0, 96, 64);
   cache.set(chave, cv);
   return cv;
 };

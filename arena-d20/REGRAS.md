@@ -277,3 +277,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 14 | Caverna só para luta com boss; câmera pega a arena toda; boss 3× maior; arquivo .md para recriar a arena | regras atuais + `SuaArenaD20.md` |
 | 15 | Arquivo .md com todas as regras da conversa | este arquivo |
 | 16 | Episódios 9 e 10 | ep 9 no calabouço; ep 10 com o Minotauro na caverna + baú; poderes estendidos até o nível 10 (o Korrin chegou ao 6) |
+| 17 | Minotauro parecido com 2 modelos de pixel art | Minotauro redesenhado do zero no mesmo estilo (curvado, musculoso, chifres longos, machado de duas lâminas, cinto com rebites, tufos de pelo); quedas novas dos chefes; folhas de sprites em `arena-d20/chefes/` |
