@@ -584,6 +584,39 @@ def trilha(total, fases):
 
 
 # ───────────────────────── ambiente de calabouço ─────────────────────────
+def ambiente_floresta(total):
+    """Clareira ao entardecer: vento nas folhas, grilos, coruja ao longe e fogueiras crepitando."""
+    n = int(total * SR)
+    rng = np.random.default_rng(901)
+    # vento nas folhas: ruído rosado filtrado com sopros lentos
+    r = lp_fft(rng.standard_normal(n), lo=300, hi=2500)
+    sopro = 0.55 + 0.45 * np.sin(2 * np.pi * 0.07 * np.arange(n) / SR + 1.3) * np.sin(2 * np.pi * 0.023 * np.arange(n) / SR)
+    out = r / (np.max(np.abs(r)) or 1) * 0.035 * sopro
+    # grilos: trinados agudos em grupos, dois grilos em ritmos diferentes
+    for f0, periodo, fase in [(4300, 0.9, 0.0), (4700, 1.3, 0.4)]:
+        t = fase
+        while t < total - 0.5:
+            for k in range(3):
+                pulso_ = np.sin(2 * np.pi * f0 * t_(0.03)) * np.sin(np.linspace(0, np.pi, int(0.03 * SR)))
+                junta(out, pulso_ * 0.018, t + k * 0.045)
+            t += periodo * (0.85 + rng.random() * 0.3)
+    # coruja ao longe (hu-hu)
+    t = 6.0
+    while t < total - 3:
+        for k, dur in enumerate([0.22, 0.38]):
+            f = 390 - k * 25
+            h = np.sin(2 * np.pi * f * t_(dur)) * np.sin(np.linspace(0, np.pi, int(dur * SR))) ** 2 * 0.05
+            for e, a in [(0, 1), (0.25, 0.25)]:
+                junta(out, h * a, t + k * 0.32 + e)
+        t += 17 + rng.random() * 9
+    # fogueiras crepitando
+    for _ in range(int(total * 7)):
+        p = rng.integers(0, n - 300)
+        k = rng.integers(40, 220)
+        out[p : p + k] += rng.choice([-1, 1], k) * decai(k, 0.0008) * (0.015 + rng.random() * 0.035)
+    return out
+
+
 def ambiente(total):
     n = int(total * SR)
     rng = np.random.default_rng(900)
@@ -630,7 +663,8 @@ def main():
     fases = {k: v / fps for k, v in dados["fases"].items()}
 
     musica = trilha(total, fases)
-    amb = ambiente(total)
+    floresta = dados.get("arena") == "floresta"
+    amb = ambiente_floresta(total) if floresta else ambiente(total)
     seco = np.zeros(len(musica))
     molhado = np.zeros(len(musica))
 
@@ -664,7 +698,8 @@ def main():
         else:
             junta(seco, x, t0)
 
-    sfx = seco + eco(molhado)
+    # eco de masmorra só no calabouço; ao ar livre o som é mais seco
+    sfx = seco + (eco(molhado, atraso=0.09, fb=0.15, mistura=0.12) if floresta else eco(molhado))
     # níveis: trilha ~ -20 dBFS RMS, efeitos ~4–6 dB acima, ambiente por baixo
     def rms(x):
         return np.sqrt(np.mean(x[np.abs(x) > 1e-4] ** 2)) if np.any(np.abs(x) > 1e-4) else 1

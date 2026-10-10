@@ -1,9 +1,9 @@
-// Monta cada quadro do vídeo: mundo (calabouço + lutadores + efeitos) e interface (HUD, banners, cut-ins).
+// Monta cada quadro do vídeo: mundo (calabouço ou floresta + lutadores + efeitos) e interface (HUD, banners, cut-ins).
 import { cena, condicoesEm, posEm, valorEm, video, V, CUTIN, VS as DUR_VS } from "./roteiro.ts";
 import type { Golpe, Roteiro } from "./roteiro.ts";
 import { ALCANCE } from "./combate.ts";
 import type { P } from "./combate.ts";
-import { W, H, fundo, aplicarLuz, luzesTochas, luzEm, desenharTochas, desenharAmbiente, vinheta } from "./cenario.ts";
+import { W, H, fundo, aplicarLuz, luzesTochas, luzEm, desenharTochas, desenharAmbiente, vinheta, AMBIENTE } from "./cenario.ts";
 import type { Luz } from "./cenario.ts";
 import { PE_X, PE_Y, quadro, retrato, mini, alturaCabeca } from "./sprite.ts";
 import type { Anim, Dir, Expr } from "./sprite.ts";
@@ -270,7 +270,8 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   // ── mundo ──
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha = 1;
-  ctx.drawImage(fundo(), 0, 0);
+  const arena = r.ep.arena ?? "calabouco";
+  ctx.drawImage(fundo(arena), 0, 0);
   const luzes: Luz[] = luzesTochas(s);
   const estados = r.lutadores.map((_, i) => estado(r, i, s, v));
 
@@ -322,8 +323,8 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     const dummy = efeitoLuzes(e);
     tmpLuzes.push(...dummy);
   }
-  aplicarLuz(ctx, [...luzes, ...fxLuzes, ...tmpLuzes]);
-  desenharAmbiente(ctx, s);
+  aplicarLuz(ctx, [...luzes, ...fxLuzes, ...tmpLuzes], AMBIENTE[arena]);
+  desenharAmbiente(ctx, s, arena);
 
   // caveirinhas de quem caiu
   r.morte.forEach((m, i) => {
@@ -391,7 +392,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
       ctx.fillRect(Math.round(e.x - 8 + hash3(k, i) * 16), Math.round(e.y - 6 - ph * 1.5), 1, 2);
     }
   });
-  desenharTochas(ctx, s);
+  desenharTochas(ctx, s, arena);
   vinheta(ctx);
   // confete (no mundo, cai sobre todos)
   if (v >= V.vitoria && v < V.pergaminho + 30) confete(ctx, v - V.vitoria);

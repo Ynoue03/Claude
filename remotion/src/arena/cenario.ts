@@ -1,6 +1,11 @@
 // Calabouço de pedra (top-down estilo GBA/SNES): fundo estático + luz das tochas + detalhes animados.
 import { Rng, hash3 } from "./rng.ts";
 import { novoCanvas } from "./pixel.ts";
+import { fundoFloresta, desenharLanternas, desenharVidaFloresta } from "./floresta.ts";
+
+export type Arena = "calabouco" | "floresta";
+// luz ambiente fora das poças de luz: penumbra azul-esverdeada (calabouço) / entardecer na mata (floresta)
+export const AMBIENTE: Record<Arena, [number, number, number]> = { calabouco: [46, 66, 82], floresta: [86, 112, 110] };
 
 export const W = 360,
   H = 640;
@@ -35,7 +40,8 @@ const esc = (a: RGB, k: number): RGB => [a[0] * k, a[1] * k, a[2] * k];
 
 let cacheFundo: HTMLCanvasElement | null = null;
 
-export const fundo = (): HTMLCanvasElement => {
+export const fundo = (arena: Arena = "calabouco"): HTMLCanvasElement => {
+  if (arena === "floresta") return fundoFloresta();
   if (cacheFundo) return cacheFundo;
   const rng = new Rng("calabouco-arena-d20");
   const img = new ImageData(W, H);
@@ -491,7 +497,8 @@ const CHAMA = [
 ];
 const COR_CHAMA: Record<string, string> = { y: "#fff2a8", o: "#ffb03a", r: "#e0501e" };
 
-export const desenharTochas = (ctx: CanvasRenderingContext2D, f: number) => {
+export const desenharTochas = (ctx: CanvasRenderingContext2D, f: number, arena: Arena = "calabouco") => {
+  if (arena === "floresta") return desenharLanternas(ctx, f, TOCHAS);
   TOCHAS.forEach((t, i) => {
     const q = Math.floor(f / 4 + i) % 4;
     // suporte
@@ -548,7 +555,8 @@ export const desenharTochas = (ctx: CanvasRenderingContext2D, f: number) => {
 };
 
 // brilho das runas, reflexo das poças, gotas, poeira e ratos
-export const desenharAmbiente = (ctx: CanvasRenderingContext2D, f: number) => {
+export const desenharAmbiente = (ctx: CanvasRenderingContext2D, f: number, arena: Arena = "calabouco") => {
+  if (arena === "floresta") return desenharVidaFloresta(ctx, f);
   // runas que respiram em azul
   const pulso = 0.45 + 0.35 * Math.sin(f * 0.06);
   const niveis = [

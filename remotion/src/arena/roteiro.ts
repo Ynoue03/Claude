@@ -313,7 +313,7 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   const campeao = lutadores[vencedor];
   const base = { ...campeao, nivel: ev.nivel, pvMax: ev.pvMax, atributos: ev.atributos, pvRolagens: ev.pvRolagens };
   const subida = combinarSubidas([...ev.subidas, subirNivel(base, rng)]);
-  const historia = escreverHistoria(campeao, sim, subida);
+  const historia = escreverHistoria(campeao, sim, subida, ep.arena);
   const pergaminho = montarPergaminho(campeao, subida, sim);
 
   const r: Roteiro = {
@@ -422,12 +422,13 @@ const FEITO: Record<string, string> = {
   BARDO: "venceu com versos afiados",
 };
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const escreverHistoria = (c: Lutador, sim: Simulacao, sub: SubidaNivel): string => {
+const escreverHistoria = (c: Lutador, sim: Simulacao, sub: SubidaNivel, arena = "calabouco"): string => {
   const st = sim.stats[c.id];
   const origem = c.especie === "DRACONATO" ? `${ORIGEM.DRACONATO} ${c.ancestralidade?.nome ?? ""}`.trim() : ORIGEM[c.especie];
   const abates = st.abates === 0 ? "sem derrubar ninguém até o fim" : st.abates === 1 ? "derrubou um rival" : `derrubou ${st.abates} rivais`;
   const frases: string[] = [];
-  frases.push(`${origem}, ${c.nome} ${FEITO[c.classe]} e ${abates}.`);
+  const feito = FEITO[c.classe].replace("ao calabouço", arena === "floresta" ? "à clareira" : "ao calabouço");
+  frases.push(`${origem}, ${c.nome} ${feito} e ${abates}.`);
   if (st.menorPv <= Math.max(3, c.pvMax * 0.3)) frases.push(`Resistiu com ${st.menorPv} PV quando tudo parecia perdido.`);
   else if (st.primeiroCritico) frases.push(`Acertou um crítico (${st.primeiroCritico}) que ficou na memória da arena.`);
   if (sim.evolucao[c.id].subidas.length) frases.push(`Derrubou o campeão e subiu de nível ali mesmo, no meio da luta.`);

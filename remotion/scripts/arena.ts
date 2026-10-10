@@ -24,7 +24,7 @@ mkdirSync(join(raiz, "public/arena"), { recursive: true });
 const vs = r.congela.find((c) => c.tipo === "vs")!;
 writeFileSync(
   join(raiz, `public/arena/ep${nn}-sons.json`),
-  JSON.stringify({ fps: FPS, quadros: V.fim, fases: { batalha: V.batalha, duelo: vs.v0, vitoria: V.vitoria, pergaminho: V.pergaminho, cta: V.cta }, sons: r.sons }),
+  JSON.stringify({ fps: FPS, quadros: V.fim, arena: ep.arena ?? "calabouco", fases: { batalha: V.batalha, duelo: vs.v0, vitoria: V.vitoria, pergaminho: V.pergaminho, cta: V.cta }, sons: r.sons }),
 );
 
 // ficha de texto

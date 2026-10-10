@@ -44,7 +44,8 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `campeaoAnterior` | `null` ou o conteúdo de `arena-d20/epNN/campeao.json` do episódio anterior: entra como 1 dos 16, com nível, atributos, PV, poderes e coroa |
 | `textos` | banners: `escolha`, `lutem`, `subiu`, `defende`, `cta` (no CTA, o trecho depois de ` · ` sai em dourado) |
 | `versao` | `2` (padrão para episódios novos): nome **e sobrenome** que nunca se repetem na série, leve foco dos lutadores no campeão e **+1 nível na hora para quem derrubar o campeão** (vencendo, soma +2). Sem o campo = regras dos episódios 1–3 (reproduzem a mesma luta de antes) |
-| `focoCampeao` | força da preferência dos lutadores por atacar o campeão (versão 2+): `1` = leve (padrão), `5` = forte. Medido com a Yara no nível 4 em 40 lutas: foco 1 → campeã vence 92%; foco 5 → ~50% |
+| `focoCampeao` | preferência dos lutadores por atacar o campeão (versão 2+): `"auto"` (recomendado) cresce com o nível do campeão — `2,5 × (nível − 2)`, calibrado para ele vencer ~50% (30 lutas por nível com a Yara nos níveis 2–5); ou um número fixo: `1` = leve (padrão), `5` = forte |
+| `arena` | `"calabouco"` (padrão) ou `"floresta"` — clareira ao entardecer com lanternas, fogueiras, lagos e vaga-lumes; muda também o som ambiente |
 | `audio` | WAV em `remotion/public/` (`arena/epNN.wav`); vazio = sem áudio |
 
 Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo ruivo com cajado e capa verde", "autor": "@fulana" }`.
@@ -66,6 +67,7 @@ sem sobrenome ganha um, fixo, na primeira luta da versão 2 (Yara → Yara Rubra
 | `remotion/src/arena/combate.ts` | a luta: iniciativa, deslocamento, ataque de oportunidade, vantagem/desvantagem, crítico/falha, salvaguardas, concentração, recursos de classe e espécie, IA (corpo a corpo × atiradores que recuam) |
 | `remotion/src/arena/roteiro.ts` | mostra os turnos em **grupos de 4 lutadores agindo ao mesmo tempo** (constante `GRUPO`; as regras continuam em ordem de iniciativa), distribui os grupos nos 90 s (só o ritmo muda, nunca as regras), escolhe os cut-ins (crítico > abate > recurso, um a cada 4,5 s), agenda sons, história e pergaminho |
 | `remotion/src/arena/pixel.ts` + `sprite.ts` | motor de pixel art: rampas com hue shifting, sombreamento em 4 tons, sel-out, rim light; sprites 48×64, retratos 96×64 e 16×16, 7 expressões, versões rasgadas |
+| `remotion/src/arena/floresta.ts` | floresta: grama e terra batida, linha de árvores, arcos em ruína, estandartes, monte de terra em degraus com pedras rúnicas, pedra d20 com musgo, lanternas, fogueiras, lagos, vaga-lumes, folhas caindo, coelhos |
 | `remotion/src/arena/cenario.ts` | calabouço: lajotas, paredes, portões, correntes, estandartes, tablado de degraus com runas, altar d20, 10 tochas com luz, poças, ratos, poeira |
 | `remotion/src/arena/efeitos.ts` | golpes: cortes, flechas, raio de fogo, mísseis, raio de gelo, onda trovejante, chama sagrada, espinhos, notas da zombaria, sopro em cone, cura… |
 | `remotion/src/arena/render.ts` | monta cada quadro: mundo + luz, HUD 4×4, caixas de golpe, d20 girando, números, "CAIU!", cut-in, VS, vitória, pergaminho, CTA |

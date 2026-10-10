@@ -468,8 +468,10 @@ export type Episodio = {
   // 1 = regras dos episódios 1–3 (nome único, sem foco no campeão).
   // 2 = nome e sobrenome que nunca se repetem, leve foco no campeão e +1 nível para quem derrubá-lo.
   versao?: number;
-  // força do foco dos lutadores no campeão (versão 2+): 1 = leve (padrão), 3 = forte, 0 = nenhum
-  focoCampeao?: number;
+  // força do foco dos lutadores no campeão (versão 2+): 1 = leve (padrão), 5 = forte, 0 = nenhum,
+  // "auto" = cresce com o nível do campeão (2,5 por nível acima do 2)
+  focoCampeao?: number | "auto";
+  arena?: "calabouco" | "floresta"; // cenário (padrão: calabouço)
 };
 
 export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng } => {
