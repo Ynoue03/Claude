@@ -79,6 +79,7 @@ type Lutador = {
   centelha: boolean;
   vexAlvo?: number; // Maestria "Irritar" (ladino): vantagem no próximo ataque contra esse alvo
   lentoAte: number;
+  reacaoRodada: number; // rodada em que já usou a reação (ataque de oportunidade)
 };
 
 const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -128,6 +129,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       adrenalina: f.especie === "orc" ? profDe(f.nivel) : 0,
       centelha: f.classe === "clerigo" && f.nivel >= 2,
       lentoAte: -1,
+      reacaoRodada: -1,
     };
   });
   // o mago já entra com Armadura Arcana (gasta um espaço de 1º círculo)
@@ -305,7 +307,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     }
     return { x, y };
   };
-  const mover = (l: Lutador, alvoX: number, alvoY: number, maxPes: number, t0: number, salto = false) => {
+  const mover = (l: Lutador, alvoX: number, alvoY: number, maxPes: number, t0: number, salto = false, provoca = true) => {
     const dx = alvoX - l.x,
       dy = alvoY - l.y;
     const dd = Math.hypot(dx, dy);
@@ -313,6 +315,21 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     const passo = Math.min(dd, maxPes);
     let { x, y } = limitar(l.x + (dx / dd) * passo, l.y + (dy / dd) * passo);
     ({ x, y } = afastar(l, x, y));
+    // Ataque de oportunidade: sair do alcance de quem luta corpo a corpo custa um golpe (reação dele).
+    // Ladino nível 2+ usa a Ação Ardilosa para Desengajar e não provoca.
+    if (provoca && !(l.f.classe === "ladino" && l.f.nivel >= 2)) {
+      for (const o of vivos()) {
+        if (o.id === l.id || !l.vivo) continue;
+        if (o.f.arma.alcance > 5 || o.reacaoRodada === rodada || o.atordoadoAte >= turnoGlobal) continue;
+        if (dist(o, l) > ALCANCE_CORPO || Math.hypot(o.x - x, o.y - y) <= ALCANCE_CORPO) continue;
+        o.reacaoRodada = rodada;
+        ev.push({ k: "rotulo", id: o.id, t: t0, dur: 28, texto: "ATAQUE DE OPORTUNIDADE", cor: "#c8ccd4" });
+        log.push(`   ${l.f.nome} sai do alcance de ${o.f.nome}: ataque de oportunidade!`);
+        const r = atacar(o, l, opArma(o), t0 + 2);
+        t0 = r.tq + 4;
+      }
+      if (!l.vivo) return t0;
+    }
     const dur = Math.max(5, Math.round(Math.hypot(x - l.x, y - l.y) / VEL));
     ev.push({ k: "mov", id: l.id, t0, t1: t0 + dur, x0: l.x, y0: l.y, x1: x, y1: y, salto });
     l.x = x;
@@ -355,6 +372,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
 
   // devolve true se acertou
   const atacar = (l: Lutador, alvo: Lutador, op: OpAtaque, ta: number, rotulo?: string, vantExtra = false, sneakDisponivel = { usado: false }) => {
+    if (!l.vivo || !alvo.vivo) return { acertou: false, tq: ta, critico: false }; // caiu no ataque de oportunidade
     const modo = modoAtaque(l, alvo, op, vantExtra);
     if (alvo.guiado) alvo.guiado = false;
     if (l.zombado) l.zombado = false;
@@ -472,6 +490,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   };
 
   const magiaSalva = (l: Lutador, magia: Magia, circulo: number, alvos: Lutador[], cx: number, cy: number, ta: number, rotulo = true) => {
+    if (!l.vivo) return ta;
     const cd = l.f.cd!;
     const expr = exprMagia(l, magia, circulo);
     const r = rolar(rng, expr);
@@ -527,7 +546,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
         if (magia.id === "sussurros") {
           // o alvo usa a reação para fugir do conjurador
           const ang = Math.atan2(a.y - l.y, a.x - l.x);
-          mover(a, a.x + Math.cos(ang) * a.f.deslocamento, a.y + Math.sin(ang) * a.f.deslocamento, a.f.deslocamento, tqi + 4);
+          mover(a, a.x + Math.cos(ang) * a.f.deslocamento, a.y + Math.sin(ang) * a.f.deslocamento, a.f.deslocamento, tqi + 4, false, false);
         }
       }
     });
@@ -579,20 +598,45 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   };
 
   // atirador: mantém distância (≥ 25 pés do inimigo mais próximo) e fica dentro do alcance
+  // Atiradores e conjuradores evitam o corpo a corpo: a cada turno procuram o ponto mais seguro
+  // (longe de todos os inimigos, sem encostar na parede) de onde ainda alcançam o alvo.
+  const pontoSeguro = (l: Lutador, alvo: Lutador, alcance: number, desloc: number) => {
+    const outros = vivos().filter((o) => o.id !== l.id);
+    const avaliar = (x: number, y: number) => {
+      const minDist = Math.min(...outros.map((o) => Math.hypot(o.x - x, o.y - y)));
+      const ameaca = outros.reduce((s, o) => s + (CLASSES[o.f.classe].papel === "linha de frente" ? Math.max(0, 35 - Math.hypot(o.x - x, o.y - y)) : 0), 0);
+      const foraAlcance = Math.max(0, Math.hypot(alvo.x - x, alvo.y - y) - alcance + 5);
+      const parede = Math.max(0, Math.hypot(x, y) - (RAIO_ARENA - 12));
+      return Math.min(minDist, 45) - ameaca * 0.35 - foraAlcance * 1.5 - parede * 1.2;
+    };
+    let melhor = { x: l.x, y: l.y, v: avaliar(l.x, l.y) };
+    for (let i = 0; i < 16; i++) {
+      const ang = (i / 16) * Math.PI * 2 + rng() * 0.2;
+      for (const d of [desloc, desloc * 0.6]) {
+        const p = limitar(l.x + Math.cos(ang) * d, l.y + Math.sin(ang) * d);
+        const v = avaliar(p.x, p.y);
+        if (v > melhor.v) melhor = { ...p, v };
+      }
+    }
+    return melhor;
+  };
+
   const posicionarDistancia = (l: Lutador, alvo: Lutador, alcance: number, t0: number, desloc: number, ficarSePuder = false) => {
     const perto = vivos().filter((o) => o.id !== l.id).sort((a, b) => dist(l, a) - dist(l, b))[0];
-    if (perto && dist(l, perto) < 18) {
-      // recua para longe do mais próximo
-      const ang = Math.atan2(l.y - perto.y, l.x - perto.x) + (rng() - 0.5) * 0.9;
-      return mover(l, l.x + Math.cos(ang) * desloc, l.y + Math.sin(ang) * desloc, desloc, t0);
+    const ameacado = perto && dist(l, perto) < 25;
+    // ladino com arco parado = Mira Firme (só se ninguém estiver perto)
+    if (ficarSePuder && !ameacado && dist(l, alvo) <= alcance) return t0;
+    const p = pontoSeguro(l, alvo, alcance, desloc);
+    if (ameacado && Math.hypot(p.x - l.x, p.y - l.y) > 2) {
+      ev.push({ k: "rotulo", id: l.id, t: t0, dur: 22, texto: "RECUA", cor: "#9aa3b5" });
+      return mover(l, p.x, p.y, desloc, t0);
     }
     if (dist(l, alvo) > alcance) return mover(l, alvo.x, alvo.y, Math.min(desloc, dist(l, alvo) - alcance + 5), t0);
-    if (ficarSePuder) return t0; // ladino: parado para usar a Mira Firme
-    // atirador nunca fica parado: contorna o alvo mantendo 25–40 pés (o deslocamento do turno)
-    const angAtual = Math.atan2(l.y - alvo.y, l.x - alvo.x);
-    const ang = angAtual + (rng() < 0.5 ? -1 : 1) * (0.5 + rng() * 0.7);
-    const distAlvo = 25 + rng() * 15;
-    return mover(l, alvo.x + Math.cos(ang) * distAlvo, alvo.y + Math.sin(ang) * distAlvo, desloc, t0);
+    // sem ameaça: reposiciona para o ponto mais seguro (nunca parado)
+    if (Math.hypot(p.x - l.x, p.y - l.y) > 3) return mover(l, p.x, p.y, desloc, t0);
+    const ang = Math.atan2(l.y - alvo.y, l.x - alvo.x) + (rng() < 0.5 ? -0.6 : 0.6);
+    const dAlvo = Math.min(alcance - 5, Math.max(30, dist(l, alvo)));
+    return mover(l, alvo.x + Math.cos(ang) * dAlvo, alvo.y + Math.sin(ang) * dAlvo, Math.min(desloc, 12), t0);
   };
 
   const opArma = (l: Lutador): OpAtaque => {
@@ -935,8 +979,8 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
         },
       });
     }
-    // ataque com arma (clérigo com maça, bardo com rapieira) se o alvo estiver colado
-    if (proximo && dist(l, proximo) <= ALCANCE_CORPO) {
+    // conjurador só usa a arma corpo a corpo se estiver encurralado (sem outra opção)
+    if (proximo && dist(l, proximo) <= ALCANCE_CORPO && ops.length === 0) {
       const op = opArma(l);
       ops.push({ valor: (media(op.dano) + op.modDano) * 0.65, fazer: () => atacar(l, proximo, op, t1).tq });
     }
@@ -1185,7 +1229,9 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   }
   const sobreviventes = vivos();
   // limite de rodadas (raro): vence quem tem mais PV proporcional
-  const vencedor = sobreviventes.sort((a, b) => b.pv / b.pvMax - a.pv / a.pvMax)[0];
+  // (segurança) se ninguém sobrou, vence quem caiu por último
+  const ultimo = [...ev].reverse().find((e): e is Extract<Ev, { k: "morte" }> => e.k === "morte");
+  const vencedor = sobreviventes.sort((a, b) => b.pv / b.pvMax - a.pv / a.pvMax)[0] ?? porId(ultimo!.id);
   // encerra auras/status no fim
   for (const e of ev) {
     if (e.k === "aura" && e.t1 > fimBatalha) e.t1 = fimBatalha + 40;
