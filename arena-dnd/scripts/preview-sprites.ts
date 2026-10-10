@@ -14,13 +14,13 @@ const nome = process.argv[2];
 const props: PropsBatalha = nome && existsSync(`batalhas/${nome}.json`) ? JSON.parse(readFileSync(`batalhas/${nome}.json`, "utf8")) : { semente: 42, lutadores: [] };
 const fichas = montarFichas(props);
 
-const ESC = 5;
+const ESC = 4;
 const POSES: { pose: Pose; ang: number }[] = [
   { pose: "parado", ang: 0.5 },
   { pose: "passoA", ang: 0.5 },
   { pose: "golpe", ang: 1.9 },
 ];
-const CEL_W = 44, CEL_H = 62;
+const CEL_W = 54, CEL_H = 84;
 const COLS = 4;
 const W = COLS * POSES.length * CEL_W * ESC;
 const H = Math.ceil(fichas.length / COLS) * CEL_H * ESC;
@@ -52,17 +52,17 @@ fichas.forEach((f, i) => {
   POSES.forEach(({ pose, ang }, k) => {
     const ox = (col * POSES.length + k) * CEL_W + 2, oy = lin * CEL_H + 6;
     // sombra
-    for (let x = 10; x < 28; x++) px(ox + x, oy + CHAO, "#c4a06a");
+    for (let x = 12; x < 36; x++) px(ox + x, oy + CHAO, "#c4a06a");
     const s = montarSprite(f, pose);
     s.forEach((l, y) => l.forEach((cor, x) => cor && px(ox + x, oy + y, cor)));
     // arma girada na mão (amostragem do vizinho mais próximo)
     if (arma.chave !== "punhos") {
       const [hx, hy] = MAO;
       const pequeno = f.especie === "halfling" || f.especie === "gnomo" || f.especie === "anao";
-      const cy = hy + (pequeno ? 2 : 0);
+      const cy = hy + (pequeno ? 4 : 0);
       const c = Math.cos(ang), sn = Math.sin(ang);
-      for (let y = -30; y <= 30; y++)
-        for (let x = -30; x <= 30; x++) {
+      for (let y = -40; y <= 40; y++)
+        for (let x = -40; x <= 40; x++) {
           const u = Math.round(c * x + sn * y) + arma.pega[0];
           const v = Math.round(-sn * x + c * y) + arma.pega[1];
           const cor = arma.grade[v]?.[u];

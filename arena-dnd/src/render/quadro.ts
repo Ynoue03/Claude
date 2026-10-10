@@ -7,7 +7,7 @@ import { criarRng, mod, sinal } from "../motor/dados";
 import { cronograma, CTA, Episodio } from "../motor/episodio";
 import { magiasDe, poderesAte, profDe } from "../motor/niveis";
 import { animarCenario, corClasse, desenharFundo, iluminar, Luz, paraTela, SALA, TELA_H, TELA_W, PX_POR_PE } from "../pixel/cenario";
-import { CENTRO_X, CHAO, Expressao, Grade, MAO, montarArma, montarSprite, Pose, retrato } from "../pixel/sprites";
+import { CENTRO_X, CHAO, DESC_PEQUENO, Expressao, Grade, MAO, montarArma, montarSprite, Pose, retrato } from "../pixel/sprites";
 import { larguraTexto, texto, textoCentro } from "../pixel/fonte";
 import { misturar, tom } from "../pixel/cor";
 
@@ -241,7 +241,7 @@ export class Cena {
     // luz das tochas + personagens + magias
     const luzes: Luz[] = vivos.map(({ s }) => {
       const p = paraTela(s.x, s.y);
-      return { x: p.x, y: p.y - 12, r: 32, i: 0.5 };
+      return { x: p.x, y: p.y - 24, r: 38, i: 0.5 };
     });
     for (const e of this.fx) if (fm >= e.t && fm < e.t + e.dur) luzes.push(this.luzDoEfeito(e, fm));
     if (fm > fim + 6) luzes.push({ x: pVenc.x, y: pVenc.y - 20, r: 70, i: 1.2, cor: "#ffd84a" });
@@ -332,7 +332,7 @@ export class Cena {
     }
     // sombra
     ctx.fillStyle = "rgba(60,40,20,0.35)";
-    const sw = queda < -10 ? 6 : 9;
+    const sw = queda < -10 ? 8 : 12;
     for (let i = -sw; i <= sw; i++) ctx.fillRect(X + i, Y - 1, 1, Math.abs(i) < sw - 2 ? 3 : 2);
 
     let pose: Pose = "parado";
@@ -393,7 +393,7 @@ export class Cena {
     if (ang) ctx.rotate(ang);
     if (flip) ctx.scale(-1, 1);
     const ox = -CENTRO_X, oy = -CHAO;
-    const desc = rec.pequeno ? 2 : 0;
+    const desc = rec.pequeno ? DESC_PEQUENO : 0;
     ctx.drawImage(this.sprite(id, pose, expr, baixo || (s.morte !== undefined && f >= s.morte)), ox, oy);
     // arma na mão direita
     if (rec.arma.chave !== "punhos" && (s.morte === undefined || f < s.morte + 4)) {
@@ -417,7 +417,7 @@ export class Cena {
         const an = rr() * Math.PI * 2, r = 4 + k * 12 * (0.6 + rr() * 0.6);
         ctx.fillStyle = `rgba(200,195,210,${(0.7 * (1 - k)).toFixed(2)})`;
         const sz = Math.max(1, Math.round(4 * (1 - k)));
-        ctx.fillRect(Math.round(X + Math.cos(an) * r), Math.round(Y - 10 + Math.sin(an) * r * 0.7 - k * 6), sz, sz);
+        ctx.fillRect(Math.round(X + Math.cos(an) * r), Math.round(Y - 18 + Math.sin(an) * r * 0.7 - k * 6), sz, sz);
       }
     }
   }
@@ -495,7 +495,7 @@ export class Cena {
     const pe = e.de !== undefined ? this.estado(e.de, f) : { x: e.x0, y: e.y0 };
     const pp = e.para !== undefined ? this.estado(e.para, f) : { x: e.x1, y: e.y1 };
     const a = paraTela(pe.x, pe.y), b = paraTela(pp.x, pp.y);
-    const alt = 14; // altura do peito/mãos
+    const alt = 24; // altura do peito/mãos
     const ax = a.x, ay = a.y - alt, bx = b.x, by = b.y - alt;
     const claro = tom(e.cor, 1);
     const px = (x: number, y: number, c: string, s = 1) => { ctx.fillStyle = c; ctx.fillRect(Math.round(x), Math.round(y), s, s); };
@@ -713,7 +713,7 @@ export class Cena {
         const t = r.texto.toUpperCase();
         const w = larguraTexto(t) + 8, h = 13;
         let x = Math.round(Math.min(Math.max(p.x - w / 2, 2), TELA_W - w - 2)) + ox;
-        let y = Math.round(p.y - 52 - i * 15) + oy;
+        let y = Math.round(p.y - 74 - i * 15) + oy;
         const subida = f - r.t < 3 ? 3 - (f - r.t) : 0;
         y += subida;
         // evita sobrepor outro rótulo
@@ -722,7 +722,7 @@ export class Cena {
           if (!bate) break;
           y = bate.y - h - 1;
         }
-        if (y < SALA.topo + 2) y = Math.round(p.y + 16 + i * 15) + oy; // sem espaço em cima: vai para baixo
+        if (y < 186) y = Math.round(p.y + 16 + i * 15) + oy; // sem espaço em cima: vai para baixo
         ocupados.push({ x, y, w, h });
         const fim = r.t + r.dur - f;
         ctx.save();
@@ -748,7 +748,7 @@ export class Cena {
       const k = f - dd.t;
       if (k < 0 || k >= 26) continue;
       const lado = s.dir > 0 ? -1 : 1;
-      const x = Math.round(p.x + lado * 20) + ox, y = Math.round(p.y - 24 - Math.min(k, 5)) + oy;
+      const x = Math.round(p.x + lado * 25) + ox, y = Math.round(p.y - 40 - Math.min(k, 5)) + oy;
       const rolando = k < 7;
       const valor = rolando ? 1 + Math.floor(criarRng(dd.t * 7 + k)() * 20) : dd.valor;
       const cor = rolando ? "#c9ced6" : dd.cor;
@@ -763,7 +763,7 @@ export class Cena {
     nums.forEach((n, i) => {
       const k = f - n.t;
       const esc = n.grande ? 2 : 1;
-      const y = Math.round(p.y - 36 - Math.min(k, 14) * 1.2 - i * 9) + oy;
+      const y = Math.round(p.y - 60 - Math.min(k, 14) * 1.2 - i * 9) + oy;
       const pulo = k < 4 ? -2 + k : 0;
       ctx.save();
       ctx.globalAlpha = k > 24 ? (30 - k) / 6 : 1;
@@ -780,7 +780,7 @@ export class Cena {
     const s = this.estado(atual.id, f);
     if (s.morte !== undefined && f >= s.morte) return;
     const p = paraTela(s.x, s.y);
-    const y = Math.round(p.y - 46 + (Math.floor(f / 6) % 2)) + oy;
+    const y = Math.round(p.y - 70 + (Math.floor(f / 6) % 2)) + oy;
     texto(ctx, "▼", Math.round(p.x) - 2 + ox, y, "#ffffff", 1, "#140f1a");
   }
 
@@ -802,7 +802,7 @@ export class Cena {
     let c = this.retratos.get(chave);
     if (!c) {
       const fi = this.r.fichas[id];
-      c = gradeParaTela(retrato(montarSprite(fi, "parado", expr, false, false), 24, 20, 8, 3));
+      c = gradeParaTela(retrato(montarSprite(fi, "parado", expr, false, false), 32, 26, 9, 5));
       this.retratos.set(chave, c);
     }
     return c;
@@ -810,7 +810,7 @@ export class Cena {
 
   // ---------- painel de cima: grade 4×4 ----------
   painel(ctx: Ctx, f: number) {
-    const X = 4, Y = 74, W = 352, H = 96;
+    const X = 4, Y = 74, W = 352, H = 108;
     ctx.fillStyle = "#07060b";
     ctx.fillRect(X - 1, Y - 1, W + 2, H + 2);
     ctx.fillStyle = "#17141f";
@@ -824,32 +824,32 @@ export class Cena {
     texto(ctx, dir, X + W - 4 - larguraTexto(dir), Y + 3, "#f4f0e6", 1, null);
     this.r.fichas.forEach((fi, i) => {
       const col = i % 4, lin = Math.floor(i / 4);
-      const x = X + 3 + col * 87, y = Y + 13 + lin * 20;
+      const x = X + 3 + col * 87, y = Y + 14 + lin * 23;
       const s = this.estadoBase(fi.id, f);
       const morto = s.morte !== undefined && f >= s.morte;
       const k = Math.max(0, s.pvVis / s.pvMax);
       const expr: Expressao = morto ? "derrota" : k < 0.3 ? "ofegante" : s.anim?.tipo === "dano" && f - s.anim.t < 8 ? "dor" : "neutra";
       ctx.fillStyle = morto ? "#2a2730" : corClasse[fi.classe];
-      ctx.fillRect(x - 1, y - 1, 18, 18);
+      ctx.fillRect(x - 1, y - 1, 22, 22);
       ctx.fillStyle = "#0e0c14";
-      ctx.fillRect(x, y, 16, 16);
+      ctx.fillRect(x, y, 20, 20);
       ctx.drawImage(this.retratoHud(fi.id, expr, morto), x, y);
       if (morto) {
         ctx.fillStyle = "#c0392b";
-        for (let q = 0; q < 14; q++) {
+        for (let q = 0; q < 18; q++) {
           ctx.fillRect(x + 1 + q, y + 1 + q, 1, 1);
-          ctx.fillRect(x + 14 - q, y + 1 + q, 1, 1);
+          ctx.fillRect(x + 18 - q, y + 1 + q, 1, 1);
         }
       }
       const nome = fi.nome.toUpperCase().slice(0, 7);
-      texto(ctx, nome, x + 19, y + 1, morto ? "#5d5874" : "#f4f0e6", 1, null);
+      texto(ctx, nome, x + 23, y + 2, morto ? "#5d5874" : "#f4f0e6", 1, null);
       const nv = `NV${fi.nivel}`;
-      texto(ctx, nv, x + 83 - larguraTexto(nv), y + 1, fi.nivel > 1 ? "#ffd84a" : morto ? "#4a4660" : "#9a94b0", 1, null);
+      texto(ctx, nv, x + 84 - larguraTexto(nv), y + 2, fi.nivel > 1 ? "#ffd84a" : morto ? "#4a4660" : "#9a94b0", 1, null);
       if (morto) {
         ctx.fillStyle = "#b04a4a";
-        ctx.fillRect(x + 18, y + 4, larguraTexto(nome) + 2, 1);
+        ctx.fillRect(x + 22, y + 5, larguraTexto(nome) + 2, 1);
       }
-      const bx = x + 19, by = y + 11, bw = 64;
+      const bx = x + 23, by = y + 13, bw = 61;
       ctx.fillStyle = "#07060b";
       ctx.fillRect(bx - 1, by - 1, bw + 2, 6);
       ctx.fillStyle = "#3b2e3a";
@@ -871,7 +871,7 @@ export class Cena {
       const entra = Math.min(1, k / 6);
       const sai = k > b.dur - 6 ? (b.dur - k) / 6 : 1;
       const x = Math.round(TELA_W - 4 - w * easeOut(entra) * sai);
-      const y = 176 + n * 22;
+      const y = 188 + n * 22;
       ctx.fillStyle = "#140f1a";
       ctx.fillRect(x - 1, y - 1, w + 8, 21);
       ctx.fillStyle = tom(b.cor, -1);
@@ -880,7 +880,7 @@ export class Cena {
       ctx.fillRect(x, y, w + 6, 15);
       // mini retrato de quem caiu
       const quem = this.r.fichas.find((fi) => t.startsWith(fi.nome.toUpperCase()));
-      if (quem) ctx.drawImage(this.retratoHud(quem.id, "derrota", false), x + 2, y + 1);
+      if (quem) ctx.drawImage(this.retratoHud(quem.id, "derrota", false), x + 1, y - 1);
       texto(ctx, t, x + 22, y + 6, "#ffffff", 1, "#140f1a");
       n++;
     }
@@ -959,13 +959,13 @@ export class Cena {
     // rosto em close (grito)
     const rx = 20, ry = yc - 40;
     ctx.fillStyle = "#140f1a";
-    ctx.fillRect(rx - 3, ry - 3, 78, 66);
+    ctx.fillRect(rx - 3, ry - 3, 70, 58);
     ctx.fillStyle = e.cor;
-    ctx.fillRect(rx - 2, ry - 2, 76, 64);
+    ctx.fillRect(rx - 2, ry - 2, 68, 56);
     ctx.fillStyle = "#2a2238";
-    ctx.fillRect(rx, ry, 72, 60);
+    ctx.fillRect(rx, ry, 64, 52);
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(this.retratoGrande(e.id, "grito"), rx, ry, 72, 60);
+    ctx.drawImage(this.retratoGrande(e.id, "grito"), rx, ry, 64, 52);
     const fi = this.r.fichas[e.id];
     texto(ctx, fi.nome.toUpperCase(), 104, yc - 30, "#c9c3d6", 1, "#140f1a");
     const esc = larguraTexto(e.texto, 2) < 240 ? 2 : 1;
@@ -989,17 +989,17 @@ export class Cena {
       const fi = this.r.fichas[id];
       const s = this.estadoBase(id, p.t);
       const lado = i === 0 ? -1 : 1;
-      const x = Math.round(TELA_W / 2 + lado * 80 - 36 + (1 - entra) * lado * 200), y = 262;
+      const x = Math.round(TELA_W / 2 + lado * 80 - 32 + (1 - entra) * lado * 200), y = 262;
       ctx.fillStyle = "#140f1a";
-      ctx.fillRect(x - 3, y - 3, 78, 66);
+      ctx.fillRect(x - 3, y - 3, 70, 58);
       ctx.fillStyle = corClasse[fi.classe];
-      ctx.fillRect(x - 2, y - 2, 76, 64);
+      ctx.fillRect(x - 2, y - 2, 68, 56);
       ctx.fillStyle = "#2a2238";
-      ctx.fillRect(x, y, 72, 60);
-      ctx.drawImage(this.retratoGrande(id, "concentrada"), x, y, 72, 60);
-      textoCentro(ctx, fi.nome.toUpperCase(), x + 36, y + 70, "#ffffff", 1, "#140f1a");
-      textoCentro(ctx, `${ESPECIES[fi.especie].nome} ${CLASSES[fi.classe].nome}`.toUpperCase(), x + 36, y + 80, corClasse[fi.classe], 1, "#140f1a");
-      textoCentro(ctx, `PV ${s.pv}/${s.pvMax} · CA ${fi.ca} · NV${fi.nivel}`, x + 36, y + 90, "#c9c3d6", 1, "#140f1a");
+      ctx.fillRect(x, y, 64, 52);
+      ctx.drawImage(this.retratoGrande(id, "concentrada"), x, y, 64, 52);
+      textoCentro(ctx, fi.nome.toUpperCase(), x + 32, y + 62, "#ffffff", 1, "#140f1a");
+      textoCentro(ctx, `${ESPECIES[fi.especie].nome} ${CLASSES[fi.classe].nome}`.toUpperCase(), x + 32, y + 72, corClasse[fi.classe], 1, "#140f1a");
+      textoCentro(ctx, `PV ${s.pv}/${s.pvMax} · CA ${fi.ca} · NV${fi.nivel}`, x + 32, y + 82, "#c9c3d6", 1, "#140f1a");
     });
     const esc = k < 10 ? 7 - Math.floor(k / 4) : 5;
     textoCentro(ctx, "VS", TELA_W / 2, 280, k % 6 < 3 ? "#ffd84a" : "#e8452e", esc, "#140f1a", true);
@@ -1089,17 +1089,17 @@ export class Cena {
     // topo: retrato, nome, espécie/classe, nível
     if (aparece(cr.topo)) {
       ctx.fillStyle = "#6a4a2a";
-      ctx.fillRect(X + 12, y - 2, 52, 44);
+      ctx.fillRect(X + 12, y - 2, 68, 56);
       ctx.fillStyle = "#2a2238";
-      ctx.fillRect(X + 14, y, 48, 40);
-      ctx.drawImage(this.retratoGrande(this.r.vencedor, "vitoria"), X + 14, y, 48, 40);
-      texto(ctx, A.nome.toUpperCase(), X + 72, y + 1, tinta, larguraTexto(A.nome.toUpperCase(), 2) < 220 ? 2 : 1, null);
-      texto(ctx, `${ESPECIES[A.especie].nome}${A.dragao ? ` (${A.dragao.nome})` : ""} ${CLASSES[A.classe].nome}`.toUpperCase(), X + 72, y + 19, suave, 1, null);
+      ctx.fillRect(X + 14, y, 64, 52);
+      ctx.drawImage(this.retratoGrande(this.r.vencedor, "vitoria"), X + 14, y, 64, 52);
+      texto(ctx, A.nome.toUpperCase(), X + 86, y + 1, tinta, larguraTexto(A.nome.toUpperCase(), 2) < 206 ? 2 : 1, null);
+      texto(ctx, `${ESPECIES[A.especie].nome}${A.dragao ? ` (${A.dragao.nome})` : ""} ${CLASSES[A.classe].nome}`.toUpperCase(), X + 86, y + 22, suave, 1, null);
       const pisca = Math.floor(f / 10) % 2 === 0;
-      texto(ctx, `NÍVEL ${A.nivel} →`, X + 72, y + 31, tinta, 1, null);
-      texto(ctx, `${D.nivel}`, X + 72 + larguraTexto(`NÍVEL ${A.nivel} → `), y + 29, pisca ? "#e8a22a" : ouro, 2, "#3a2a10");
+      texto(ctx, `NÍVEL ${A.nivel} →`, X + 86, y + 36, tinta, 1, null);
+      texto(ctx, `${D.nivel}`, X + 86 + larguraTexto(`NÍVEL ${A.nivel} → `), y + 34, pisca ? "#e8a22a" : ouro, 2, "#3a2a10");
     }
-    y += 50;
+    y += 62;
     // atributos
     if (aparece(cr.atributos)) {
       texto(ctx, "ATRIBUTOS", X + 12, y, ouro, 1, null);

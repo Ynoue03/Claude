@@ -38,7 +38,7 @@ e alto nível de detalhe. Todos os sprites são desenhados do zero, nada copiado
 
 ### Animações (quadros por ação)
 - Idle respirando: 4 quadros (cabelo, capa e manto balançam levemente)
-- Caminhada: 6 quadros, 4 direções (capa, aljava, chapéu e acessórios com movimento secundário)
+- Caminhada: 2 quadros, 2 direções (direita e esquerda espelhada), com balanço de corpo
 - Ataque com arma: 4 quadros · Magia/habilidade especial: 6–8 quadros (com antecipação e follow-through)
 - Dano: 2 quadros · Derrota: 4 quadros · Vitória: 4 quadros em loop
 - Dano progressivo: abaixo de 30% dos PV o sprite troca para a versão com roupa rasgada e ferimentos.
@@ -163,8 +163,13 @@ Robustez Anã (+1 PV por nível), Inspiração Heroica (humano rerrola um ataque
 ## Mecânica da luta (regras + IA simples)
 - **Iniciativa**: d20 + DES; cada rodada age do maior para o menor (seta ▼ piscando em cima de quem está no turno).
 - **Turno**: deslocamento (30 pés; alguns têm 25–35) + uma ação + às vezes uma ação bônus + uma reação por rodada.
-- **IA**: lutadores corpo a corpo vão até o inimigo mais vantajoso (perto, ferido ou atordoado); atiradores e
-  conjuradores contornam o alvo mantendo distância; com PV baixo usam cura (se tiverem) ou fogem (Desengajar).
+- **IA**: lutadores corpo a corpo vão até o inimigo mais vantajoso (perto, ferido ou atordoado). Atiradores e
+  conjuradores (mago, feiticeiro, bruxo, clérigo, druida, bardo, patrulheiro, ladino com arco) EVITAM o corpo a corpo:
+  a cada turno vão para o ponto mais seguro da arena (longe de todos os inimigos e da parede) de onde ainda alcançam
+  o alvo, recuam quando alguém chega perto ("RECUA") e atacam de longe com magias e flechas; só usam arma corpo a
+  corpo se ficarem encurralados. Com PV baixo usam cura (se tiverem).
+- **Ataque de oportunidade**: sair do alcance de um inimigo corpo a corpo provoca um golpe dele (reação, 1× por
+  rodada); o ladino nível 2+ desengaja com a Ação Ardilosa e não provoca.
 - **Ataque**: d20 + modificador + proficiência ≥ CA do alvo → acerta. **20 natural = CRÍTICO** (dados de dano em
   dobro). **1 natural = FALHA**. Vantagem/desvantagem = rola 2d20 e fica com o maior/menor.
   Um **d20 gira** ao lado de quem ataca por 0,2 s e para no resultado (verde = acertou, cinza = errou,
