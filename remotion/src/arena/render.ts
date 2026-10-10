@@ -649,7 +649,7 @@ const numerosFlutuantes = (ctx: Ctx, x: number, y: number, res: Golpe["resultado
   if (res.cura > 0) linhas.push({ t: `+${res.cura}`, cor: "#6aff7a", esc: 2 });
   for (const t of res.textos) {
     if (t === "CRÍTICO!") continue;
-    const cor = t === "BLOQUEOU!" ? "#5ad0a0" : t === "ENGANOU A MORTE!" ? DOURADO : t === "INVISÍVEL!" ? "#c8a0ff" : t === "CEIFADOR" ? "#ff9a6a" : t === "ERROU" || t === "FALHA" ? "#c8c8d0" : t === "SALVOU" ? "#9ad8ff" : t === "IMPLACÁVEL!" ? "#ff9a4a" : t.startsWith("PERDEU") ? "#ffb0ff" : "#fff2a0";
+    const cor = t === "REFLETIU!" ? "#d0e0f0" : t === "ESPINHOS" ? "#b8d060" : t === "VAMPIRA" ? "#ff6a9a" : t === "RÚNICA" ? "#8aa0ff" : t === "BLOQUEOU!" ? "#5ad0a0" : t === "ENGANOU A MORTE!" ? DOURADO : t === "INVISÍVEL!" ? "#c8a0ff" : t === "CEIFADOR" ? "#ff9a6a" : t === "ERROU" || t === "FALHA" ? "#c8c8d0" : t === "SALVOU" ? "#9ad8ff" : t === "IMPLACÁVEL!" ? "#ff9a4a" : t.startsWith("PERDEU") ? "#ffb0ff" : "#fff2a0";
     linhas.push({ t: t === "PERDEU CONCENTRAÇÃO" ? "PERDEU CONC." : t, cor, esc: 1 });
   }
   if (res.r === "buff" && g.fx === "marca") linhas.push({ t: "MARCADO", cor: "#b8f060", esc: 1 });

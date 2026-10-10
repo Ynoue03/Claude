@@ -4,6 +4,7 @@ import { Rng } from "./rng.ts";
 import { ARMAS, fmt, subirNivel } from "./personagem.ts";
 import type { Arma, Lutador, SubidaNivel } from "./personagem.ts";
 import { CLASSES, COR_DANO, espacos, mod, proficiencia } from "./regras.ts";
+import { tipoDe } from "./itens.ts";
 import type { ItemId } from "./itens.ts";
 import type { Atributo, TipoDano } from "./regras.ts";
 
@@ -198,6 +199,7 @@ type Est = {
   itemUsado: Set<ItemId>;
   invisivel: number; // turnos restantes
   espadaTurno: boolean;
+  miragem: boolean; // Capa da Miragem já desviou um ataque nesta rodada
   lento: boolean;
   desvantagem: boolean;
   vantagemContra: boolean;
@@ -233,6 +235,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       itemUsado: new Set(),
       invisivel: 0,
       espadaTurno: false,
+      miragem: false,
       pv: l.pvMax,
       pvTemp: 0,
       vivo: true,
@@ -278,7 +281,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
 
   // iniciativa
   const iniciativa = E.map((e) => {
-    const r = rng.roll(`${e.l.nome} · iniciativa`, 1, 20, mod(e.at.DES));
+    const r = rng.roll(`${e.l.nome} · iniciativa`, 1, 20, mod(e.at.DES) + (e.itens.has("elmoVigia") ? 5 : 0));
     return { id: e.id, d20: r.dados[0], total: r.total, des: e.at.DES, desempate: rng.next() };
   }).sort((a, b) => b.total - a.total || b.des - a.des || b.desempate - a.desempate);
 
@@ -291,7 +294,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const m = (e: Est, a: Atributo) => mod(e.at[a]);
   const conj = (e: Est) => (CLASSES[e.l.classe].conjuracao ? m(e, CLASSES[e.l.classe].conjuracao!) : Math.max(m(e, "INT"), m(e, "SAB"), m(e, "CAR")));
   const cd = (e: Est) => 8 + e.prof + conj(e) + (e.inataAtiva ? 1 : 0);
-  const caAtual = (e: Est) => e.l.ca + (e.escudo ? 5 : 0) + (e.itens.has("armadura") ? 2 : 0);
+  const caAtual = (e: Est) => e.l.ca + (e.escudo ? 5 : 0) + (e.itens.has("armaduraBastiao") ? 2 : 0) + (e.itens.has("botasFirmes") ? 1 : 0) + (e.itens.has("escudoGuardiao") ? 1 : 0);
   const armaCorpo = (e: Est): Arma => (e.l.arma.distancia ? { ...ARMAS.adaga, nome: e.l.classe === "PATRULHEIRO" ? "Espada Curta" : "Adaga", d: e.l.classe === "PATRULHEIRO" ? 6 : 4 } : e.l.arma);
   const modArma = (e: Est, a: Arma) => (a.atributo === "DES" ? Math.max(m(e, "DES"), m(e, "FOR")) : m(e, "FOR"));
   const podeCorpo = (e: Est) => e.vivo;
@@ -338,7 +341,11 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   // Aplica dano: resistência, Resistência da Pedra, PV temporários, Implacável, concentração, morte.
   const aplicarDano = (fonte: Est, alvo: Est, bruto: number, tipo: TipoDano, nomeGolpe: string, res: Resultado, batida: Batida & { k: "golpe" }) => {
     let dano = bruto;
-    if (resistente(alvo, tipo)) {
+    if (alvo.itens.has("armaduraRunica") && batida.magia && tipo !== "cura") {
+      dano = Math.floor(dano / 2);
+      res.textos.push("RÚNICA");
+    }
+    if (resistente(alvo, tipo) && !fonte.itens.has("machadoFendedor")) {
       dano = Math.floor(dano / 2);
       res.textos.push("RESISTE");
     }
@@ -351,6 +358,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       res.textos.push(`PEDRA −${red}`);
       log(`  ${alvo.l.nome} usa Resistência da Pedra: −${red}`);
     }
+    if (alvo.itens.has("escudoGuardiao") && dano > 0) dano = Math.max(0, dano - 2);
     if (alvo.pvTemp > 0) {
       const abs = Math.min(alvo.pvTemp, dano);
       alvo.pvTemp -= abs;
@@ -366,8 +374,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       log(`  ${alvo.l.nome}: Resistência Implacável, fica com 1 PV`);
     }
     // Elmo da Última Chance: engana a morte uma vez
-    if (alvo.pv <= 0 && alvo.itens.has("elmo") && !alvo.itemUsado.has("elmo")) {
-      alvo.itemUsado.add("elmo");
+    if (alvo.pv <= 0 && alvo.itens.has("elmoUltimaChance") && !alvo.itemUsado.has("elmoUltimaChance")) {
+      alvo.itemUsado.add("elmoUltimaChance");
       alvo.pv = 1;
       res.textos.push("ENGANOU A MORTE!");
       log(`  ${alvo.l.nome}: o Elmo da Última Chance engana a morte, volta com 1 PV`);
@@ -390,7 +398,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       if (versao >= 2 && alvo.l.campeao && fonte.id !== alvo.id && fonte.vivo) subirNaLuta(fonte, batida);
       // quem derruba o portador pega os itens dele
       if (alvo.itens.size && fonte.id !== alvo.id && fonte.vivo) {
-        const pegos = [...alvo.itens].filter((it) => !fonte.itens.has(it));
+        const tiposFonte = new Set([...fonte.itens].map(tipoDe));
+        const pegos = [...alvo.itens].filter((it) => !tiposFonte.has(tipoDe(it)));
         pegos.forEach((it) => fonte.itens.add(it));
         alvo.itens.clear();
         if (pegos.length) {
@@ -399,7 +408,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         }
       }
       // Machado Ceifador: cura ao derrubar
-      if (fonte.vivo && fonte.id !== alvo.id && fonte.itens.has("machado") && fonte.pv < fonte.pvMax) {
+      if (fonte.vivo && fonte.id !== alvo.id && fonte.itens.has("machadoCeifador") && fonte.pv < fonte.pvMax) {
         const r = rng.roll(`${fonte.l.nome} · Machado Ceifador (1d8)`, 1, 8);
         const antes = fonte.pv;
         fonte.pv = Math.min(fonte.pvMax, fonte.pv + r.total);
@@ -413,8 +422,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     } else {
       alvo.stats.menorPv = Math.min(alvo.stats.menorPv, alvo.pv);
       // Capa das Sombras: some por 2 turnos ao chegar na metade dos PV
-      if (alvo.itens.has("capa") && !alvo.itemUsado.has("capa") && alvo.pv <= alvo.pvMax / 2) {
-        alvo.itemUsado.add("capa");
+      if (alvo.itens.has("capaSombras") && !alvo.itemUsado.has("capaSombras") && alvo.pv <= alvo.pvMax / 2) {
+        alvo.itemUsado.add("capaSombras");
         alvo.invisivel = 2;
         batida.cond.push({ id: alvo.id, add: "INV" });
         res.textos.push("INVISÍVEL!");
@@ -423,7 +432,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       if (alvo.conc && dano > 0) {
         const cdC = Math.max(10, Math.floor(dano / 2));
         const profC = CLASSES[alvo.l.classe].salvaguardas.includes("CON") ? alvo.prof : 0;
-        const s = rolarD20(alvo, `concentração (CD ${cdC})`, 0);
+        const s = rolarD20(alvo, `concentração (CD ${cdC})`, alvo.itens.has("elmoMente") ? 1 : 0);
         const tot = s.v + m(alvo, "CON") + profC;
         if (tot < cdC) {
           res.textos.push("PERDEU CONCENTRAÇÃO");
@@ -492,6 +501,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     let v = 0,
       d = 0;
     if (alvo.vantagemContra) v++;
+    if (a.itens.has("arcoCacador") && alvo.pv <= alvo.pvMax / 2) v++; // Arco do Caçador
     if (a.invisivel > 0) v++; // invisível ataca com vantagem…
     if (alvo.invisivel > 0) d++; // …e é atacado com desvantagem
     if (magia && a.inataAtiva) v++;
@@ -524,7 +534,12 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const atacar = (a: Est, alvo: Est, op: OpAtaque, batidas: Batida[]): Batida & { k: "golpe" } => {
     const b = novoGolpe(a, op.nome, op.tipo, op.fx, !op.distancia, op.magia, !!op.reacao);
     b.especial = op.especial ?? 0;
-    const vant = vantagem(a, alvo, op.distancia, op.magia);
+    let vant = vantagem(a, alvo, op.distancia, op.magia);
+    // Capa da Miragem: o primeiro ataque contra o portador em cada rodada tem desvantagem
+    if (alvo.itens.has("capaDeslocamento") && !alvo.miragem) {
+      alvo.miragem = true;
+      vant = vant > 0 ? 0 : -1;
+    }
     if (alvo.vantagemContra) {
       alvo.vantagemContra = false;
     }
@@ -532,10 +547,10 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       a.desvantagem = false;
       b.cond.push({ id: a.id, del: "ZMB" });
     }
-    const bonus = op.bonusAcerto;
+    const bonus = op.bonusAcerto + (a.itens.has("luvasPrecisas") ? 2 : 0);
     let d = rolarD20(a, `ataque (${op.nome}) contra ${alvo.l.nome}`, vant);
     let total = d.v + bonus;
-    const critMin = (op.critMin ?? 20) - (a.itens.has("luvas") ? 1 : 0);
+    const critMin = (op.critMin ?? 20) - (a.itens.has("luvasCerteiras") ? 1 : 0);
     let critico = d.v >= critMin;
     let falha = d.v === 1;
     // Escudo (mago): reação que transforma acerto em erro
@@ -546,7 +561,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       b.cond.push({ id: alvo.id, add: "ESC" });
       log(`  ${alvo.l.nome} lança ESCUDO (+5 CA) como reação`);
     }
-    let acertou = !falha && (critico || total >= caAtual(alvo));
+    const caEfetiva = caAtual(alvo) + (alvo.itens.has("botasEsquiva") && op.distancia ? 3 : 0);
+    let acertou = !falha && (critico || total >= caEfetiva);
     // Inspiração Heroica (humano): rerrola um ataque que errou
     let insp = false;
     if (!acertou && a.inspiracao) {
@@ -557,12 +573,12 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       total = d.v + bonus;
       critico = d.v >= critMin;
       falha = d.v === 1;
-      acertou = !falha && (critico || total >= caAtual(alvo));
+      acertou = !falha && (critico || total >= caEfetiva);
     }
     // Escudo do Primeiro Golpe: bloqueia o primeiro ataque que causaria dano
     let bloqueou = false;
-    if (acertou && alvo.itens.has("escudo") && !alvo.itemUsado.has("escudo")) {
-      alvo.itemUsado.add("escudo");
+    if (acertou && alvo.itens.has("escudoPrimeiroGolpe") && !alvo.itemUsado.has("escudoPrimeiroGolpe")) {
+      alvo.itemUsado.add("escudoPrimeiroGolpe");
       acertou = false;
       critico = false;
       bloqueou = true;
@@ -578,7 +594,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       let total2 = dn.total + op.bonusDano;
       let extraTxt = "";
       // Lâmina Rubra: +1d6 no primeiro acerto do turno
-      if (a.itens.has("espada") && !a.espadaTurno) {
+      if (a.itens.has("espadaRubra") && !a.espadaTurno) {
         a.espadaTurno = true;
         const f = rolarDano(a, "Lâmina Rubra", 1, 6, critico);
         total2 += f.total;
@@ -625,6 +641,22 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         b.fx = "fulgor";
         b.especial = Math.max(b.especial, 1) as 1;
       }
+      // itens que somam dano
+      if (a.itens.has("luvasTrovao") && critico) {
+        const f = rolarDano(a, "Manoplas do Trovão", 2, 8, false);
+        total2 += f.total;
+        extraTxt += ` + trovão ${f.txt}=${f.total}`;
+      }
+      if (a.itens.has("arcoChamas") && op.distancia) {
+        const f = rolarDano(a, "Arco das Chamas", 1, 6, critico);
+        total2 += f.total;
+        extraTxt += ` + chamas ${f.txt}=${f.total}`;
+      }
+      if (a.itens.has("machadoBerserker") && a.pv <= a.pvMax / 2) {
+        const f = rolarDano(a, "Machado da Ira", 1, 6, critico);
+        total2 += f.total;
+        extraTxt += ` + ira ${f.txt}=${f.total}`;
+      }
       total2 = Math.max(1, total2);
       if (critico) {
         res.textos.push("CRÍTICO!");
@@ -634,8 +666,44 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       }
       b.rolagem = `${dn.txt}${op.bonusDano ? fmt(op.bonusDano) : ""} = ${total2}`;
       log(`    dano ${dn.dados.join("+")}${op.bonusDano ? fmt(op.bonusDano) : ""}${extraTxt} = ${total2} ${op.tipo}`);
+      const pvAntesAlvo = alvo.pv;
       aplicarDano(a, alvo, total2, op.tipo, op.rotulo ?? op.nome, res, b);
       op.extra?.(alvo, res, b);
+      const causado = Math.max(0, pvAntesAlvo - alvo.pv);
+      // Lâmina do Inverno: deixa lento
+      if (a.itens.has("espadaGelo") && alvo.vivo && !alvo.lento) {
+        alvo.lento = true;
+        b.cond.push({ id: alvo.id, add: "LNT" });
+      }
+      // Lâmina Vampira: recupera 1d4 a cada acerto
+      if (a.itens.has("espadaVampira") && a.vivo && a.pv < a.pvMax) {
+        const r = rng.roll(`${a.l.nome} · Lâmina Vampira (1d4)`, 1, 4);
+        const antes = a.pv;
+        a.pv = Math.min(a.pvMax, a.pv + r.total);
+        const cura = novoRes(a, "cura");
+        cura.cura = a.pv - antes;
+        cura.pvDepois = a.pv;
+        cura.textos.push("VAMPIRA");
+        b.resultados.push(cura);
+        log(`  ${a.l.nome}: Lâmina Vampira recupera ${cura.cura} PV`);
+      }
+      // Cota de Espinhos: devolve 1d4 a quem acertou corpo a corpo
+      if (alvo.itens.has("armaduraEspinhos") && !op.distancia && a.vivo && alvo.id !== a.id) {
+        const r = rng.roll(`${alvo.l.nome} · Cota de Espinhos (1d4)`, 1, 4);
+        const ret = novoRes(a, "acerto");
+        ret.textos.push("ESPINHOS");
+        log(`  ${a.l.nome} se fere na Cota de Espinhos de ${alvo.l.nome}: ${r.total}`);
+        aplicarDano(alvo, a, r.total, "perfurante", "Cota de Espinhos", ret, b);
+        b.resultados.push(ret);
+      }
+      // Escudo Espelhado: devolve metade do dano de magias de ataque
+      if (alvo.itens.has("escudoEspelhado") && op.magia && causado > 1 && a.vivo && alvo.id !== a.id) {
+        const ret = novoRes(a, "acerto");
+        ret.textos.push("REFLETIU!");
+        log(`  o Escudo Espelhado de ${alvo.l.nome} devolve ${Math.floor(causado / 2)} de dano a ${a.l.nome}`);
+        aplicarDano(alvo, a, Math.floor(causado / 2), op.tipo, "Escudo Espelhado", ret, b);
+        b.resultados.push(ret);
+      }
     } else {
       if (!bloqueou) res.textos.push(falha ? "FALHA" : "ERROU");
       b.rolagem = `d20 = ${d.v}`;
@@ -663,7 +731,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     for (const alvo of alvos) {
       const mental = op.atributo === "INT" || op.atributo === "SAB" || op.atributo === "CAR";
       const sentido = alvo.l.classe === "BARBARO" && alvo.nivel >= 2 && op.atributo === "DES"; // Sentido de Perigo
-      const vant = (alvo.l.especie === "GNOMO" && mental) || sentido ? 1 : 0;
+      const vant = (alvo.l.especie === "GNOMO" && mental) || sentido || alvo.itens.has("elmoMente") ? 1 : 0;
       const profS = CLASSES[alvo.l.classe].salvaguardas.includes(op.atributo) ? alvo.prof : 0;
       const s = rolarD20(alvo, `salvaguarda de ${op.atributo} contra ${op.nome}`, vant);
       const tot = s.v + m(alvo, op.atributo) + profS;
@@ -716,7 +784,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       const nPassos = Math.max(1, Math.ceil(seg / passo));
       for (let s = 1; s <= nPassos; s++) {
         const q = lerp(pts[i - 1], pts[i], s / nPassos);
-        if (!desengajar && !a.itens.has("botas")) {
+        if (!desengajar && !a.itens.has("botasLigeiras")) {
           for (const o of inimigos(a)) {
             if (!o.reacao || naoProvocou.has(o.id) || !podeCorpo(o)) continue;
             if (dist(pos, o.pos) <= ALCANCE && dist(q, o.pos) > ALCANCE) {
@@ -821,7 +889,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     }
     return best;
   };
-  const velocidade = (a: Est) => (a.l.deslocamento - (a.lento ? 10 : 0) + (a.l.classe === "BARBARO" && a.nivel >= 5 ? 10 : 0) + (a.l.classe === "MONGE" && a.nivel >= 2 ? 10 : 0) + (a.itens.has("botas") ? 10 : 0)) * PE;
+  const velocidade = (a: Est) => (a.l.deslocamento - (a.lento ? 10 : 0) + (a.l.classe === "BARBARO" && a.nivel >= 5 ? 10 : 0) + (a.l.classe === "MONGE" && a.nivel >= 2 ? 10 : 0) + (a.itens.has("botasLigeiras") ? 10 : 0)) * PE;
 
   const pontoSeguro = (a: Est, alvo: Est | undefined): P => {
     const vel = velocidade(a);
@@ -866,6 +934,9 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     // início do turno
     a.reacao = true;
     a.espadaTurno = false;
+    if (a.itens.has("capaCurativa") && a.pv < a.pvMax) {
+      curar(a, a, "CAPA DA SEIVA", 2, "+2 PV", "cura", batidas, false);
+    }
     if (a.escudo) {
       a.escudo = false;
       batidas.push({ k: "estado", cond: [{ id: a.id, del: "ESC" }] });
@@ -1029,7 +1100,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
 
     function finalizar() {
       // Arco Sussurrante: dispara sozinho no inimigo mais ferido
-      if (a.vivo && a.itens.has("arco")) {
+      if (a.vivo && a.itens.has("arcoSussurrante")) {
         const alvos = inimigos(a).filter((o) => o.invisivel <= 0);
         const t = alvos.sort((x, y) => x.pv - y.pv)[0];
         if (t) atacar(a, t, { nome: "ARCO SUSSURRANTE", n: 1, d: 6, bonusDano: 0, tipo: "perfurante", fx: "flecha", distancia: true, magia: false, bonusAcerto: a.prof + m(a, "DES"), rotulo: "Arco Sussurrante", especial: 0 }, batidas);
@@ -1132,7 +1203,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
           atributo: "CON",
           metade: true,
           extra: (alvo2, res, falhou) => {
-            if (falhou && alvo2.vivo) {
+            if (falhou && alvo2.vivo && !alvo2.itens.has("botasFirmes")) {
               const ang = Math.atan2(alvo2.pos.y - a.pos.y, alvo2.pos.x - a.pos.x);
               const np = clampP({ x: alvo2.pos.x + Math.cos(ang) * 40, y: alvo2.pos.y + Math.sin(ang) * 40 });
               alvo2.pos = np;
@@ -1218,7 +1289,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
             alvo,
             {
               ...opMagia(a, "CHICOTE DE ESPINHOS", T, 6, "perfurante", "espinhos", 0, (t, res) => {
-                if (t.vivo) {
+                if (t.vivo && !t.itens.has("botasFirmes")) {
                   const ang = Math.atan2(a.pos.y - t.pos.y, a.pos.x - t.pos.x);
                   const d = Math.max(0, Math.min(40, dist(a.pos, t.pos) - CONTATO - 6));
                   const np = clampP({ x: t.pos.x + Math.cos(ang) * d, y: t.pos.y + Math.sin(ang) * d });
@@ -1255,7 +1326,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
               atributo: "SAB",
               metade: true,
               extra: (t, res, falhou) => {
-                if (falhou && t.vivo && t.reacao) {
+                if (falhou && t.vivo && t.reacao && !t.itens.has("botasFirmes")) {
                   t.reacao = false;
                   const ang = Math.atan2(t.pos.y - a.pos.y, t.pos.x - a.pos.x);
                   const np = clampP({ x: t.pos.x + Math.cos(ang) * 60, y: t.pos.y + Math.sin(ang) * 60 });
@@ -1306,6 +1377,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   let rodada = 0;
   while (vivos().length > 1 && rodada < 80) {
     rodada++;
+    E.forEach((e) => (e.miragem = false));
     for (const ini of iniciativa) {
       const a = E[ini.id];
       if (!a.vivo) continue;

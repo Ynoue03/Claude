@@ -5,7 +5,7 @@ import type { Episodio, Lutador, SubidaNivel } from "./personagem.ts";
 import { simular } from "./combate.ts";
 import type { Batida, Efeito, P, Resultado, Simulacao } from "./combate.ts";
 import { CLASSES, ESPECIES, espacos } from "./regras.ts";
-import { ITEM_IDS } from "./itens.ts";
+import { ITEM_IDS, tipoDe } from "./itens.ts";
 import type { ItemId } from "./itens.ts";
 import type { TipoDano } from "./regras.ts";
 
@@ -326,11 +326,13 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   const campeao = lutadores[vencedor];
   const base = { ...campeao, nivel: ev.nivel, pvMax: ev.pvMax, atributos: ev.atributos, pvRolagens: ev.pvRolagens, itens: ev.itens };
   const subida = combinarSubidas([...ev.subidas, subirNivel(base, rng)]);
-  // baú: o campeão acha um item que ainda não tem (rola d9 até sair um novo)
+  // baú: o campeão acha um item de um tipo que ainda não tem (rola d27 até sair)
   const fases = fasesDe(ep);
   let itemBau: ItemId | null = null;
   if (fases.bau >= 0) {
-    const faltam = ITEM_IDS.filter((i) => !ev.itens.includes(i));
+    // 27 itens (9 tipos × 3 versões); só vale um item de cada tipo, então rerrola se sair um tipo que já tem
+    const tiposTem = new Set(ev.itens.map(tipoDe));
+    const faltam = ITEM_IDS.filter((i) => !tiposTem.has(tipoDe(i)));
     for (let k = 0; k < 40 && faltam.length; k++) {
       const d = rng.roll(`${campeao.nome} · baú do campeão (d${ITEM_IDS.length})`, 1, ITEM_IDS.length).total;
       if (faltam.includes(ITEM_IDS[d - 1])) {

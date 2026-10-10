@@ -54,22 +54,23 @@ Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo 
 
 ## Baú do campeão e itens (versão 3)
 
-Nos episódios **5, 10, 15…** entra uma cena de 4 s depois da vitória: o campeão abre um baú e acha um item que ainda
-não tem (d9, rerrola se repetir). O pergaminho fica um pouco mais rápido para caber nos 90 s. Os itens ficam na ficha
-(`campeao.json` → `itens`) e valem em todas as lutas seguintes. **Quem derrubar o portador pega os itens dele** na hora
-(aparece "PEGOU O ITEM!"), e se vencer leva para o próximo episódio.
+Nos episódios **5, 10, 15…** entra uma cena de 4 s depois da vitória: o campeão abre um baú e acha um item
+(d27, rerrola se sair um **tipo** que ele já tem — só vale 1 item de cada tipo). O pergaminho fica um pouco mais rápido
+para caber nos 90 s. Os itens ficam na ficha (`campeao.json` → `itens`) e valem em todas as lutas seguintes.
+**Quem derrubar o portador pega os itens dele** na hora (só os de tipos que ainda não tem; aparece "PEGOU O ITEM!"),
+e se vencer leva para o próximo episódio. Catálogo com ícones: `itens.png` (composição `ArenaItens`).
 
-| Item | Poder na luta |
-| --- | --- |
-| Lâmina Rubra (espada) | o primeiro acerto de cada turno causa +1d6 de dano |
-| Couraça do Bastião (armadura) | +2 na CA |
-| Elmo da Última Chance (elmo) | engana a morte: quando cairia, volta com 1 PV (1× por luta) |
-| Botas Ligeiras (botas) | +10 pés de deslocamento e não provoca ataque de oportunidade |
-| Manoplas Certeiras (luvas) | crítico com 1 número a menos no d20 |
-| Capa das Sombras (capa) | ao ficar com metade dos PV, fica invisível por 2 turnos (ninguém mira nele; atacado com desvantagem, ataca com vantagem) |
-| Arco Sussurrante (arco) | dispara sozinho uma flecha (1d6) a cada turno |
-| Machado Ceifador (machado) | ao derrubar alguém, recupera 1d8 PV |
-| Escudo do Primeiro Golpe (escudo) | bloqueia o primeiro ataque que causaria dano |
+| Tipo | Versão 1 | Versão 2 | Versão 3 |
+| --- | --- | --- | --- |
+| Espada | **Lâmina Rubra**: 1º acerto do turno +1d6 | **Lâmina Vampira**: cada acerto recupera 1d4 PV | **Lâmina do Inverno**: cada acerto deixa o alvo lento |
+| Armadura | **Couraça do Bastião**: +2 CA | **Cota de Espinhos**: quem acerta corpo a corpo leva 1d4 | **Armadura Rúnica**: magias causam metade do dano |
+| Elmo | **Elmo da Última Chance**: engana a morte (volta com 1 PV, 1× por luta) | **Elmo do Vigia**: +5 na iniciativa | **Elmo da Mente Firme**: vantagem em todas as salvaguardas |
+| Botas | **Botas Ligeiras**: +10 pés e sem ataque de oportunidade | **Botas de Raiz**: não é empurrado/puxado, +1 CA | **Botas do Vento**: +3 CA contra ataques à distância |
+| Luvas | **Manoplas Certeiras**: crítico com 1 a menos no d20 | **Luvas da Precisão**: +2 em todos os ataques | **Manoplas do Trovão**: críticos +2d8 trovejante |
+| Capa | **Capa das Sombras**: invisível 2 turnos ao chegar à metade dos PV | **Capa da Miragem**: 1º ataque contra ele por rodada tem desvantagem | **Capa da Seiva**: +2 PV no início de cada turno |
+| Arco | **Arco Sussurrante**: dispara sozinho 1d6 por turno | **Arco das Chamas**: ataques à distância +1d6 de fogo | **Arco do Caçador**: vantagem contra quem está com metade dos PV ou menos |
+| Machado | **Machado Ceifador**: ao derrubar alguém, +1d8 PV | **Machado da Ira**: +1d6 de dano com metade dos PV ou menos | **Machado Fendedor**: ignora resistências |
+| Escudo | **Escudo do Primeiro Golpe**: bloqueia o 1º ataque que causaria dano | **Escudo Espelhado**: devolve metade do dano de magias de ataque | **Escudo Guardião**: +1 CA e todo dano recebido −2 |
 
 ## Nomes
 
