@@ -21,8 +21,10 @@ export type Geo = { w: number; h: number; lim: { x0: number; x1: number; y0: num
 export const GEO: Record<string, Geo> = {
   calabouco: { w: 360, h: 640, lim: { x0: 46, x1: 314, y0: 200, y1: 520 }, centro: { x: 180, y: 360 }, raio: { x: 118, y: 140 } },
   floresta: { w: 360, h: 640, lim: { x0: 46, x1: 314, y0: 200, y1: 520 }, centro: { x: 180, y: 360 }, raio: { x: 118, y: 140 } },
-  caverna: { w: 720, h: 1280, lim: { x0: 80, x1: 640, y0: 170, y1: 1150 }, centro: { x: 360, y: 660 }, raio: { x: 148, y: 205 } },
+  // caverna dos chefes: 4× a área (2× cada lado); a luta ocupa o retângulo das arenas normais em 2×, e a câmera mostra tudo
+  caverna: { w: 720, h: 1280, lim: { x0: 92, x1: 628, y0: 400, y1: 1040 }, centro: { x: 360, y: 720 }, raio: { x: 236, y: 280 } },
 };
+export const Y_MIN_CHEFE = 640;
 export const geoDe = (arena?: string): Geo => GEO[arena ?? "calabouco"] ?? GEO.calabouco;
 // limites da simulação em andamento (ajustados no início de cada simulação)
 export let LIMITES = { ...GEO.calabouco.lim };
@@ -825,6 +827,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
 
   // ─── movimento com ataques de oportunidade ───
   const mover = (a: Est, pts: P[], batidas: Batida[], recua = false, corre = false, desengajar = false) => {
+    // o chefe não sobe tanto que a cabeça fique atrás do placar
+    if (a.l.boss) pts = pts.map((q) => ({ x: q.x, y: Math.max(q.y, Y_MIN_CHEFE) }));
     if (pts.length < 2 || compPath(pts) < 1) return;
     const passo = 3;
     let atual = [pts[0]];

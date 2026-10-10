@@ -73,6 +73,7 @@ type Pinta = {
   po: (pts: [number, number][], mat: string, op?: OpForma) => void;
   ca: (x0: number, y0: number, x1: number, y1: number, r: number, mat: string, op?: OpForma) => void;
   px: (x: number, y: number, mat: string, tom?: Tom) => void;
+  li: (x0: number, y0: number, x1: number, y1: number, mat: number, tom: Tom) => void;
 };
 const escamas: OpForma["padrao"] = (x, y, tt) => (tt === 1 && ((x + (Math.floor(y / 2) % 2) * 2) % 4 === 0) && y % 2 === 0 ? 2 : tt);
 const pelos: OpForma["padrao"] = (x, y, tt) => (tt === 1 && (x * 2 + y) % 5 === 0 ? 2 : tt);
@@ -93,7 +94,7 @@ const minotauro = (P: Pinta, p: Pose) => {
   // tronco musculoso
   P.el(56 - p.recua, 56 + b, 17, 18, "pele", { linha: true });
   P.el(60 - p.recua, 52 + b, 9, 7, "pele", { tom: tomVol(0.3) });
-  P.t.linha(52 - p.recua, 50 + b, 52 - p.recua, 66 + b, P.m("pele"), 2);
+  P.li(52 - p.recua, 50 + b, 52 - p.recua, 66 + b, P.m("pele"), 2);
   // braço de trás
   P.ca(46, 46 + b, 40, 66 + b, 5, "pele", { linha: true });
   // machado grande (ergue e desce no golpe)
@@ -164,7 +165,7 @@ const grifo = (P: Pinta, p: Pose) => {
   P.po([[cx - 6, cy - 6], [cx - 14, cy - 12], [cx - 4, cy - 9]], "pena", { tom: tomFixo(2) });
   // asa da frente (por cima)
   P.po([[50, 52 + b], [34, 18 + asa + b], [22, 30 + asa + b], [30, 46 + b], [44, 60 + b]], "asa", { linha: true, padrao: penas });
-  for (let k = 0; k < 4; k++) P.t.linha(32 + k * 4, 24 + asa + b + k * 6, 46, 54 + b, P.m("asa"), 3);
+  for (let k = 0; k < 4; k++) P.li(32 + k * 4, 24 + asa + b + k * 6, 46, 54 + b, P.m("asa"), 3);
 };
 
 const hidra = (P: Pinta, p: Pose) => {
@@ -215,7 +216,7 @@ const gigante = (P: Pinta, p: Pose) => {
   P.po([[38, 64 + b], [76, 64 + b], [74, 80 + b], [40, 80 + b]], "pelego", { linha: true, padrao: pelos });
   // tronco
   P.el(56 - p.recua, 48 + b, 20, 20, "pele", { linha: true });
-  P.t.linha(46, 32 + b, 70, 66 + b, P.m("corda"), 1);
+  P.li(46, 32 + b, 70, 66 + b, P.m("corda"), 1);
   P.el(50 - p.recua, 36 + b, 14, 7, "pelego", { linha: true, padrao: pelos });
   // braço de trás
   P.ca(40, 38 + b, 34, 62 + b, 6, "pele", { linha: true });
@@ -317,7 +318,7 @@ const dragao = (P: Pinta, p: Pose) => {
   for (let k = 0; k < 6; k++) P.po([[30 + k * 7, 58 + b - (k > 3 ? 4 : 0)], [33 + k * 7, 50 + b - (k > 3 ? 4 : 0)], [36 + k * 7, 58 + b - (k > 3 ? 4 : 0)]], "chifre", { tom: tomFixo(2) });
   // asa da frente
   P.po([[50, 54 + b], [30, 2 + asa + b], [16, 16 + asa + b], [22, 40 + b], [44, 64 + b]], "asa", { linha: true });
-  for (let k = 0; k < 3; k++) P.t.linha(30 - k * 5, 4 + asa + b + k * 6, 46, 58 + b, P.m("chifre"), 2);
+  for (let k = 0; k < 3; k++) P.li(30 - k * 5, 4 + asa + b + k * 6, 46, 58 + b, P.m("chifre"), 2);
 };
 
 const DESENHO: Record<ChefeId, (P: Pinta, p: Pose) => void> = { MINOTAURO: minotauro, GRIFO: grifo, HIDRA: hidra, GIGANTE: gigante, QUIMERA: quimera, DRAGAO: dragao };
@@ -332,38 +333,44 @@ export const CABECA: Record<ChefeId, { x: number; y: number }> = {
 };
 
 const cache = new Map<string, HTMLCanvasElement>();
-export const quadroChefe = (id: ChefeId, anim: Anim, q: number, dir: string): HTMLCanvasElement => {
-  const chave = `${id}|${anim}|${q}|${dir}`;
+// escala: 1 = desenho original 112×112 (retrato, mini, CTA); 3 = no mundo (3× maior, redesenhado em resolução
+// tripla — não é ampliado, então o pixel do chefe tem o mesmo tamanho do pixel dos heróis)
+export const quadroChefe = (id: ChefeId, anim: Anim, q: number, dir: string, escala = 1): HTMLCanvasElement => {
+  const chave = `${id}|${anim}|${q}|${dir}|${escala}`;
   const c0 = cache.get(chave);
   if (c0) return c0;
   const { nomes, rampas } = rampasDe(id);
-  const t = new Tela(CW, CH);
+  const E = escala;
+  const w = CW * E,
+    h = CH * E;
+  const t = new Tela(w, h);
   const m = (nome: string) => nomes.indexOf(nome);
   const P: Pinta = {
     t,
     m,
-    el: (cx, cy, rx, ry, mat, op) => t.elipse(cx, cy, rx, ry, m(mat), op),
-    po: (pts, mat, op) => t.poli(pts, m(mat), op),
-    ca: (x0, y0, x1, y1, r, mat, op) => t.capsula(x0, y0, x1, y1, r, m(mat), op),
-    px: (x, y, mat, tom = 1) => t.px(x, y, m(mat), tom),
+    el: (cx, cy, rx, ry, mat, op) => t.elipse(cx * E, cy * E, rx * E, ry * E, m(mat), op),
+    po: (pts, mat, op) => t.poli(pts.map(([x, y]) => [x * E, y * E]), m(mat), op),
+    ca: (x0, y0, x1, y1, r, mat, op) => t.capsula(x0 * E, y0 * E, x1 * E, y1 * E, r * E, m(mat), op),
+    px: (x, y, mat, tom = 1) => (E === 1 ? t.px(x, y, m(mat), tom) : t.ret(x * E, y * E, x * E + E - 1, y * E + E - 1, m(mat), { tom: tomFixo(tom) })),
+    li: (x0, y0, x1, y1, mat, tom) => (E === 1 ? t.linha(x0, y0, x1, y1, mat, tom) : t.capsula(x0 * E, y0 * E, x1 * E, y1 * E, E / 2, mat, { tom: tomFixo(tom) })),
   };
   const p = pose(anim, q);
   DESENHO[id](P, p);
-  let cv = novoCanvas(CW, CH);
+  let cv = novoCanvas(w, h);
   cv.getContext("2d")!.putImageData(t.cores(rampas), 0, 0);
   if (p.caido > 0) {
     // derrota: tomba de lado
-    const r = novoCanvas(CW, CH);
+    const r = novoCanvas(w, h);
     const ctx = r.getContext("2d")!;
-    ctx.translate(CX, CY);
+    ctx.translate(CX * E, CY * E);
     ctx.rotate(-p.caido * (Math.PI / 2) * 0.9);
-    ctx.drawImage(cv, -CX, -CY + p.caido * 8);
+    ctx.drawImage(cv, -CX * E, -CY * E + p.caido * 8 * E);
     cv = r;
   }
   if (dir === "W") {
-    const f = novoCanvas(CW, CH);
+    const f = novoCanvas(w, h);
     const ctx = f.getContext("2d")!;
-    ctx.translate(CW, 0);
+    ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(cv, 0, 0);
     cv = f;

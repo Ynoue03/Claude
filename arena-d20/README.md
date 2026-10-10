@@ -9,6 +9,9 @@ O campeão sobe de nível e termina com o pergaminho da ficha nova.
 > Ele **não segue a identidade "quiet luxury"** do `CLAUDE.md`: tem estética própria de jogo retrô, pedida no briefing
 > (`briefings/2026-10-10-arena-d20.md`).
 
+> **Tudo para recriar a arena do zero:** [`SuaArenaD20.md`](SuaArenaD20.md) (gerado do código por
+> `node scripts/documento.ts`, dentro de `remotion/`).
+
 ## Gerar um episódio
 
 ```bash
@@ -45,7 +48,7 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `textos` | banners: `escolha`, `lutem`, `subiu`, `defende`, `cta` (no CTA, o trecho depois de ` · ` sai em dourado) |
 | `versao` | `2` (padrão para episódios novos): nome **e sobrenome** que nunca se repetem na série, leve foco dos lutadores no campeão e **+1 nível na hora para quem derrubar o campeão** (vencendo, soma +2). Sem o campo = regras dos episódios 1–3 (reproduzem a mesma luta de antes) |
 | `focoCampeao` | preferência dos lutadores por atacar o campeão (versão 2+): `"auto"` (recomendado) cresce com o nível do campeão — `2,5 × (nível − 2)`, calibrado para ele vencer ~50% (30 lutas por nível com a Yara nos níveis 2–5); ou um número fixo: `1` = leve (padrão), `5` = forte |
-| `arena` | `"calabouco"` (padrão), `"floresta"` — clareira ao entardecer com lanternas, fogueiras, lagos e vaga-lumes; muda também o som ambiente — ou `"caverna"`: arena dos chefes, **4× maior** (720×1280), escura, com 8 tochas, cristais, lago subterrâneo, morcegos; a câmera segue a ação e aparece um minimapa |
+| `arena` | `"calabouco"` (padrão), `"floresta"` — clareira ao entardecer com lanternas, fogueiras, lagos e vaga-lumes; muda também o som ambiente — A `"caverna"` (4× maior, 720×1280, escura, com 8 tochas, cristais, lago subterrâneo, morcegos) é **só para luta com chefe** e entra sozinha nos episódios com chefe; a câmera mostra a caverna inteira |
 | `chefe` | força um chefe (`"MINOTAURO"`, `"GRIFO"`, `"HIDRA"`, `"GIGANTE"`, `"QUIMERA"`, `"DRAGAO"`). Sem o campo, na versão 3 os episódios **10, 20, 30…** têm chefe automaticamente, nessa ordem |
 | `focoChefe` | quanto os heróis preferem atacar o chefe (padrão `1.25`, calibrado para o chefe vencer ~30%) |
 | `centro` | `"livre"` (recomendado para episódios novos): sem tablado de degraus e sem pedra d20 no meio, e sem obstáculo na luta. Sem o campo = com o tablado e o altar (episódios 1–6 reproduzem igual) |
@@ -81,7 +84,8 @@ arco. Vale no baú, no item que o chefe deixa cair e ao derrubar o portador (o i
 
 ## Chefes (versão 3, episódios 10, 20, 30…)
 
-Uma criatura grande do SRD 5.2 entra como **17º lutador**, no meio da caverna, cercada pelos 16 heróis. É todos contra
+Uma criatura grande do SRD 5.2 entra como **17º lutador**, no meio da caverna, cercada pelos 16 heróis, **3× maior** que o
+primeiro desenho (sprite de 336×336 no mundo, redesenhado em resolução tripla; o corpo e o alcance crescem junto). É todos contra
 todos: os heróis também se atacam, mas preferem o chefe. Barra de vida própria embaixo do HUD, banner
 "CUIDADO: …!" na abertura e rugido. Regras:
 
@@ -94,14 +98,14 @@ todos: os heróis também se atacam, mas preferem o chefe. Barra de vida própri
 
 | Chefe | Ficha do SRD 5.2 | CA | PV | Ataques | Especial | Vence* |
 | --- | --- | --- | --- | --- | --- | --- |
-| Minotauro | Minotaur | 14 | 110 | Machado grande 2d12+4, chifrada 2d8+4 | Investida (+2d8, empurra) | 32% |
-| Grifo | Griffon | 12 | 135 | Bico 1d8+4, garras 2d6+4 | Rasante (voa, vantagem) | 26% |
-| Hidra | Hydra | 15 | 100 | 3 mordidas 1d10+5 | Fúria das cabeças | 34% |
-| Gigante da Colina | Hill Giant | 13 | 160 | 2× clava grande 3d8+5 | Arremesso de pedra 3d10+5 | 22% |
-| Quimera | Chimera | 14 | 90 | Mordida, chifres, garras | Sopro de fogo 7d8 (CD 15) | 40% |
-| Dragão Vermelho | Young Red Dragon | 18 | 85 | Mordida 2d10+6, garras 2d6+6 | Sopro de fogo 6d6 (CD 14), resiste a fogo | 52% |
+| Minotauro | Minotaur | 14 | 145 | Machado grande 2d12+4, chifrada 2d8+4 | Investida (+2d8, empurra) | 30% |
+| Grifo | Griffon | 12 | 135 | Bico 1d8+4, garras 2d6+4 | Rasante (voa, vantagem) | 36% |
+| Hidra | Hydra | 15 | 120 | 3 mordidas 1d10+5 | Fúria das cabeças | 28% |
+| Gigante da Colina | Hill Giant | 13 | 100 | 2× clava grande 3d8+5 | Arremesso de pedra 3d10+5 | 34% |
+| Quimera | Chimera | 14 | 90 | Mordida, chifres, garras | Sopro de fogo 7d8 (CD 15) | 36% |
+| Dragão Vermelho | Young Red Dragon | 18 | 110 | Mordida 2d10+6, garras 2d6+6 | Sopro de fogo 6d6 (CD 14), resiste a fogo | 48% |
 
-\* 50 lutas simuladas por chefe com `focoChefe` 1,25 e o campeão do ep. 8 (Bárbaro nv 4). PV ajustados (o dragão
+\* 50 lutas simuladas por chefe (já 3× maior, na caverna mostrada inteira) com `focoChefe` 1,25 e o campeão do ep. 8 (Bárbaro nv 4). PV ajustados (o dragão
 jovem tem bem mais na ficha) para o chefe perder na maioria das vezes, mas ser sempre ameaça. O Beholder não está no
 SRD, então o chefe "de muitos olhos" virou a Quimera.
 

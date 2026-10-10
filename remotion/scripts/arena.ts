@@ -41,7 +41,7 @@ writeFileSync(
   JSON.stringify({
     fps: FPS,
     quadros: V.fim,
-    arena: ep.arena ?? "calabouco",
+    arena: r.ep.arena ?? "calabouco",
     fases: {
       batalha: V.batalha,
       duelo: vs.v0,
@@ -69,7 +69,7 @@ P(
 const chefe = L.find((l) => l.boss);
 if (chefe)
   P(
-    `- **Chefe:** ${chefe.nome} — ficha ${CHEFES[chefe.boss!].fonte} · arena ${ep.arena ?? "calabouco"} · ${chefe.boss === campeao.boss ? "**o chefe venceu**" : `derrubado por ${r.sim.stats[chefe.id].derrubadoPor}`}`,
+    `- **Chefe:** ${chefe.nome} — ficha ${CHEFES[chefe.boss!].fonte} · arena ${r.ep.arena} · ${chefe.boss === campeao.boss ? "**o chefe venceu**" : `derrubado por ${r.sim.stats[chefe.id].derrubadoPor}`}`,
   );
 if (campeao.boss)
   P(

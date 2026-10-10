@@ -2,6 +2,7 @@
 // Tudo desenhado do zero em código: corpo chibi de ~2,5 cabeças, peças por classe, 7 expressões.
 import { Tela, rampa, novoCanvas, tomVol, tomCil, tomFixo, variar } from "./pixel.ts";
 import { quadroChefe, retratoChefe, miniChefe, CABECA, CX, CY } from "./chefes-arte.ts";
+export const ESCALA_CHEFE = 3; // o chefe no mundo: 3× o desenho de 112×112
 import type { Rampa, Tom, OpForma } from "./pixel.ts";
 import type { Lutador, Visual } from "./personagem.ts";
 import { hash3 } from "./rng.ts";
@@ -1488,7 +1489,7 @@ const renderizar = (l: Lutador, fq: Quadro): HTMLCanvasElement => {
 };
 
 export const quadro = (l: Lutador, fq: Quadro): HTMLCanvasElement => {
-  if (l.boss) return quadroChefe(l.boss, fq.anim, fq.q, fq.dir === "W" ? "W" : "E");
+  if (l.boss) return quadroChefe(l.boss, fq.anim, fq.q, fq.dir === "W" ? "W" : "E", ESCALA_CHEFE);
   let m = caches.get(l.id);
   if (!m) {
     m = new Map();
@@ -1568,7 +1569,7 @@ export const mini = (l: Lutador, expr: Expr, cinza = false): HTMLCanvasElement =
 };
 
 // altura da cabeça medida como num herói (âncora PE_Y): o chefe usa a cabeça do desenho dele
-export const alturaCabeca = (l: Lutador) => (l.boss ? CABECA[l.boss].y - CY + PE_Y : geo(l.visual, P0).hcy);
+export const alturaCabeca = (l: Lutador) => (l.boss ? (CABECA[l.boss].y - CY) * ESCALA_CHEFE + PE_Y : geo(l.visual, P0).hcy);
 // âncora (pés) dentro do quadro devolvido por quadro()
-export const ancora = (l: Lutador) => (l.boss ? { x: CX, y: CY } : { x: PE_X, y: PE_Y });
+export const ancora = (l: Lutador) => (l.boss ? { x: CX * ESCALA_CHEFE, y: CY * ESCALA_CHEFE } : { x: PE_X, y: PE_Y });
 export const corClasse = (l: Lutador) => l.visual.magia;

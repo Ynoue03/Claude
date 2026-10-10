@@ -22,7 +22,7 @@ export type Chefe = {
   atributos: { FOR: number; DES: number; CON: number; INT: number; SAB: number; CAR: number };
   deslocamento: number; // pés
   voa: boolean; // ignora ataques de oportunidade ao se mover
-  raio: number; // px: corpo maior (alcance e espaço em volta)
+  raio: number; // px: corpo (alcance e espaço em volta) — 3× o do primeiro desenho, como o sprite
   ataques: AtaqueChefe[];
   especial: EspecialChefe;
   recarga: number; // especial volta com d6 >= recarga
@@ -35,11 +35,11 @@ export const CHEFES: Record<ChefeId, Chefe> = {
     id: "MINOTAURO",
     nome: "Minotauro",
     ca: 14,
-    pv: 110,
+    pv: 145,
     atributos: { FOR: 18, DES: 11, CON: 16, INT: 6, SAB: 16, CAR: 9 },
     deslocamento: 40,
     voa: false,
-    raio: 14,
+    raio: 42,
     ataques: [
       { nome: "MACHADO GRANDE", acerto: 6, n: 2, d: 12, bonus: 4, tipo: "cortante", fx: "corteGrande" },
       { nome: "CHIFRADA", acerto: 6, n: 2, d: 8, bonus: 4, tipo: "perfurante", fx: "estocada" },
@@ -57,7 +57,7 @@ export const CHEFES: Record<ChefeId, Chefe> = {
     atributos: { FOR: 18, DES: 15, CON: 16, INT: 2, SAB: 13, CAR: 8 },
     deslocamento: 40,
     voa: true,
-    raio: 15,
+    raio: 45,
     ataques: [
       { nome: "BICO", acerto: 6, n: 1, d: 8, bonus: 4, tipo: "perfurante", fx: "estocada" },
       { nome: "GARRAS", acerto: 6, n: 2, d: 6, bonus: 4, tipo: "cortante", fx: "corte" },
@@ -71,11 +71,11 @@ export const CHEFES: Record<ChefeId, Chefe> = {
     id: "HIDRA",
     nome: "Hidra",
     ca: 15,
-    pv: 100,
+    pv: 120,
     atributos: { FOR: 20, DES: 12, CON: 20, INT: 2, SAB: 10, CAR: 7 },
     deslocamento: 30,
     voa: false,
-    raio: 18,
+    raio: 54,
     ataques: [
       { nome: "MORDIDA", acerto: 8, n: 1, d: 10, bonus: 5, tipo: "perfurante", fx: "estocada" },
       { nome: "MORDIDA", acerto: 8, n: 1, d: 10, bonus: 5, tipo: "perfurante", fx: "estocada" },
@@ -90,11 +90,11 @@ export const CHEFES: Record<ChefeId, Chefe> = {
     id: "GIGANTE",
     nome: "Gigante da Colina",
     ca: 13,
-    pv: 160,
+    pv: 100,
     atributos: { FOR: 21, DES: 8, CON: 19, INT: 5, SAB: 9, CAR: 6 },
     deslocamento: 40,
     voa: false,
-    raio: 16,
+    raio: 48,
     ataques: [
       { nome: "CLAVA GRANDE", acerto: 8, n: 3, d: 8, bonus: 5, tipo: "concussao", fx: "impacto" },
       { nome: "CLAVA GRANDE", acerto: 8, n: 3, d: 8, bonus: 5, tipo: "concussao", fx: "impacto" },
@@ -112,7 +112,7 @@ export const CHEFES: Record<ChefeId, Chefe> = {
     atributos: { FOR: 19, DES: 11, CON: 19, INT: 3, SAB: 14, CAR: 10 },
     deslocamento: 30,
     voa: true,
-    raio: 16,
+    raio: 48,
     ataques: [
       { nome: "MORDIDA", acerto: 7, n: 2, d: 6, bonus: 4, tipo: "perfurante", fx: "estocada" },
       { nome: "CHIFRES", acerto: 7, n: 1, d: 12, bonus: 4, tipo: "concussao", fx: "impacto" },
@@ -127,11 +127,11 @@ export const CHEFES: Record<ChefeId, Chefe> = {
     id: "DRAGAO",
     nome: "Dragão Vermelho",
     ca: 18,
-    pv: 85,
+    pv: 110,
     atributos: { FOR: 23, DES: 10, CON: 21, INT: 14, SAB: 11, CAR: 19 },
     deslocamento: 40,
     voa: true,
-    raio: 20,
+    raio: 60,
     ataques: [
       { nome: "MORDIDA", acerto: 9, n: 2, d: 10, bonus: 6, tipo: "perfurante", fx: "estocada" },
       { nome: "GARRAS", acerto: 9, n: 2, d: 6, bonus: 6, tipo: "cortante", fx: "corteGrande" },

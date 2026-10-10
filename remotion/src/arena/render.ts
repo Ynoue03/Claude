@@ -8,6 +8,7 @@ import { W, H, fundo, aplicarLuz, luzesTochas, luzEm, desenharTochas, desenharAm
 import type { Luz } from "./cenario.ts";
 import { PE_Y, quadro, retrato, mini, alturaCabeca, ancora } from "./sprite.ts";
 import { CHEFES } from "./chefes.ts";
+import { quadroChefe } from "./chefes-arte.ts";
 import type { Anim, Dir, Expr } from "./sprite.ts";
 import { texto, larguraTexto, quebrar } from "./fonte.ts";
 import type { OpTexto } from "./fonte.ts";
@@ -287,6 +288,8 @@ const golpeTxt = (r: Roteiro, g: Golpe) => (g.nome === "ATAQUE" || g.nome === "O
 let MW = W,
   MH = H;
 let GEOM: Geo = geoDe();
+let LARG = W;
+let ROT_Y = { y0: 0, y1: H }; // faixa vertical das caixas de golpe (no mesmo espaço de LARG) // largura de onde os rótulos são desenhados (mundo nas arenas normais, tela na caverna)
 
 export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   const arena = r.ep.arena ?? "calabouco";
@@ -321,7 +324,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     const de = { x: a.x + (a.dir === "E" ? 8 : a.dir === "W" ? -8 : 0), y: a.y + hy };
     const para = g.resultados.map((res) => {
       const b = estados[res.alvo];
-      return { x: b.x, y: b.y - 16 };
+      return { x: b.x, y: b.y - (r.lutadores[res.alvo].boss ? Math.round((PE_Y - alturaCabeca(r.lutadores[res.alvo])) * 0.55) : 16) };
     });
     const distanciaFx = ["flecha", "raioFogo", "misseis", "raioGelo", "orbe", "rajada", "chama", "raioGuia", "espinhos", "zombaria", "sussurros"].includes(g.fx);
     const tSolta = distanciaFx ? Math.min(8, (g.tImp - g.t0) * 0.45) : g.tImp - g.t0;
@@ -375,7 +378,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   for (const { e, i } of ordem) {
     const k = e.caindo > 0 ? clamp(1 - e.caindo / 150, 0.3, 1) : 1;
     const b = r.lutadores[i].boss;
-    sombra(ctx, e.x, e.y, k * (b ? CHEFES[b].raio / 6 : 1) * (e.anim === "derrota" && e.q >= 2 ? 1.4 : 1));
+    sombra(ctx, e.x, e.y, k * (b ? CHEFES[b].raio / 7 : 1) * (e.anim === "derrota" && e.q >= 2 ? 1.4 : 1));
   }
   // coluna de luz dourada do vencedor (atrás)
   if (v >= V.vitoria && v < r.fases.pergaminho + 10) colunaLuz(ctx, estados[r.vencedor].x, estados[r.vencedor].y, v - V.vitoria);
@@ -435,74 +438,15 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   if (!grande) vinheta(ctx);
   // confete (no mundo, cai sobre todos)
 
-  // ── marcadores sobre os lutadores (não escurecem) ──
-  if (v >= V.batalha - 20 && v < r.fases.pergaminho) {
-    for (const { e, i } of ordem) {
-      if (e.morto) continue;
-      const l = r.lutadores[i];
-      const by = Math.round(e.y + 3);
-      barraPv(ctx, Math.round(e.x) - 8, by, 16, e.pv / e.pvMax);
-      const conds = condicoesEm(r, i, s).filter((c) => c !== "ZMB");
-      conds.slice(0, 3).forEach((c, k) => etiqueta(ctx, Math.round(e.x) - 3 * conds.slice(0, 3).length * 2 + k * 12 + 6, by + 5, c));
-      void l;
-    }
-    // seta ▼ de quem está no turno
-    // seta ▼ em cada um dos (até 4) lutadores que estão agindo agora
-    const noTurno = r.turnos.filter((t) => s >= t.t0 && s < t.t1);
-    if (!congelado && Math.floor(v / 4) % 4 !== 3)
-      for (const tAtual of noTurno) {
-        const e = estados[tAtual.ator];
-        if (!e.vis || e.morto) continue;
-        const hy = e.y - PE_Y + alturaCabeca(r.lutadores[tAtual.ator]) - 17 - Math.round(Math.abs(Math.sin(v * 0.25)) * 2);
-        texto(ctx, "▼", Math.round(e.x), hy, { cor: DOURADO, contorno: TINTA, alinhar: "centro" });
-      }
-  }
-  // caixas dos golpes, dados e números
-  caixasUsadas.length = 0;
-  for (const { g } of ativos) {
-    const a = estados[g.ator];
-    const dt = s - g.t0;
-    if (dt >= 0 && dt < 30 && v < V.vitoria + 10) caixaGolpe(ctx, g, a.x, a.y - PE_Y + alturaCabeca(r.lutadores[g.ator]) - 30, dt);
-    if (g.d20 && dt >= 0 && dt < 26) {
-      const sx = a.x + (a.x > 250 ? -20 : 20);
-      desenharD20(ctx, Math.round(sx), Math.round(a.y - 34), g.d20.v, dt, { acerto: "#5ac85a", erro: "#8a8a96", critico: DOURADO, falha: "#e04040" }[g.d20.cor], (n, x, y) => texto(ctx, n, x, y, { fonte: "p", cor: "#ffffff", contorno: TINTA, alinhar: "centro" }));
-    }
-    const pi = s - g.tImp;
-    if (g.subiu && pi >= 8 && pi < 60) {
-      const b = estados[g.subiu.id];
-      const k = pi - 8;
-      const a = k > 44 ? 1 - (k - 44) / 8 : 1;
-      const yb = b.y - PE_Y + alturaCabeca(r.lutadores[g.subiu.id]) - 30 - Math.min(10, k * 0.8);
-      if (Math.floor(k / 4) % 4 !== 3) texto(ctx, "SUBIU DE NÍVEL!", clamp(b.x, 60, MW - 60), yb, { cor: DOURADO, contorno: TINTA, alinhar: "centro", alpha: a });
-      texto(ctx, `NV ${g.subiu.de} → ${g.subiu.para} · +${g.subiu.ganho} PV`, clamp(b.x, 60, MW - 60), yb + 10, { cor: "#6aff7a", contorno: TINTA, alinhar: "centro", fonte: "p", alpha: a });
-      if (k < 30) colunaLuz(ctx, b.x, b.y, k + 20);
-    }
-    if (g.itensPegos && pi >= 14 && pi < 64) {
-      const b = estados[g.itensPegos.id];
-      const k = pi - 14;
-      const a = k > 40 ? 1 - (k - 40) / 10 : 1;
-      const yb = b.y - PE_Y + alturaCabeca(r.lutadores[g.itensPegos.id]) - 44 - Math.min(8, k * 0.6);
-      const n = g.itensPegos.itens.length;
-      texto(ctx, n > 1 ? `PEGOU ${n} ITENS!` : "PEGOU O ITEM!", clamp(b.x, 60, MW - 60), yb, { cor: "#ffd84a", contorno: TINTA, alinhar: "centro", alpha: a });
-      ctx.globalAlpha = a;
-      g.itensPegos.itens.forEach((it, j) => desenharIcone(ctx, it, Math.round(clamp(b.x, 60, MW - 60) - (n * 17) / 2 + j * 17), Math.round(yb + 9)));
-      ctx.globalAlpha = 1;
-    }
-    if (pi >= 0 && pi < 32) {
-      g.resultados.forEach((res, k) => {
-        const b = estados[res.alvo];
-        numerosFlutuantes(ctx, b.x, b.y - 36 - pi * 0.6 - k * 4, res, pi, g);
-      });
-    }
-  }
-
   // ── câmera: zoom 1,2× no duelo e tremor nos especiais ──
-  let zoom = 1;
-  let foco: P = grande ? cameraGrande(r, v, s) : { x: W / 2, y: H / 2 };
+  // caverna do chefe: a câmera mostra a arena inteira (zoom 0,5 = 720×1280 na tela de 360×640)
+  const z0 = grande ? W / MW : 1;
+  let zoom = z0;
+  let foco: P = grande ? { x: MW / 2, y: MH / 2 } : { x: W / 2, y: H / 2 };
   const vsC = r.congela.find((c) => c.tipo === "vs")!;
   if (v >= vsC.v0 + DUR_VS && v < r.fases.pergaminho) {
     const k = ease((v - vsC.v0 - DUR_VS) / 20);
-    zoom = 1 + 0.2 * k;
+    zoom = grande ? z0 + (1 - z0) * k : 1 + 0.2 * k; // no duelo a caverna aproxima até o tamanho normal
     const [a, b] = r.finalistas.map((i) => estados[i]);
     const alvo = v >= V.vitoria || !b ? { x: estados[r.vencedor].x, y: estados[r.vencedor].y - 20 } : { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 20 };
     foco = { x: foco.x + (alvo.x - foco.x) * k, y: foco.y + (alvo.y - foco.y) * k };
@@ -523,12 +467,82 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     }
   }
 
-  // ── interface ──
+  // rótulos (vida, ▼, caixas, dados, números): nas arenas normais vão no mundo; na caverna vão na interface, no
+  // tamanho normal, na posição de tela de cada lutador (com o zoom 0,5 ficariam ilegíveis)
   if (grande) vinheta(ui);
+  const oc = grande ? ui : ctx;
+  const zr = grande ? zoom : 1;
+  const ov: P = grande ? off : { x: 0, y: 0 };
+  const est = grande ? estados.map((e) => ({ ...e, x: e.x * zr + ov.x, y: e.y * zr + ov.y })) : estados;
+  const cab = (i: number) => (alturaCabeca(r.lutadores[i]) - PE_Y) * zr; // da sola à cabeça, já no zoom
+  LARG = grande ? W : MW;
+  ROT_Y = grande ? { y0: 192, y1: H - 90 } : { y0: GEOM.lim.y0 - 32, y1: GEOM.lim.y1 };
+  // ── marcadores sobre os lutadores (não escurecem) ──
+  if (v >= V.batalha - 20 && v < r.fases.pergaminho) {
+    for (const { i } of ordem) {
+      const e = est[i];
+      if (e.morto) continue;
+      const l = r.lutadores[i];
+      const by = Math.round(e.y + 3);
+      barraPv(oc, Math.round(e.x) - 8, by, 16, e.pv / e.pvMax);
+      const conds = condicoesEm(r, i, s).filter((c) => c !== "ZMB");
+      conds.slice(0, 3).forEach((c, k) => etiqueta(oc, Math.round(e.x) - 3 * conds.slice(0, 3).length * 2 + k * 12 + 6, by + 5, c));
+      void l;
+    }
+    // seta ▼ de quem está no turno
+    // seta ▼ em cada um dos (até 4) lutadores que estão agindo agora
+    const noTurno = r.turnos.filter((t) => s >= t.t0 && s < t.t1);
+    if (!congelado && Math.floor(v / 4) % 4 !== 3)
+      for (const tAtual of noTurno) {
+        const e = est[tAtual.ator];
+        if (!e.vis || e.morto) continue;
+        const hy = e.y + cab(tAtual.ator) - 17 - Math.round(Math.abs(Math.sin(v * 0.25)) * 2);
+        texto(oc, "▼", Math.round(e.x), hy, { cor: DOURADO, contorno: TINTA, alinhar: "centro" });
+      }
+  }
+  // caixas dos golpes, dados e números
+  caixasUsadas.length = 0;
+  for (const { g } of ativos) {
+    const a = est[g.ator];
+    const dt = s - g.t0;
+    if (dt >= 0 && dt < 30 && v < V.vitoria + 10) caixaGolpe(oc, g, a.x, a.y + cab(g.ator) - 30, dt);
+    if (g.d20 && dt >= 0 && dt < 26) {
+      const sx = a.x + (a.x > LARG * 0.7 ? -20 : 20);
+      desenharD20(oc, Math.round(sx), Math.round(a.y + Math.min(-34, cab(g.ator) + 8)), g.d20.v, dt, { acerto: "#5ac85a", erro: "#8a8a96", critico: DOURADO, falha: "#e04040" }[g.d20.cor], (n, x, y) => texto(oc, n, x, y, { fonte: "p", cor: "#ffffff", contorno: TINTA, alinhar: "centro" }));
+    }
+    const pi = s - g.tImp;
+    if (g.subiu && pi >= 8 && pi < 60) {
+      const b = est[g.subiu.id];
+      const k = pi - 8;
+      const a = k > 44 ? 1 - (k - 44) / 8 : 1;
+      const yb = b.y + cab(g.subiu.id) - 30 - Math.min(10, k * 0.8);
+      if (Math.floor(k / 4) % 4 !== 3) texto(oc, "SUBIU DE NÍVEL!", clamp(b.x, 60, LARG - 60), yb, { cor: DOURADO, contorno: TINTA, alinhar: "centro", alpha: a });
+      texto(oc, `NV ${g.subiu.de} → ${g.subiu.para} · +${g.subiu.ganho} PV`, clamp(b.x, 60, LARG - 60), yb + 10, { cor: "#6aff7a", contorno: TINTA, alinhar: "centro", fonte: "p", alpha: a });
+      if (k < 30) colunaLuz(ctx, estados[g.subiu.id].x, estados[g.subiu.id].y, k + 20);
+    }
+    if (g.itensPegos && pi >= 14 && pi < 64) {
+      const b = est[g.itensPegos.id];
+      const k = pi - 14;
+      const a = k > 40 ? 1 - (k - 40) / 10 : 1;
+      const yb = b.y + cab(g.itensPegos.id) - 44 - Math.min(8, k * 0.6);
+      const n = g.itensPegos.itens.length;
+      texto(oc, n > 1 ? `PEGOU ${n} ITENS!` : "PEGOU O ITEM!", clamp(b.x, 60, LARG - 60), yb, { cor: "#ffd84a", contorno: TINTA, alinhar: "centro", alpha: a });
+      oc.globalAlpha = a;
+      g.itensPegos.itens.forEach((it, j) => desenharIcone(oc, it, Math.round(clamp(b.x, 60, LARG - 60) - (n * 17) / 2 + j * 17), Math.round(yb + 9)));
+      oc.globalAlpha = 1;
+    }
+    if (pi >= 0 && pi < 32) {
+      g.resultados.forEach((res, k) => {
+        const b = est[res.alvo];
+        numerosFlutuantes(oc, b.x, b.y + Math.min(-36, cab(res.alvo) + 5) - pi * 0.6 - k * 4, res, pi, g);
+      });
+    }
+  }
+
+  // ── interface ──
   if (v >= V.vitoria && v < r.fases.pergaminho + 30) confete(ui, v - V.vitoria);
   if (v < (r.fases.bau >= 0 ? r.fases.bau : r.fases.pergaminho)) hud(ui, r, s, v, estados);
-  if (grande && v < (r.fases.bau >= 0 ? r.fases.bau : r.fases.pergaminho)) minimapa(ui, r, s, estados, foco);
-  if (v < V.batalha + 10) intro(ui, r, v, estados, off);
+  if (v < V.batalha + 10) intro(ui, r, v, estados, off, zoom);
   bannersCaiu(ui, r, v);
   bannerChefe(ui, r, s);
   if (congelado?.tipo === "cutin" && congelado.golpe) cutin(ui, r, congelado.golpe, dentro);
@@ -667,8 +681,8 @@ const caixaGolpe = (ctx: Ctx, g: Golpe, x: number, y: number, dt: number) => {
   const h = 13;
   const sobe = dt < 4 ? (4 - dt) * 2 : 0;
   const alpha = dt > 24 ? 1 - (dt - 24) / 6 : 1;
-  const bx = clamp(x - w / 2, 30, MW - 30 - w);
-  let by = clamp(y - h - sobe, GEOM.lim.y0 - 32, GEOM.lim.y1);
+  const bx = clamp(x - w / 2, 30, LARG - 30 - w);
+  let by = clamp(y - h - sobe, ROT_Y.y0, ROT_Y.y1);
   // empilha se encostar em outra caixa
   for (let n = 0; n < 4; n++) {
     const bate = caixasUsadas.some((c) => bx < c.x + c.w && bx + w > c.x && by < c.y + c.h && by + h > c.y);
@@ -699,7 +713,7 @@ const numerosFlutuantes = (ctx: Ctx, x: number, y: number, res: Golpe["resultado
   let yy = y;
   ctx.globalAlpha = alpha;
   for (const ln of linhas) {
-    const xx = clamp(x, 40, MW - 40);
+    const xx = clamp(x, 40, LARG - 40);
     texto(ctx, ln.t, xx, Math.round(yy - pop), { cor: ln.cor, contorno: TINTA, escala: ln.esc, alinhar: "centro" });
     yy += ln.esc === 2 ? 16 : 10;
   }
@@ -791,14 +805,14 @@ const barraChefe = (ui: Ctx, l: Lutador, e: EstadoL, visivel: boolean, morto: bo
 };
 
 // ───────────── intro ─────────────
-const intro = (ui: Ctx, r: Roteiro, v: number, estados: EstadoL[], off: P = { x: 0, y: 0 }) => {
+const intro = (ui: Ctx, r: Roteiro, v: number, estados: EstadoL[], off: P = { x: 0, y: 0 }, zoom = 1) => {
   // nomes embaixo de cada um
   if (v < V.batalha) {
     r.lutadores.forEach((l, i) => {
       if (v < POUSO(i) + 2) return;
       const e = estados[i];
-      const x = Math.round(e.x + off.x),
-        y = Math.round(e.y + 4 + off.y);
+      const x = Math.round(e.x * zoom + off.x),
+        y = Math.round(e.y * zoom + 4 + off.y);
       const nome = l.nome.toUpperCase();
       const sub = l.boss ? "CHEFE" : `${CLASSES[l.classe].nome.toUpperCase()} NV${l.nivel}`;
       const w = Math.max(larguraTexto(nome, "p"), larguraTexto(sub, "p")) + 4;
@@ -1280,7 +1294,7 @@ const cta = (ui: Ctx, r: Roteiro, t: number) => {
   ui.globalAlpha = a;
   const l = r.lutadores[r.vencedor];
   const sp = quadro(l, { anim: "vitoria", q: Math.floor(t / 6) % 4, dir: "S", expr: "vitoria", rasgado: false });
-  if (l.boss) ui.drawImage(sp, W / 2 - 112, 248 - 212, 224, 224);
+  if (l.boss) ui.drawImage(quadroChefe(l.boss, "vitoria", Math.floor(t / 6) % 4, "E"), W / 2 - 112, 248 - 212, 224, 224);
   else {
     ui.drawImage(sp, W / 2 - 48, 120, 96, 128);
     coroa(ui, W / 2, 120 + (alturaCabeca(l) - 14) * 2);
@@ -1417,75 +1431,3 @@ const cenaBau = (ui: Ctx, r: Roteiro, t: number) => {
 };
 const BAU_DUR = 120;
 
-// ───────────── câmera e minimapa da arena grande (caverna) ─────────────
-// A câmera é função pura do quadro: média do "ponto de interesse" numa janela de ±1 s (fica suave sem guardar estado).
-const interesse = (r: Roteiro, t: number): P | null => {
-  const ativos = r.turnos.filter((u) => t >= u.t0 && t < u.t1).map((u) => u.ator);
-  const ids = new Set<number>(ativos);
-  for (const g of r.golpes) if (t >= g.t0 && t <= g.t1 && ids.has(g.ator)) g.resultados.forEach((x) => ids.add(x.alvo));
-  const vivos = [...ids].filter((i) => t < r.morte[i] + 20);
-  const lista = vivos.length ? vivos : r.lutadores.map((_, i) => i).filter((i) => t < r.morte[i]);
-  if (!lista.length) return null;
-  const ps = lista.map((i) => posEm(r.pos[i], t));
-  return { x: ps.reduce((a, p) => a + p.x, 0) / ps.length, y: ps.reduce((a, p) => a + p.y, 0) / ps.length - 16 };
-};
-const cameraGrande = (r: Roteiro, v: number, s: number): P => {
-  const centro = { x: GEOM.centro.x, y: GEOM.centro.y };
-  if (v < V.batalha - 30) return centro;
-  if (v >= V.vitoria) {
-    const p = posEm(r.pos[r.vencedor], s);
-    return { x: p.x, y: p.y - 20 };
-  }
-  if (s >= r.sDuelo && r.finalistas.length === 2) {
-    const [a, b] = r.finalistas.map((i) => posEm(r.pos[i], s));
-    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 20 };
-  }
-  let sx = 0,
-    sy = 0,
-    n = 0;
-  for (let k = -30; k <= 30; k += 6) {
-    const p = interesse(r, Math.max(V.batalha, s + k));
-    if (!p) continue;
-    const w = 1 - Math.abs(k) / 36;
-    sx += p.x * w;
-    sy += p.y * w;
-    n += w;
-  }
-  const alvo = n ? { x: sx / n, y: sy / n } : centro;
-  // entra suave saindo do centro no começo da batalha
-  const k = clamp((v - (V.batalha - 30)) / 40, 0, 1);
-  return { x: centro.x + (alvo.x - centro.x) * k, y: centro.y + (alvo.y - centro.y) * k };
-};
-let miniFundo: HTMLCanvasElement | null = null;
-const minimapa = (ui: Ctx, r: Roteiro, s: number, estados: EstadoL[], foco: P) => {
-  const esc = 12;
-  const w = Math.round(MW / esc),
-    h = Math.round(MH / esc);
-  const x0 = W - 30 - w,
-    y0 = r.lutadores.some((l) => l.boss) ? 192 : 170;
-  if (!miniFundo || miniFundo.width !== w) {
-    miniFundo = novoCanvas(w, h);
-    const m = miniFundo.getContext("2d")!;
-    m.imageSmoothingEnabled = true;
-    m.drawImage(fundo(r.ep.arena ?? "calabouco"), 0, 0, w, h);
-    m.fillStyle = "rgba(0,0,0,0.35)";
-    m.fillRect(0, 0, w, h);
-  }
-  ui.fillStyle = TINTA;
-  ui.fillRect(x0 - 2, y0 - 2, w + 4, h + 4);
-  ui.drawImage(miniFundo, x0, y0);
-  // retângulo da câmera
-  ui.strokeStyle = "rgba(255,255,255,0.7)";
-  ui.lineWidth = 1;
-  ui.strokeRect(Math.round(x0 + (foco.x - W / 2) / esc) + 0.5, Math.round(y0 + (foco.y - H / 2) / esc) + 0.5, Math.round(W / esc), Math.round(H / esc));
-  r.lutadores.forEach((l, i) => {
-    const e = estados[i];
-    if (!e.vis || e.morto) return;
-    const px = Math.round(x0 + e.x / esc),
-      py = Math.round(y0 + e.y / esc);
-    const chefe = !!l.boss;
-    ui.fillStyle = chefe ? "#ff3a3a" : l.campeao ? DOURADO : CLASSES[l.classe].cor;
-    ui.fillRect(px - (chefe ? 2 : 1), py - (chefe ? 2 : 1), chefe ? 4 : 2, chefe ? 4 : 2);
-  });
-  void s;
-};

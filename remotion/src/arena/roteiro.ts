@@ -6,7 +6,7 @@ import { simular } from "./combate.ts";
 import type { Batida, Efeito, P, Resultado, Simulacao } from "./combate.ts";
 import { CLASSES, ESPECIES, espacos } from "./regras.ts";
 import { ITEM_IDS, podeUsar, tipoDe } from "./itens.ts";
-import { CHEFES } from "./chefes.ts";
+import { CHEFES, chefeDoEpisodio } from "./chefes.ts";
 import type { ItemId } from "./itens.ts";
 import type { TipoDano } from "./regras.ts";
 
@@ -93,7 +93,10 @@ const natural = (b: Batida, posAtor: P, posAlvo: P | undefined) => {
   return { pre: b.magia ? 9 : 7, viagem: viaja, pos: 12 + (morreu ? 12 : 0) + (b.resultados.length > 1 ? 4 : 0) };
 };
 
-export const criarRoteiro = (ep: Episodio): Roteiro => {
+// a caverna (arena grande) é só para luta com chefe, e luta com chefe é sempre na caverna
+export const arenaDoEpisodio = (ep: Episodio): Episodio["arena"] => (chefeDoEpisodio(ep) ? "caverna" : ep.arena === "caverna" ? "calabouco" : ep.arena);
+export const criarRoteiro = (ep0: Episodio): Roteiro => {
+  const ep: Episodio = { ...ep0, arena: arenaDoEpisodio(ep0) };
   const { lutadores, rng } = gerarLutadores(ep);
   const sim = simular(lutadores, rng, { versao: ep.versao, focoCampeao: ep.focoCampeao, centro: ep.centro, arena: ep.arena, focoChefe: ep.focoChefe });
   const N = lutadores.length;
