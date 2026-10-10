@@ -162,138 +162,138 @@ Tempo = momento do vídeo em que o turno começa.
       Hale → Dax: FLECHA, d20 17 +6 = 23 vs CA 13 → acertou
         dano 3+4 + marca 1d6=6 = 13 perfurante
       ✖ Dax CAIU (Arco Longo de Hale)
-**0:06** [R1] Turno de Tamsin (13/13 PV)
+**0:05** [R1] Turno de Tamsin (13/13 PV)
       Tamsin marca Azura (Marca do Caçador, concentração)
       Tamsin → Azura: FLECHA, d20 2 +5 = 7 vs CA 16 → errou
-**0:08** [R1] Turno de Grom (10/10 PV)
+**0:05** [R1] Turno de Grom (10/10 PV)
       Grom → Azura: RAIO DE FOGO, d20 20 +6 = 26 vs CA 16 → CRÍTICO!
         dano 9+4 = 13 fogo
       Azura usa Resistência da Pedra: −10
-**0:10** [R1] Turno de Ivo (11/11 PV)
+**0:07** [R1] Turno de Ivo (11/11 PV)
       Ivo lança Bruxaria em Grom (concentração)
       Grom lança ESCUDO (+5 CA) como reação
       Ivo → Grom: RAJADA MÍSTICA, d20 12 +6 = 18 vs CA 20 → errou
-**0:12** [R1] Turno de Wren (17/17 PV)
+**0:11** [R1] Turno de Wren (17/17 PV)
       Wren → Garruk: ATAQUE, d20 7 +6 = 13 vs CA 20 → errou
-**0:13** [R1] Turno de Runa (15/15 PV)
+**0:11** [R1] Turno de Runa (15/15 PV)
       Runa entra em FÚRIA (resiste a cortante/perfurante/concussão, +2 de dano)
       Runa → Orrin: ATAQUE, d20 19 +5 = 24 vs CA 16 → acertou
         dano 6+5+3 + fúria 2 = 16 cortante
       ✖ Orrin CAIU (Montante de Runa)
-**0:14** [R1] Turno de Azura (7/10 PV)
+**0:11** [R1] Turno de Azura (7/10 PV)
       Azura → Kael: ADAGAS, d20 19 +6 = 25 vs CA 15 → acertou
         dano 2+4 = 6 perfurante
-**0:15** [R1] Turno de Yara (13/13 PV)
+**0:11** [R1] Turno de Yara (13/13 PV)
       Yara → Kael: ATAQUE, d20 12 +7 = 19 vs CA 15 → acertou
         dano 5+5+5 = 15 cortante
       ✖ Kael CAIU (Montante de Yara)
-**0:16** [R1] Turno de Elowen (11/11 PV)
+**0:14** [R1] Turno de Elowen (11/11 PV)
       Elowen: SUSSURROS DISSONANTES (CD 13 SAB) → dano 3+4+3 = 10
         Azura: d20 4 +0 = 4 → falhou (10 de dano)
       Azura usa Resistência da Pedra: −7
-**0:17** [R1] Turno de Doran (9/9 PV)
+**0:15** [R1] Turno de Doran (9/9 PV)
       Doran desperta a Feitiçaria Inata (vantagem nas magias, CD +1)
       Doran → Azura: RAIO DE FOGO, d20 9/3 +6 = 15 vs CA 16 → errou
-**0:18** [R1] Turno de Garruk (12/12 PV)
+**0:15** [R1] Turno de Garruk (12/12 PV)
       ↯ Garruk provoca ataque de oportunidade de Wren
       Wren → Garruk: ATAQUE, d20 6 +6 = 12 vs CA 20 → errou
       Garruk → Azura: ATAQUE, d20 11 +5 = 16 vs CA 16 → acertou
         dano 5+3 = 8 concussao
       ✖ Azura CAIU (Martelo de Guerra de Garruk)
-**0:20** [R1] Turno de Soren (10/10 PV)
+**0:15** [R1] Turno de Soren (10/10 PV)
       Soren → Doran: RAIO GUIA, d20 9 +5 = 14 vs CA 12 → acertou
         dano 4+1+3+2 = 10 radiante
       ✖ Doran CAIU (RAIO GUIA de Soren)
-**0:22** [R1] Turno de Nessa (10/10 PV)
+**0:20** [R1] Turno de Nessa (10/10 PV)
       Nessa lança Bruxaria em Soren (concentração)
       Nessa → Soren: RAJADA MÍSTICA, d20 1 +6 = 7 vs CA 18 → FALHA (1 natural)
-**0:24** [R2] Turno de Hale (13/13 PV)
+**0:23** [R2] Turno de Hale (13/13 PV)
       Hale move a Marca do Caçador para Soren
       Hale → Soren: FLECHA, d20 18 +6 = 24 vs CA 18 → acertou
         dano 1+4 + marca 1d6=3 = 8 perfurante
-**0:26** [R2] Turno de Tamsin (13/13 PV)
+**0:23** [R2] Turno de Tamsin (13/13 PV)
       Tamsin move a Marca do Caçador para Soren
       Tamsin → Soren: FLECHA, d20 9 +5 = 14 vs CA 18 → errou
-**0:27** [R2] Turno de Grom (10/10 PV)
+**0:24** [R2] Turno de Grom (10/10 PV)
       Grom → Soren: RAIO DE FOGO, d20 12 +6 = 18 vs CA 18 → acertou
         dano 7 = 7 fogo
       ✖ Soren CAIU (RAIO DE FOGO de Grom)
-**0:29** [R2] Turno de Ivo (11/11 PV)
+**0:24** [R2] Turno de Ivo (11/11 PV)
       Ivo → Grom: RAJADA MÍSTICA, d20 15 +6 = 21 vs CA 15 → acertou
         dano 9 + bruxaria 1d6=6 = 15 energia
       Grom usa Resistência da Pedra: −6
-**0:30** [R2] Turno de Wren (17/17 PV)
+**0:28** [R2] Turno de Wren (17/17 PV)
       Wren: Surto de Adrenalina (dispara, +2 PV temporários)
       Wren → Grom: ATAQUE, d20 6 +6 = 12 vs CA 15 → errou
-**0:32** [R2] Turno de Runa (15/15 PV)
+**0:29** [R2] Turno de Runa (15/15 PV)
       Runa: ARMA DE SOPRO (CD 13 DES) → dano 10 = 10
         Grom: d20 2 +2 = 4 → falhou (10 de dano)
       ✖ Grom CAIU (ARMA DE SOPRO de Runa)
         Wren: d20 15 +0 = 15 → SALVOU (5 de dano)
-**0:34** [R2] Turno de Yara (13/13 PV)
+**0:28** [R2] Turno de Yara (13/13 PV)
       Yara → Garruk: ATAQUE, d20 13 +7 = 20 vs CA 20 → acertou
         dano 5+3+5 = 13 cortante
       ✖ Garruk CAIU (Montante de Yara)
-**0:35** [R2] Turno de Elowen (11/11 PV)
+**0:28** [R2] Turno de Elowen (11/11 PV)
       Elowen: SUSSURROS DISSONANTES (CD 13 SAB) → dano 4+3+3 = 10
         Tamsin: d20 9 +2 = 11 → falhou (10 de dano)
       Tamsin usa Resistência da Pedra: −9
-**0:36** [R2] Turno de Nessa (10/10 PV)
+**0:33** [R2] Turno de Nessa (10/10 PV)
       Nessa move a Bruxaria para Ivo
       Nessa → Ivo: RAJADA MÍSTICA, d20 7 +6 = 13 vs CA 13 → acertou
         dano 9 + bruxaria 1d6=4 = 13 energia
       ✖ Ivo CAIU (RAJADA MÍSTICA de Nessa)
-**0:37** [R3] Turno de Hale (13/13 PV)
+**0:36** [R3] Turno de Hale (13/13 PV)
       Hale move a Marca do Caçador para Nessa
       Hale → Nessa: FLECHA, d20 13 +6 = 19 vs CA 11 → acertou
         dano 7+4 + marca 1d6=5 = 16 perfurante
       ✖ Nessa CAIU (Arco Longo de Hale)
-**0:39** [R3] Turno de Tamsin (12/13 PV)
+**0:36** [R3] Turno de Tamsin (12/13 PV)
       Tamsin move a Marca do Caçador para Wren
       Tamsin → Wren: FLECHA, d20 17 +5 = 22 vs CA 20 → acertou
         dano 6+3 + marca 1d6=3 = 12 perfurante
-**0:41** [R3] Turno de Wren (2/17 PV)
+**0:36** [R3] Turno de Wren (2/17 PV)
       Wren: CURA PELAS MÃOS 10 PV da reserva → +10 PV (12/17) [ação bônus]
       Wren → Runa: ATAQUE, d20 15 +6 = 21 vs CA 14 → acertou
         dano 7+6 + destruição 2d8=13 = 26 concussao
-**0:42** [R3] Turno de Runa (2/15 PV)
+**0:38** [R3] Turno de Runa (2/15 PV)
       Runa → Wren: ATAQUE, d20 19 +5 = 24 vs CA 20 → acertou
         dano 3+1+3 + fúria 2 = 9 cortante
-**0:43** [R3] Turno de Yara (13/13 PV)
+**0:40** [R3] Turno de Yara (13/13 PV)
       Yara: ARMA DE SOPRO (CD 13 DES) → dano 8 = 8
         Runa: d20 9 +1 = 10 → falhou (8 de dano)
       ✖ Runa CAIU (ARMA DE SOPRO de Yara)
         Wren: d20 11 +0 = 11 → falhou (8 de dano)
       Wren: Resistência Implacável, fica com 1 PV
-**0:44** [R3] Turno de Elowen (11/11 PV)
+**0:40** [R3] Turno de Elowen (11/11 PV)
       Elowen: ZOMBARIA VICIOSA (CD 13 SAB) → dano 4 = 4
         Wren: d20 15 +3 = 18 → SALVOU (0 de dano)
-**0:45** [R4] Turno de Hale (13/13 PV)
+**0:42** [R4] Turno de Hale (13/13 PV)
       Hale move a Marca do Caçador para Wren
       Hale → Wren: FLECHA, d20 9 +6 = 15 vs CA 20 → errou
-**0:47** [R4] Turno de Tamsin (12/13 PV)
+**0:43** [R4] Turno de Tamsin (12/13 PV)
       Tamsin → Wren: FLECHA, d20 18 +5 = 23 vs CA 20 → acertou
         dano 6+3 + marca 1d6=1 = 10 perfurante
       ✖ Wren CAIU (Arco Longo de Tamsin)
-**0:48** [R4] Turno de Yara (13/13 PV)
+**0:43** [R4] Turno de Yara (13/13 PV)
       Yara usa Disparada
-**0:48** [R4] Turno de Elowen (11/11 PV)
+**0:44** [R4] Turno de Elowen (11/11 PV)
       ↯ Elowen provoca ataque de oportunidade de Yara
       Yara → Elowen: ATAQUE, d20 11 +7 = 18 vs CA 13 → acertou
         dano 4+4+5 = 13 cortante
       ✖ Elowen CAIU (Montante de Yara)
-**0:50** [R5] Turno de Hale (13/13 PV)
+**0:46** [R5] Turno de Hale (13/13 PV)
       Hale move a Marca do Caçador para Tamsin
       Hale → Tamsin: FLECHA, d20 12 +6 = 18 vs CA 15 → acertou
         dano 7+4 + marca 1d6=5 = 16 perfurante
       Tamsin usa Resistência da Pedra: −13
-**0:51** [R5] Turno de Tamsin (9/13 PV)
+**0:49** [R5] Turno de Tamsin (9/13 PV)
       Tamsin move a Marca do Caçador para Hale
       Tamsin → Hale: FLECHA, d20 16 +5 = 21 vs CA 16 → acertou
         dano 2+3 + marca 1d6=3 = 8 perfurante
-**0:53** [R5] Turno de Yara (13/13 PV)
+**0:47** [R5] Turno de Yara (13/13 PV)
       Yara usa Disparada
-**0:53** [R6] Turno de Hale (5/13 PV)
+**0:51** [R6] Turno de Hale (5/13 PV)
       ↯ Hale provoca ataque de oportunidade de Yara
       Yara → Hale: ATAQUE, d20 6 +7 = 13 vs CA 16 → errou
       Hale → Tamsin: FLECHA, d20 10 +6 = 16 vs CA 15 → acertou
@@ -308,7 +308,7 @@ Tempo = momento do vídeo em que o turno começa.
       Yara → Hale: ATAQUE, d20 2 +7 = 9 vs CA 16 → errou
       Hale → Yara: FLECHA, d20 13 +6 = 19 vs CA 16 → acertou
         dano 3+4 + marca 1d6=3 = 10 perfurante
-**1:01** [R7] Turno de Yara (3/13 PV)
+**0:59** [R7] Turno de Yara (3/13 PV)
       Yara: RETOMAR O FÔLEGO 1d10+1 = 5 → +5 PV (8/13) [ação bônus]
       Yara usa Disparada
 **1:02** [R8] Turno de Hale (4/13 PV)

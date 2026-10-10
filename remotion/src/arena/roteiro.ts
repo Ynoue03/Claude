@@ -19,6 +19,8 @@ export const V = {
 export const CUTIN = 18; // 0,6 s congelado
 export const VS = 48; // cut-in duplo do duelo
 export const ESPACO_CUTIN = 135; // mínimo de 4,5 s entre cut-ins
+export const GRUPO = 4; // lutadores agindo ao mesmo tempo
+const ESCALONA = 6; // quadros entre o início de cada turno do grupo
 
 export type Golpe = Batida & { k: "golpe" } & {
   t0: number; // início (cena)
@@ -98,52 +100,87 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   );
   if (idx2 < 0) idx2 = sim.turnos.length - 1; // (só acontece se a luta terminar sem duelo)
 
-  // Faz o layout de uma fase; retorna a duração natural e (se escala dada) preenche tempos.
-  type Plano = { golpes: Golpe[]; movs: Movimento[]; turnos: Roteiro["turnos"]; fim: number; pos: P[] };
+  // Turnos em grupos de até 4 lutadores agindo ao mesmo tempo (dentro da mesma rodada, na ordem
+  // de iniciativa). As regras continuam sequenciais; só a apresentação é simultânea, com um pequeno
+  // escalonamento para cada golpe ter seu próprio impacto.
+  type Plano = { golpes: Golpe[]; movs: Movimento[]; turnos: Roteiro["turnos"]; fim: number; pos: P[]; grupos: number };
   const layout = (ini: number, fimT: number, inicioS: number, escala: number, folga: number, posIni: P[], cutins: Set<string>): Plano => {
     const pos = posIni.map((p) => ({ ...p }));
     const golpes: Golpe[] = [];
     const movs: Movimento[] = [];
     const turnos: Roteiro["turnos"] = [];
     let s = inicioS;
-    for (let ti = ini; ti <= fimT; ti++) {
-      const t = sim.turnos[ti];
-      const t0 = s;
-      s += 5 * escala;
-      let sobra = 0; // parte final do último golpe que pode se sobrepor ao próximo turno
-      t.batidas.forEach((b, bi) => {
-        if (b.k === "mover") {
-          const n = natural(b, pos[b.ator], undefined);
-          const d = n.viagem * escala;
-          movs.push({ ator: b.ator, t0: s, t1: s + d, pts: b.pts, corre: b.corre, recua: b.recua });
-          pos[b.ator] = { ...b.pts[b.pts.length - 1] };
-          s += d;
-          sobra = 0;
-        } else if (b.k === "golpe") {
-          const alvoP = b.resultados[0] ? pos[b.resultados[0].alvo] : undefined;
-          const n = natural(b, pos[b.ator], alvoP);
-          const chave = `${ti}:${bi}`;
-          const g: Golpe = {
-            ...b,
-            t0: s,
-            tImp: s + (n.pre + n.viagem) * escala,
-            t1: s + (n.pre + n.viagem + n.pos) * escala,
-            origem: { ...pos[b.ator] },
-            destinos: b.resultados.map((r) => ({ ...pos[r.alvo] })),
-            cutin: cutins.has(chave),
-            turno: ti,
-          };
-          (g as Golpe & { chave: string }).chave = chave;
+    let grupos = 0;
+    let ti = ini;
+    while (ti <= fimT) {
+      const rodada = sim.turnos[ti].rodada;
+      const grupo: number[] = [];
+      while (ti <= fimT && grupo.length < GRUPO && sim.turnos[ti].rodada === rodada) grupo.push(ti++);
+      grupos++;
+      const fimAtor = new Map<number, number>(); // quem já agiu neste grupo → quando terminou
+      const empurrado = new Map<number, number>(); // quem foi empurrado/puxado → quando
+      let fimGrupo = s;
+      grupo.forEach((tk, k) => {
+        const t = sim.turnos[tk];
+        // 1) planeja o turno em tempo relativo (posições na ordem das regras)
+        let c = 5 * escala;
+        let sobra = 0;
+        const rMovs: Movimento[] = [];
+        const rGolpes: Golpe[] = [];
+        let minInicio = s + k * ESCALONA * escala;
+        if (empurrado.has(t.ator)) minInicio = Math.max(minInicio, empurrado.get(t.ator)! + 6);
+        const impactosEmQuemJaAgiu: { rel: number; fim: number }[] = [];
+        t.batidas.forEach((b, bi) => {
+          if (b.k === "mover") {
+            const n = natural(b, pos[b.ator], undefined);
+            const d = n.viagem * escala;
+            rMovs.push({ ator: b.ator, t0: c, t1: c + d, pts: b.pts, corre: b.corre, recua: b.recua });
+            pos[b.ator] = { ...b.pts[b.pts.length - 1] };
+            c += d;
+            sobra = 0;
+          } else if (b.k === "golpe") {
+            const alvoP = b.resultados[0] ? pos[b.resultados[0].alvo] : undefined;
+            const n = natural(b, pos[b.ator], alvoP);
+            const chave = `${tk}:${bi}`;
+            const g: Golpe = {
+              ...b,
+              t0: c,
+              tImp: c + (n.pre + n.viagem) * escala,
+              t1: c + (n.pre + n.viagem + n.pos) * escala,
+              origem: { ...pos[b.ator] },
+              destinos: b.resultados.map((r) => ({ ...pos[r.alvo] })),
+              cutin: cutins.has(chave),
+              turno: tk,
+            };
+            (g as Golpe & { chave: string }).chave = chave;
+            rGolpes.push(g);
+            // quem já agiu neste grupo só pode ser atingido (ou reagir) depois do próprio turno
+            for (const id of [b.ator, ...b.resultados.map((r) => r.alvo)])
+              if (id !== t.ator && fimAtor.has(id)) impactosEmQuemJaAgiu.push({ rel: id === b.ator ? g.t0 : g.tImp, fim: fimAtor.get(id)! });
+            b.resultados.forEach((r) => r.novaPos && (pos[r.alvo] = { ...r.novaPos }));
+            c = g.t1;
+            sobra = Math.max(0, n.pos - (b.resultados.some((r) => r.morreu) ? 16 : 7)) * escala;
+          }
+        });
+        // 2) encaixa o turno no grupo respeitando as dependências
+        for (const x of impactosEmQuemJaAgiu) minInicio = Math.max(minInicio, x.fim + 2 - x.rel);
+        const t0 = minInicio;
+        rMovs.forEach((m) => movs.push({ ...m, t0: m.t0 + t0, t1: m.t1 + t0 }));
+        rGolpes.forEach((g) => {
+          g.t0 += t0;
+          g.tImp += t0;
+          g.t1 += t0;
           golpes.push(g);
-          b.resultados.forEach((r) => r.novaPos && (pos[r.alvo] = { ...r.novaPos }));
-          s = g.t1;
-          sobra = Math.max(0, n.pos - (b.resultados.some((r) => r.morreu) ? 16 : 7)) * escala;
-        }
+          g.resultados.forEach((r) => r.novaPos && empurrado.set(r.alvo, g.tImp));
+        });
+        const t1 = t0 + c - sobra + 3 * escala;
+        fimAtor.set(t.ator, t0 + c);
+        turnos.push({ t0, t1, ator: t.ator, rodada: t.rodada });
+        fimGrupo = Math.max(fimGrupo, t1);
       });
-      s += -sobra + 3 * escala + folga;
-      turnos.push({ t0, t1: s, ator: t.ator, rodada: t.rodada });
+      s = fimGrupo + folga;
     }
-    return { golpes, movs, turnos, fim: s, pos };
+    return { golpes, movs, turnos, fim: s, pos, grupos };
   };
 
   // 1ª passada: duração natural
@@ -185,13 +222,13 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   const ajustar = (nat: number, orc: number, nTurnos: number) => {
     let e = orc / Math.max(1, nat);
     let folga = 0;
-    if (e > 1.35) {
-      folga = ((e - 1.35) * nat) / Math.max(1, nTurnos);
-      e = 1.35;
+    if (e > 1.5) {
+      folga = ((e - 1.5) * nat) / Math.max(1, nTurnos);
+      e = 1.5;
     }
     return { e, folga };
   };
-  const a1 = ajustar(natBat.fim, orcBat - nCutBat * CUTIN, idx2 + 1);
+  const a1 = ajustar(natBat.fim, orcBat - nCutBat * CUTIN, natBat.grupos);
   esc1 = a1.e;
   if (esc1 < 0.5) avisos.push(`Batalha comprimida (escala ${esc1.toFixed(2)}): turnos muito rápidos — considere outra seed.`);
   const sBat0 = V.batalha;
@@ -199,7 +236,7 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   // cena no fim da batalha: V.duelo - cut-ins da batalha
   const sDuelo = V.duelo - nCutBat * CUTIN;
   bat.turnos[bat.turnos.length - 1].t1 = sDuelo;
-  const a2 = ajustar(natDuelo.fim, orcDuelo - nCutDuelo * CUTIN, sim.turnos.length - 1 - idx2);
+  const a2 = ajustar(natDuelo.fim, orcDuelo - nCutDuelo * CUTIN, natDuelo.grupos);
   esc2 = a2.e;
   if (esc2 < 0.5) avisos.push(`Duelo comprimido (escala ${esc2.toFixed(2)}).`);
   // o duelo começa depois do VS (congelado no tempo de cena sDuelo)

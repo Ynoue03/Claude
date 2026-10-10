@@ -407,14 +407,15 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
       void l;
     }
     // seta ▼ de quem está no turno
-    const tAtual = r.turnos.find((t) => s >= t.t0 && s < t.t1);
-    if (tAtual && !congelado && Math.floor(v / 4) % 4 !== 3) {
-      const e = estados[tAtual.ator];
-      if (e.vis && !e.morto) {
+    // seta ▼ em cada um dos (até 4) lutadores que estão agindo agora
+    const noTurno = r.turnos.filter((t) => s >= t.t0 && s < t.t1);
+    if (!congelado && Math.floor(v / 4) % 4 !== 3)
+      for (const tAtual of noTurno) {
+        const e = estados[tAtual.ator];
+        if (!e.vis || e.morto) continue;
         const hy = e.y - PE_Y + alturaCabeca(r.lutadores[tAtual.ator]) - 17 - Math.round(Math.abs(Math.sin(v * 0.25)) * 2);
         texto(ctx, "▼", Math.round(e.x), hy, { cor: DOURADO, contorno: TINTA, alinhar: "centro" });
       }
-    }
   }
   // caixas dos golpes, dados e números
   caixasUsadas.length = 0;
@@ -648,10 +649,10 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
   ui.fillRect(28, y0 + 1, W - 56, 1);
   texto(ui, `ARENA D20 #${r.ep.numero}`, 34, y0 + 5, { cor: DOURADO, contorno: TINTA, escala: 2 });
   const vivos = r.morte.filter((m) => s < m).length;
-  const tAtual = [...r.turnos].reverse().find((t) => s >= t.t0);
-  const rodada = v < V.batalha ? 0 : tAtual?.rodada ?? 1;
+  const iniciados = r.turnos.filter((t) => s >= t.t0);
+  const rodada = v < V.batalha ? 0 : Math.max(1, ...iniciados.map((t) => t.rodada));
   texto(ui, v < V.batalha ? `VIVOS ${r.lutadores.length}` : `RODADA ${rodada} · VIVOS ${vivos}`, W - 34, y0 + 9, { cor: "#ffffff", contorno: TINTA, alinhar: "dir" });
-  const ativo = tAtual && s < tAtual.t1 ? tAtual.ator : -1;
+  const ativos = new Set(r.turnos.filter((t) => s >= t.t0 && s < t.t1).map((t) => t.ator));
   r.lutadores.forEach((l, i) => {
     const col = i % 4,
       row = Math.floor(i / 4);
@@ -663,7 +664,7 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
     if (!visivel) return;
     const frac = e.pv / l.pvMax;
     const expr: Expr = morto ? "derrota" : frac > 0.6 ? "neutra" : frac > 0.3 ? "foco" : "pvbaixo";
-    if (i === ativo && Math.floor(v / 3) % 2 === 0) {
+    if (ativos.has(i) && Math.floor(v / 3) % 2 === 0) {
       ui.fillStyle = DOURADO;
       ui.fillRect(x - 1, y - 1, 18, 18);
     }

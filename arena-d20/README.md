@@ -54,7 +54,7 @@ Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo 
 | `remotion/src/arena/regras.ts` | tabelas do SRD 5.2: classes, espécies, dados de vida, espaços de magia, poderes por nível (1–5) |
 | `remotion/src/arena/personagem.ts` | sorteio dos 16 (classes, espécies, nomes, peças do visual), 4d6 descartando o menor, PV, CA, leitura da descrição, subida de nível |
 | `remotion/src/arena/combate.ts` | a luta: iniciativa, deslocamento, ataque de oportunidade, vantagem/desvantagem, crítico/falha, salvaguardas, concentração, recursos de classe e espécie, IA (corpo a corpo × atiradores que recuam) |
-| `remotion/src/arena/roteiro.ts` | distribui os turnos nos 90 s (só o ritmo muda, nunca as regras), escolhe os cut-ins (crítico > abate > recurso, um a cada 4,5 s), agenda sons, história e pergaminho |
+| `remotion/src/arena/roteiro.ts` | mostra os turnos em **grupos de 4 lutadores agindo ao mesmo tempo** (constante `GRUPO`; as regras continuam em ordem de iniciativa), distribui os grupos nos 90 s (só o ritmo muda, nunca as regras), escolhe os cut-ins (crítico > abate > recurso, um a cada 4,5 s), agenda sons, história e pergaminho |
 | `remotion/src/arena/pixel.ts` + `sprite.ts` | motor de pixel art: rampas com hue shifting, sombreamento em 4 tons, sel-out, rim light; sprites 48×64, retratos 96×64 e 16×16, 7 expressões, versões rasgadas |
 | `remotion/src/arena/cenario.ts` | calabouço: lajotas, paredes, portões, correntes, estandartes, tablado de degraus com runas, altar d20, 10 tochas com luz, poças, ratos, poeira |
 | `remotion/src/arena/efeitos.ts` | golpes: cortes, flechas, raio de fogo, mísseis, raio de gelo, onda trovejante, chama sagrada, espinhos, notas da zombaria, sopro em cone, cura… |
