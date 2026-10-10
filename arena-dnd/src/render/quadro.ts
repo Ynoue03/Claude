@@ -1039,7 +1039,7 @@ export class Cena {
     const u = f - cr.t0;
     const sub = this.r.subida;
     const A = sub.antes, D = sub.depois;
-    const X = 24, W = 312, Y0 = 96, Y1 = 428;
+    const X = 24, W = 312, Y0 = 92, Y1 = 452;
     const abre = easeOut(Math.min(1, u / 26));
     const yb = Math.round(Y0 + 10 + (Y1 - Y0 - 10) * abre);
     ctx.save();
@@ -1165,8 +1165,10 @@ export class Cena {
         yy += novos.length > 2 ? 10 : 20;
       });
       if (!novos.length && aparece(cr.novos)) texto(ctx, "MAIS RESISTENTE: SÓ PV NESTE NÍVEL", X + 12, yy, verde, 1, null);
-    }
-    y += 82;
+      // a história começa logo depois da lista completa de poderes (mesmo antes de todos aparecerem)
+      const linhasNovos = novos.reduce((sum, n) => sum + (novos.length > 2 ? 1 : Math.min(2, quebrar(n.toUpperCase(), 41).length)), 0);
+      y = y + 14 + linhaAnt.length * 10 + 2 + Math.max(1, linhasNovos) * 10 + 8;
+    } else y += 82;
     // história (letra por letra)
     if (aparece(cr.historia)) {
       texto(ctx, "HISTÓRIA", X + 12, y, ouro, 1, null);
@@ -1175,7 +1177,8 @@ export class Cena {
       const n = Math.floor((f - cr.historia) * cr.charsPorQuadro);
       const linhas = quebrar(this.r.historia.toUpperCase(), 48);
       let resto = n;
-      linhas.slice(0, 6).forEach((l, i) => {
+      const cabem = Math.max(3, Math.floor((Y1 - 30 - (y + 14)) / 10));
+      linhas.slice(0, cabem).forEach((l, i) => {
         if (resto <= 0) return;
         texto(ctx, l.slice(0, resto), X + 12, y + 14 + i * 10, tinta, 1, null);
         resto -= l.length;
@@ -1193,7 +1196,7 @@ export class Cena {
   chamada(ctx: Ctx, f: number) {
     if (f < CTA) return;
     const k = f - CTA;
-    const W = 300, H = 56, x = (TELA_W - W) / 2, y = 446;
+    const W = 300, H = 56, x = (TELA_W - W) / 2, y = 466;
     ctx.save();
     ctx.globalAlpha = Math.min(1, k / 6);
     ctx.fillStyle = "#140f1a";
