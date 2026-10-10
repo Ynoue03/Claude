@@ -294,3 +294,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 19 | Aumentar o foco no campeão; ep 12; descrição dos itens no pergaminho | `focoCampeao: "forte"` (pelos PV do campeão); itens com o poder escrito no pergaminho; ep 12 no calabouço: Korrin cai na 1ª rodada e o Orrin Ventolargo vence |
 | 20 | O ep 12 é da ordem A; criar o ep 1 da ordem B | campo `serie`; ARENA D20 B #1 no calabouço, campeão Grom Rubrafonte |
 | 21 | Render mais rápido; eps A 13, 14 e 15 | `scripts/arena.sh` com todos os núcleos e x264 veryfast (~3,7 min por episódio); A13 Pike Valeclaro derruba o Orrin (+2 níveis), A14 Pike defende (nv 4), A15 Pike cai para Nessa Solposto e Rhea Ouroverde vence e acha as Luvas da Precisão no baú |
+| 22 | Ordem B, eps 2 a 5 | B2 Talia Águaclara derruba o Grom (+2 níveis); B3 Oona Galhoverde derruba a Talia e Yara Ferrocinza vence; B4 Zara Pontavento derruba a Yara (+2); B5 Zara defende (nv 4) e acha as Manoplas Certeiras |
