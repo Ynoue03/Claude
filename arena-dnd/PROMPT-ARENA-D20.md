@@ -1,7 +1,8 @@
 Crie um vídeo vertical de motion graphics em PIXEL ART chamado "ARENA D20",
 no estilo "battle royale automático" (FFA, todos contra todos) com REGRAS DE RPG DE MESA
-(5ª edição, System Reference Document 5.2), com duração exata de 1:30 (90 s).
-Cada luta é decidida por dados de verdade: nada é roteirizado.
+(5ª edição, System Reference Document 5.2) e SISTEMA DE NÍVEIS, com duração exata de 1:30 (90 s).
+Cada luta é decidida por dados de verdade: nada é roteirizado. Todos começam no nível 1; o campeão sobe de nível
+e termina com um pergaminho mostrando a ficha nova.
 
 ## Formato técnico
 - 1080×1920 (9:16), 30 fps, 2700 quadros.
@@ -48,12 +49,12 @@ e alto nível de detalhe. Todos os sprites são desenhados do zero; nada copiado
   no próprio turno, andam até a posição da regra e agem.
 
 ## Cut-in de golpe especial (estilo anime)
-- Dispara em: 20 natural (CRÍTICO!), magias de 3º círculo (Bola de Fogo, Relâmpago, Guardiões
-  Espirituais, Convocar Relâmpagos), Surto de Ação, Fúria, Destruição Divina e Arma de Sopro.
+- Dispara em: 20 natural (CRÍTICO!), golpe que derruba um lutador, Fúria, Arma de Sopro, Surto de Ação e
+  Destruição Divina (quando o campeão já tiver esses poderes) e magias que acertam 2+ alvos (ex.: Onda Trovejante).
 - A ação congela por 0,6 s e aparece uma faixa diagonal com o ROSTO do personagem em close (retrato
   pixel art 96×64 px, rico em detalhes e com expressão de grito), linhas de velocidade ao fundo,
-  o nome do golpe e a rolagem em destaque (ex.: "BOLA DE FOGO · 8d6 = 31"). Depois o golpe é disparado.
-- Máximo de um cut-in a cada 4–5 s, para não cansar (prioridade: crítico > 3º círculo > recursos de classe).
+  o nome do golpe e a rolagem em destaque (ex.: "RAIO DE FOGO · 1d10 = 10"). Depois o golpe é disparado.
+- Máximo de um cut-in a cada 4–5 s, para não cansar (prioridade: crítico > abate > recursos de classe).
 
 ## Cenário (arena)
 - Mapa top-down estilo GBA/SNES: ilha de grama cercada por água animada, borda de terra/pedra,
@@ -69,7 +70,7 @@ Nenhum personagem é pré-definido. A cada vídeo, com a seed, sorteie 10 lutado
   orc de pele verde-acinzentada com presas; tiefling de pele vermelha/roxa com chifres e cauda;
   draconato com cabeça de dragão e escamas na cor da ancestralidade (vermelho, azul, branco, verde,
   negro, dourado, prateado, bronze); golias alto de pele cinza com marcas.
-- **Classe** (nível 5): Guerreiro, Bárbaro, Paladino, Patrulheiro, Ladino, Monge, Mago, Feiticeiro,
+- **Classe** (todos começam no nível 1): Guerreiro, Bárbaro, Paladino, Patrulheiro, Ladino, Monge, Mago, Feiticeiro,
   Bruxo, Clérigo, Druida, Bardo. Evite repetir a mesma classe mais de 2 vezes por vídeo.
 - **Nome**: sorteado de uma lista de nomes de fantasia (Thorin, Lyra, Kael, Mirela, Bruk, Seraphine,
   Doran, Vex, Elowen, Garruk, Isolde, Nyx, Zara, Ulric, Wren…), sem repetir no mesmo vídeo.
@@ -90,17 +91,29 @@ Nenhum personagem é pré-definido. A cada vídeo, com a seed, sorteie 10 lutado
   use-os no lugar dos aleatórios. Classe, espécie, cores e arma saem da descrição; ATRIBUTOS, PV e
   GOLPES continuam sendo rolados nos dados. Mostre "CRIADO POR @autor" se ele vencer.
 
-## Sistema de dados (regras SRD 5.2, todos no nível 5)
-Ficha de cada lutador (toda rolagem gravada para conferência):
+- **Campeão da batalha anterior (opcional)**: se receber a ficha do último campeão, ele entra como 1 dos 10,
+  com o nível, os atributos, os PV e os poderes que já conquistou, e uma coroa pixel art em cima da cabeça.
+  Os outros 9 são sempre nível 1.
+
+## Sistema de níveis
+- **Todos começam no NÍVEL 1** e só podem usar o que o nível deles permite (tabela abaixo).
+  Ex.: no nível 1 o Mago só tem 2 espaços de magia de 1º círculo e não conhece Bola de Fogo; o Guerreiro
+  ainda não tem Surto de Ação nem Ataque Extra.
+- **Bônus de proficiência**: +2 nos níveis 1–4, +3 nos níveis 5–8, +4 nos níveis 9–12 (segue o SRD).
+- **Truques escalam**: 1 dado de dano nos níveis 1–4, 2 dados a partir do 5º (ex.: Raio de Fogo 1d10 → 2d10).
+- **Subir de nível** acontece só com o CAMPEÃO, depois da vitória (ver "Pergaminho do campeão").
+  Se ele voltar e vencer de novo, sobe mais um nível; se perder, a sequência termina.
+
+## Sistema de dados (regras SRD 5.2)
+Ficha de cada lutador no nível 1 (toda rolagem gravada para conferência):
 - **Atributos**: role 4d6 e descarte o menor, 6 vezes (FOR, DES, CON, INT, SAB, CAR). O maior valor vai
   no atributo principal da classe; +2/+1 do antecedente (máx. 20). Modificador = (valor − 10) ÷ 2,
   arredondado para baixo. Se a soma dos modificadores for ≤ 0, role o conjunto de novo.
-- **Pontos de vida**: máximo do dado de vida no 1º nível + dado rolado nos níveis 2–5 + CON × 5.
+- **Pontos de vida no nível 1**: valor máximo do dado de vida + modificador de CON.
   Dados de vida: d12 Bárbaro · d10 Guerreiro, Paladino, Patrulheiro · d8 Bardo, Bruxo, Clérigo,
   Druida, Ladino, Monge · d6 Feiticeiro, Mago.
 - **Classe de Armadura (CA)**: placas 18 · cota de malha 16 · brunea 14 + DES (máx. 2) · couro 11 + DES ·
   couro batido 12 + DES · bárbaro 10 + DES + CON · monge 10 + DES + SAB · armadura arcana 13 + DES · escudo +2.
-- **Bônus de proficiência**: +3.
 
 Combate (rodadas, todos contra todos):
 1. **Iniciativa**: d20 + DES; age do maior para o menor.
@@ -108,27 +121,64 @@ Combate (rodadas, todos contra todos):
    em dobro). **1 natural = FALHA**. Vantagem/desvantagem = rola 2d20 e fica com o maior/menor.
 3. **Magias de salvaguarda**: o alvo rola d20 + modificador contra CD = 8 + proficiência + mod. de conjuração;
    passou = metade do dano (quando a magia permite).
-4. **Dano**: sempre nos dados da arma ou magia + modificador (ex.: Montante 2d6+4, Machado Grande 1d12+4,
-   Arco Longo 1d8+3, Raio de Fogo 2d10, Bola de Fogo 8d6, Mísseis Mágicos 3×(1d4+1), Rajada Mística 2×(1d10+CAR)).
+4. **Dano**: sempre nos dados da arma ou magia + modificador (ex.: Montante 2d6+3, Machado Grande 1d12+3,
+   Arco Longo 1d8+3, Raio de Fogo 1d10, Mísseis Mágicos 3×(1d4+1), Rajada Mística 1d10).
 5. **Concentração**: ao sofrer dano, CON contra CD 10 ou metade do dano; falhou = a magia acaba.
 6. **0 PV**: o lutador cai e sai da luta (faixa "NOME CAIU!").
 
-Golpes e poderes por classe (nomes em português, só material do SRD):
-- Guerreiro: Ataque Extra, Surto de Ação, Retomar o Fôlego (1d10+5).
-- Bárbaro: Fúria (+2 de dano, resistência), Ataque Descuidado (vantagem), Ataque Extra.
-- Paladino: Ataque Extra, Destruição Divina (2d8 radiante +1d8 por círculo), Cura pelas Mãos.
-- Patrulheiro: Ataque Extra com arco, Marca do Caçador (+1d6).
-- Ladino: Ataque Furtivo (3d6 com vantagem), Mira Firme, Ação Ardilosa, Esquiva Sobrenatural.
-- Monge: Rajada de Golpes, Golpe Atordoante, Defletir Ataques.
-- Mago: Raio de Fogo, Mísseis Mágicos, Raio Ardente, Bola de Fogo, Relâmpago, Escudo (+5 CA).
-- Feiticeiro: Raio de Gelo, Orbe Cromático, Despedaçar, Bola de Fogo.
-- Bruxo: Rajada Mística, Bruxaria (+1d6), Toque Vampírico.
-- Clérigo: Chama Sagrada, Raio Guia, Arma Espiritual, Guardiões Espirituais, Palavra Curativa.
-- Druida: Produzir Chama, Chicote de Espinhos, Raio Lunar, Convocar Relâmpagos, Onda Trovejante.
-- Bardo: Zombaria Viciosa, Sussurros Dissonantes, Despedaçar, Palavra Curativa.
-Traços de espécie: Sortudo (halfling rerrola o 1), Resistência Implacável (orc fica com 1 PV uma vez),
-Repreensão Infernal (tiefling), Arma de Sopro (draconato, 2d10 em cone), Resistência da Pedra (golias),
-Robustez Anã, Inspiração Heroica (humano rerrola um ataque).
+## Poderes por nível (progressão do SRD 5.2, níveis 1 a 5)
+Espaços de magia: conjuradores completos (Bardo, Clérigo, Druida, Feiticeiro, Mago) 2 → 3 → 4+2 → 4+3 → 4+3+2;
+meio-conjuradores (Paladino, Patrulheiro) 2 → 2 → 3 → 3 → 4+2; Bruxo 1 → 2 (1º círculo) → 2 (2º) → 2 (2º) → 2 (3º).
+(Ex.: "4+2" = 4 espaços de 1º círculo e 2 de 2º.)
+
+| Classe | Nível 1 | Nível 2 | Nível 3 | Nível 4 | Nível 5 |
+|---|---|---|---|---|---|
+| Bárbaro | Fúria (2×), Defesa sem Armadura | Ataque Descuidado, Sentido de Perigo | Frenesi (Berserker), Fúria 3× | Aumento de Atributo | Ataque Extra, Movimento Rápido |
+| Bardo | Inspiração de Bardo (d6); Zombaria Viciosa, Sussurros Dissonantes, Palavra Curativa, Onda Trovejante | Pau pra Toda Obra | Colégio; Despedaçar (2º) | Aumento de Atributo | Inspiração d8 |
+| Clérigo | Chama Sagrada, Raio Guia, Palavra Curativa, Curar Ferimentos | Canalizar Divindade: Centelha Divina (1d8) | Arma Espiritual (2º), Domínio | Aumento de Atributo | Guardiões Espirituais (3º) |
+| Druida | Produzir Chama, Chicote de Espinhos, Onda Trovejante, Palavra Curativa | Forma Selvagem | Raio Lunar (2º), Círculo | Aumento de Atributo | Convocar Relâmpagos (3º) |
+| Guerreiro | Estilo de Luta, Retomar o Fôlego (1d10+nível) | Surto de Ação | Crítico Aprimorado (19–20, Campeão) | Aumento de Atributo | Ataque Extra |
+| Monge | Artes Marciais (d6), Defesa sem Armadura | Foco: Rajada de Golpes, Defesa Paciente, Passo do Vento | Defletir Ataques | Aumento de Atributo | Golpe Atordoante, Ataque Extra, Artes Marciais d8 |
+| Paladino | Cura pelas Mãos (5 PV × nível), magias de 1º | Estilo de Luta, Destruição Divina | Canalizar Divindade, Juramento | Aumento de Atributo | Ataque Extra |
+| Patrulheiro | Marca do Caçador, magias de 1º | Estilo de Luta (Arquearia +2) | Presa do Caçador | Aumento de Atributo | Ataque Extra |
+| Ladino | Ataque Furtivo 1d6 | Ação Ardilosa | Ataque Furtivo 2d6, Mira Firme | Aumento de Atributo | Ataque Furtivo 3d6, Esquiva Sobrenatural |
+| Feiticeiro | Raio de Fogo, Raio de Gelo, Orbe Cromático, Feitiçaria Inata | Fonte de Magia, Metamagia | Raio Ardente (2º), Feitiçaria Dracônica | Aumento de Atributo | Bola de Fogo (3º) |
+| Bruxo | Rajada Mística + Rajada Agonizante, Bruxaria | +2 Invocações | Pacto; magias de 2º | Aumento de Atributo | Toque Vampírico (3º) |
+| Mago | Raio de Fogo, Mísseis Mágicos, Onda Trovejante, Escudo, Armadura Arcana | Erudito | Raio Ardente (2º), Escola de Evocação | Aumento de Atributo | Bola de Fogo e Relâmpago (3º) |
+
+Traços de espécie no nível 1: Sortudo (halfling rerrola o 1), Resistência Implacável (orc fica com 1 PV uma vez),
+Surto de Adrenalina (orc), Legado Infernal (tiefling: resistência a fogo + truque Raio de Fogo; Repreensão Infernal
+só no nível 3), Arma de Sopro (draconato, 1d10 em cone; 2d10 no nível 5), Resistência da Pedra (golias),
+Robustez Anã (+1 PV por nível), Inspiração Heroica (humano rerrola um ataque), Astúcia Gnômica.
+
+## Subida de nível do campeão (regras de mesa, com dados)
+Ao vencer, o campeão sobe 1 nível (1 → 2 na primeira vitória):
+- **PV**: role o dado de vida da classe + modificador de CON (mínimo 1) e some ao máximo. Mostre a rolagem
+  (ex.: "d10 = 7 + 2 CON = +9 PV").
+- **Poderes**: recebe tudo da coluna do novo nível na tabela acima (ex.: Guerreiro nível 2 → Surto de Ação).
+- **Espaços de magia e truques**: atualizados pela tabela de espaços.
+- **Atributos**: no SRD eles só sobem no nível 4 (e depois 8, 12, 16 e 19), no "Aumento de Atributo":
+  +2 em um atributo ou +1 em dois (máx. 20), escolhendo o principal da classe. Nos outros níveis os atributos
+  não mudam, mas o que muda por causa do nível (PV, bônus de proficiência no 5, CD de magia, bônus de ataque) recebe o +.
+
+## Pergaminho do campeão (tela final)
+Depois da vitória, um pergaminho pixel art desenrola de cima para baixo (papel envelhecido com bordas queimadas,
+fitas vermelhas e um selo de cera com um d20) e mostra a ficha do campeão:
+- **Topo**: retrato do campeão (o mesmo do cut-in, com expressão de vitória), NOME grande, espécie e classe,
+  e "NÍVEL 1 → 2" com o novo número piscando em dourado.
+- **Atributos**: os 6 (FOR, DES, CON, INT, SAB, CAR) com valor e modificador. Todo valor que aumentou ganha um
+  "+N" em VERDE ao lado (ex.: "CON 16 (+3) +1"), aparecendo um por um com um brilho e um som de subida.
+- **Combate**: PV máximos com "+N" em verde e o dado rolado na hora (o d20/dado gira e para no valor),
+  CA, bônus de ataque, CD de magia e espaços de magia (os novos em verde).
+- **Poderes**: lista de habilidades e magias; os poderes NOVOS aparecem por último, em VERDE, com a marca "NOVO!"
+  e uma descrição curta (ex.: "SURTO DE AÇÃO — uma ação extra por descanso").
+- **História**: 3–4 linhas em português, em terceira pessoa e sem marcar gênero se ele não foi informado,
+  misturando a espécie, a classe, a descrição do comentário (se houver) e o que aconteceu na luta
+  (quantos derrubou, o golpe final, um crítico marcante). Ex.: "Nascida nas florestas do norte, a druida
+  Zara invocou relâmpagos sobre três rivais e resistiu com 4 PV até o último golpe. Agora, no nível 2,
+  aprendeu a assumir a forma das feras."
+- **Rodapé**: "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!" e "CRIADO POR @autor" (se veio de comentário).
+- Texto em fonte pixel legível (mín. 7 px de altura na resolução interna), dentro da área segura.
 
 ## Interface na tela
 - **Painel no topo** (abaixo da área segura): título "ARENA D20", "RODADA X · VIVOS N", e os 10 lutadores em
@@ -143,22 +193,29 @@ Robustez Anã, Inspiração Heroica (humano rerrola um ataque).
 - Barra de PV pequena embaixo de cada personagem e etiquetas de condição (ATD atordoado, MRC marcado).
 - Seta ▼ piscando em cima de quem está no turno.
 
+- Etiqueta "NV 1" ao lado do nome no painel; o campeão que volta mostra "NV 2" (ou mais) e uma coroinha.
+
 ## Linha do tempo (90 s)
-- 0–5 s: os 10 caem na arena um por um (com poeira), nome e classe embaixo de cada um, caixa
+- 0–5 s: os 10 caem na arena um por um (com poeira), nome, classe e "NV 1" embaixo de cada um, caixa
   "ESCOLHA SEU CAMPEÃO!" com d20 nos cantos, contagem 3-2-1 e "LUTEM!".
-- 5–80 s: batalha. Ajuste o ritmo dos turnos para a luta terminar entre 75 e 80 s.
-- 80–90 s: câmera aproxima no vencedor (vitória em loop), caixa "VITÓRIA DE NOME!" com espécie, classe,
-  abates e dano causado; depois a chamada "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!".
+- 5–68 s: batalha. Ajuste o ritmo dos turnos para a luta terminar entre 65 e 68 s.
+- 68–72 s: câmera aproxima no vencedor (vitória em loop), faixa "VITÓRIA!" e "SUBIU DE NÍVEL!" com uma coluna
+  de luz dourada e partículas subindo.
+- 72–86 s: pergaminho do campeão (desenrola em 1 s; atributos, PV e poderes aparecem em sequência; os "+" e os
+  poderes novos entram em verde com brilho; a história aparece por último, letra por letra).
+- 86–90 s: chamada "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!" sobre o pergaminho.
 
 ## Áudio
 - Trilha chiptune 8-bit própria (onda quadrada, triângulo e ruído), ~150 BPM, em loop; recua no fim e
-  entra uma fanfarra de vitória.
+  entra uma fanfarra de vitória e um jingle de "level up" quando o pergaminho abre.
 - Um efeito por evento: dado rolando, golpe, impacto, crítico, erro, flecha, magia, fogo, explosão, trovão,
-  cura, escudo, queda de lutador, contagem e "LUTEM!". Volume final em −14 LUFS.
+  cura, escudo, queda de lutador, contagem, "LUTEM!", papel desenrolando e um "plim" a cada "+" verde.
+  Volume final em −14 LUFS.
 
 ## Entregáveis
-- O vídeo MP4 e uma ficha de texto com: seed, fichas dos 10 (todas as rolagens de 4d6, PV, CA, arma),
-  ordem de iniciativa e o log do combate rolagem por rolagem.
+- O vídeo MP4 e uma ficha de texto com: seed, fichas dos 10 no nível 1 (todas as rolagens de 4d6, PV, CA, arma),
+  ordem de iniciativa, log do combate rolagem por rolagem e a FICHA NOVA DO CAMPEÃO (nível, rolagem de PV,
+  poderes novos e história), pronta para ele voltar na próxima batalha.
 - No fim da ficha, o crédito obrigatório do SRD:
   "This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC,
   available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0
