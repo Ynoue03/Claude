@@ -5,7 +5,7 @@ import { chegadas, INTRO } from "../motor/batalha";
 import { CLASSES, ESPECIES } from "../motor/srd";
 import { criarRng } from "../motor/dados";
 import { animarCenario, corClasse, desenharFundo, paraTela, TELA_H, TELA_W, PX_POR_PE } from "../pixel/cenario";
-import { ALT, Grade, LARG, montarArma, montarSprite, Pose } from "../pixel/sprites";
+import { CENTRO_X, CHAO, Grade, MAO, montarArma, montarSprite, Pose } from "../pixel/sprites";
 import { larguraTexto, texto, textoCentro } from "../pixel/fonte";
 import { misturar, tom } from "../pixel/cor";
 
@@ -33,7 +33,6 @@ const gradeParaTela = (g: Grade) => {
 type Recursos = {
   poses: Record<Pose, HTMLCanvasElement>;
   arma: { c: HTMLCanvasElement; pega: [number, number]; chave: string };
-  escudo?: { c: HTMLCanvasElement; pega: [number, number] };
   pequeno: boolean;
 };
 
@@ -65,11 +64,9 @@ export class Cena {
       const poses = {} as Record<Pose, HTMLCanvasElement>;
       for (const p of ["parado", "passoA", "passoB", "golpe", "magia", "dano"] as Pose[]) poses[p] = gradeParaTela(montarSprite(ficha, p));
       const a = montarArma(ficha);
-      const e = ficha.escudo ? montarArma(ficha, "escudo") : undefined;
       this.rec[ficha.id] = {
         poses,
         arma: { c: gradeParaTela(a.grade), pega: a.pega, chave: a.chave },
-        escudo: e ? { c: gradeParaTela(e.grade), pega: e.pega } : undefined,
         pequeno: ficha.especie === "halfling" || ficha.especie === "gnomo" || ficha.especie === "anao",
       };
       this.porId[ficha.id] = { movs: [], pvs: [], anims: [], status: [], auras: [], dados: [], numeros: [], rotulos: [] };
@@ -238,14 +235,14 @@ export class Cena {
     if (s.andando) pose = Math.floor(f / 4) % 2 ? "passoA" : "passoB";
     else dy = bob;
     const a = s.anim;
-    let armaAng = -0.35, armaDy = 0;
+    let armaAng = 0.5, armaDy = 0;
     if (a) {
       const k = f - a.t;
       if (a.tipo === "ataque") {
         dx = k >= 2 && k < 7 ? (a.dx ?? 1) * (k < 5 ? 3 : 2) : 0;
-        armaAng = k < 3 ? -0.35 - k * 0.55 : k < 7 ? -2 + (k - 3) * 0.75 : 0.8 - (k - 7) * 0.23;
+        armaAng = k < 3 ? 0.5 - k * 0.45 : k < 7 ? -0.85 + (k - 3) * 0.7 : 1.95 - (k - 7) * 0.29;
       } else if (a.tipo === "magia") {
-        armaAng = -0.1;
+        armaAng = -0.2;
         armaDy = -3;
         dy = -1;
         // faíscas nas mãos
@@ -275,26 +272,23 @@ export class Cena {
     ctx.translate(X, Y);
     if (ang) ctx.rotate(ang);
     if (flip) ctx.scale(-1, 1);
-    const ox = -12, oy = -ALT;
+    const ox = -CENTRO_X, oy = -CHAO;
     const desc = rec.pequeno ? 2 : 0;
-    // escudo atrás (mão esquerda)
-    if (rec.escudo && (s.morte === undefined || f < s.morte)) ctx.drawImage(rec.escudo.c, ox + 5 - rec.escudo.pega[0], oy + 22 + desc - rec.escudo.pega[1]);
     ctx.drawImage(rec.poses[pose], ox, oy);
     // arma na mão direita
     if (rec.arma.chave !== "punhos" && (s.morte === undefined || f < s.morte + 4)) {
       ctx.save();
-      const hx = ox + 18, hy = oy + 22 + desc + armaDy;
+      const hx = ox + MAO[0], hy = oy + MAO[1] + desc + armaDy;
       ctx.translate(hx, hy);
       if (rec.arma.chave === "foco") {
         ctx.translate(2, -6 + (Math.floor(f / 8) % 2));
       } else if (rec.arma.chave === "arco") {
-        ctx.rotate(a?.tipo === "ataque" ? 0.25 : 0.05);
+        ctx.rotate(a?.tipo === "ataque" ? 0.15 : 0.05);
       } else ctx.rotate(armaAng);
       ctx.drawImage(rec.arma.c, -rec.arma.pega[0], -rec.arma.pega[1]);
       ctx.restore();
     }
     ctx.restore();
-    void LARG;
   }
 
   barra(ctx: Ctx, id: number, s: ReturnType<Cena["estado"]>, f: number) {
@@ -586,7 +580,7 @@ export class Cena {
         const t = r.texto.toUpperCase();
         const w = larguraTexto(t) + 8, h = 13;
         let x = Math.round(Math.min(Math.max(p.x - w / 2, 2), TELA_W - w - 2)) + ox;
-        let y = Math.round(p.y - 46 - i * 15) + oy;
+        let y = Math.round(p.y - 52 - i * 15) + oy;
         const subida = f - r.t < 3 ? 3 - (f - r.t) : 0;
         y += subida;
         // evita sobrepor outro rótulo
@@ -621,7 +615,7 @@ export class Cena {
       const k = f - dd.t;
       if (k < 0 || k >= 26) continue;
       const lado = s.dir > 0 ? -1 : 1;
-      const x = Math.round(p.x + lado * 19) + ox, y = Math.round(p.y - 18 - Math.min(k, 5)) + oy;
+      const x = Math.round(p.x + lado * 20) + ox, y = Math.round(p.y - 24 - Math.min(k, 5)) + oy;
       const rolando = k < 7;
       const valor = rolando ? 1 + Math.floor(criarRng(dd.t * 7 + k)() * 20) : dd.valor;
       const cor = rolando ? "#c9ced6" : dd.cor;
@@ -636,7 +630,7 @@ export class Cena {
     nums.forEach((n, i) => {
       const k = f - n.t;
       const esc = n.grande ? 2 : 1;
-      const y = Math.round(p.y - 30 - Math.min(k, 14) * 1.2 - i * 9) + oy;
+      const y = Math.round(p.y - 36 - Math.min(k, 14) * 1.2 - i * 9) + oy;
       const pulo = k < 4 ? -2 + k : 0;
       ctx.save();
       ctx.globalAlpha = k > 24 ? (30 - k) / 6 : 1;
@@ -653,7 +647,7 @@ export class Cena {
     const s = this.estado(atual.id, f);
     if (s.morte !== undefined && f >= s.morte) return;
     const p = paraTela(s.x, s.y);
-    const y = Math.round(p.y - 38 + (Math.floor(f / 6) % 2)) + oy;
+    const y = Math.round(p.y - 46 + (Math.floor(f / 6) % 2)) + oy;
     texto(ctx, "▼", Math.round(p.x) - 2 + ox, y, "#ffffff", 1, "#140f1a");
   }
 

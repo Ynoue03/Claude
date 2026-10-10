@@ -29,7 +29,7 @@ npm run dev                              # Studio do Remotion (mude a semente no
 npm run batalha -- --semente 1234        # repete uma batalha exatamente
 npm run batalha -- --sem-fila            # 10 personagens aleatórios
 npm run batalha -- --titulo "TORNEIO DOS MAGOS" --perfil @suaconta
-npm run sprites                          # folha com todos os sprites (out/sprites-parado.png)
+npm run sprites -- batalha-001           # folha de aprovação só com os 10 da batalha
 ```
 
 `npm run batalha` gera:
@@ -70,7 +70,7 @@ src/motor/        regras e simulação (sem nada de vídeo)
   descricao.ts      lê a descrição do comentário
   batalha.ts        combate rodada a rodada → eventos com tempo em quadros
 src/pixel/        arte
-  sprites.ts        sprites 24×30 gerados por código (classe × espécie × cores) + armas
+  sprites.ts        sprites 40×40 em vista 3/4 montados por peças sorteadas (elmos, capuz, roupas, capa…) + armas
   cenario.ts        ilha, arena octogonal, tochas, árvores, água
   fonte.ts          fonte bitmap 5×7 com acentos
 src/render/quadro.ts   desenha cada quadro (canvas 270×480 → 1080×1920, escala 4×)
