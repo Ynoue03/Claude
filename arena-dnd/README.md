@@ -76,7 +76,7 @@ src/motor/        regras e simulação (sem nada de vídeo)
   batalha.ts        combate rodada a rodada → eventos com tempo em quadros
   episodio.ts       encaixa a luta em 90 s, escolhe cut-ins, VS, sobe o nível do campeão e escreve a história
 src/pixel/        arte
-  sprites.ts        sprites 48×64 em vista 3/4 (rosto detalhado, 7 expressões, roupa com dobras) montados por peças sorteadas + armas
+  sprites.ts        sprites 40×40 em vista 3/4 montados por peças sorteadas (elmos, capuz, roupas, capa…) + armas
   cenario.ts        calabouço, tablado em degraus, altar d20, tochas e iluminação
   fonte.ts          fonte bitmap 5×7 com acentos
 src/render/quadro.ts   desenha cada quadro (canvas 360×640 → 1080×1920, escala 3×): luta, painel 4×4, cut-in, VS, pergaminho

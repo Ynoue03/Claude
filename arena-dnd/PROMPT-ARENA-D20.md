@@ -38,7 +38,7 @@ e alto nível de detalhe. Todos os sprites são desenhados do zero, nada copiado
 
 ### Animações (quadros por ação)
 - Idle respirando: 4 quadros (cabelo, capa e manto balançam levemente)
-- Caminhada: 2 quadros, 2 direções (direita e esquerda espelhada), com balanço de corpo
+- Caminhada: 6 quadros, 4 direções (capa, aljava, chapéu e acessórios com movimento secundário)
 - Ataque com arma: 4 quadros · Magia/habilidade especial: 6–8 quadros (com antecipação e follow-through)
 - Dano: 2 quadros · Derrota: 4 quadros · Vitória: 4 quadros em loop
 - Dano progressivo: abaixo de 30% dos PV o sprite troca para a versão com roupa rasgada e ferimentos.
