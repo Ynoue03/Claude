@@ -1,11 +1,12 @@
 # Estúdio de Motion — Academia & Alimentação (aesthetic)
 
-Este repositório produz vídeos curtos de motion graphics com o Claude, em dois motores:
+Este repositório produz vídeos curtos de motion graphics com o Claude, em dois motores (mais a série Arena D20):
 
 | Pasta          | Motor                         | Use para                                                                 |
 | -------------- | ----------------------------- | ------------------------------------------------------------------------ |
 | `remotion/`    | Remotion (React)              | **Templates em série** — mesmo vídeo, dados diferentes (treinos, receitas) |
 | `hyperframes/` | HyperFrames (HTML + GSAP)     | **Peças únicas e rápidas** — motion graphic de 8–15 s, dica, chamada, legenda em vídeo gravado |
+| `arena-dnd/`  | Remotion + canvas pixel art   | **Arena D20** — batalhas de RPG (SRD 5.2) com personagens dos comentários. Identidade própria (retrô); as regras visuais abaixo **não** valem lá. Use `/nova-batalha` |
 
 Antes de mexer em um projeto, entre na pasta dele e use as skills instaladas lá
 (`remotion-best-practices` / `hyperframes`). Elas têm as regras técnicas de cada motor.
