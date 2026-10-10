@@ -1,7 +1,7 @@
 // Desenha um quadro da batalha a partir do resultado da simulação.
 // Determinístico: o quadro N sempre sai igual (requisito do Remotion).
 import type { Ev, Resultado } from "../motor/batalha";
-import { chegadas, INTRO } from "../motor/batalha";
+import { chegadas, INTRO, RAIO_ARENA } from "../motor/batalha";
 import { CLASSES, ESPECIES } from "../motor/srd";
 import { criarRng } from "../motor/dados";
 import { animarCenario, corClasse, desenharFundo, paraTela, TELA_H, TELA_W, PX_POR_PE } from "../pixel/cenario";
@@ -48,6 +48,7 @@ export class Cena {
   banners: EvK<"banner">[] = [];
   tremores: EvK<"tremor">[] = [];
   chegada: Record<number, number> = {};
+  janelas: Record<number, [number, number][]> = {}; // momentos em que o personagem fica na posição exata
   duracao: number;
   titulo: string;
   perfil: string;
@@ -89,10 +90,57 @@ export class Cena {
     }
     // ordem de chegada na intro = ordem na roda
     this.chegada = chegadas(r);
+    for (const fi of r.fichas) {
+      const p = this.porId[fi.id];
+      this.janelas[fi.id] = [
+        ...p.movs.map((m) => [m.t0 - 4, m.t1 + 2] as [number, number]),
+        ...p.anims.map((a) => [a.t - 8, a.t + 10] as [number, number]),
+      ].sort((a, b) => a[0] - b[0]);
+    }
   }
 
   // ---------- estado de um lutador no quadro f ----------
+  // Movimento contínuo: enquanto espera a vez, cada personagem fica circulando e trocando de
+  // lugar em volta da posição "de regra". Perto de qualquer ação dele (andar no turno, atacar,
+  // levar golpe) o desvio vai a zero, então distâncias e acertos seguem o simulador.
   estado(id: number, f: number) {
+    const s = this.estadoBase(id, f);
+    const off = (q: number) => {
+      const e = this.envelope(id, q);
+      if (e <= 0) return { x: 0, y: 0 };
+      const fase = id * 2.399;
+      const A = 11; // pés
+      return {
+        x: e * A * (Math.sin(q * 0.061 + fase) + 0.45 * Math.sin(q * 0.137 + fase * 3)),
+        y: e * A * 0.8 * (Math.cos(q * 0.053 + fase * 1.7) + 0.4 * Math.sin(q * 0.119 + fase)),
+      };
+    };
+    const o0 = off(f), o1 = off(f + 1);
+    let x = s.x + o0.x, y = s.y + o0.y;
+    const r = Math.hypot(x, y), max = RAIO_ARENA - 1;
+    if (r > max) { x = (x / r) * max; y = (y / r) * max; }
+    const vx = o1.x - o0.x, vy = o1.y - o0.y;
+    const vel = Math.hypot(vx, vy);
+    const andando = s.andando || vel > 0.12;
+    const dir = !s.anim && !s.andando && Math.abs(vx) > 0.04 ? Math.sign(vx) : s.dir;
+    return { ...s, x, y, andando, dir };
+  }
+
+  envelope(id: number, f: number) {
+    if (f < INTRO + 8 || f > this.r.fimBatalha + 6) return 0;
+    const m = this.porId[id].morte;
+    if (m !== undefined && f >= m - 12) return 0;
+    let d = 99;
+    for (const [a, b] of this.janelas[id]) {
+      if (a - 12 > f) break;
+      if (f >= a && f <= b) return 0;
+      d = Math.min(d, f < a ? a - f : f - b);
+    }
+    const k = Math.min(1, d / 12, (f - INTRO - 8) / 20, (this.r.fimBatalha + 6 - f) / 12);
+    return k * k * (3 - 2 * k);
+  }
+
+  estadoBase(id: number, f: number) {
     const p = this.porId[id];
     const ini = this.r.posIniciais.find((q) => q.id === id)!;
     let x = ini.x, y = ini.y, andando = false, dir = ini.x < 0 ? 1 : -1, salto = 0;
@@ -361,7 +409,9 @@ export class Cena {
   // ---------- efeitos ----------
   efeito(ctx: Ctx, e: EvK<"fx">, f: number) {
     const k = (f - e.t) / e.dur;
-    const a = paraTela(e.x0, e.y0), b = paraTela(e.x1, e.y1);
+    const pe = e.de !== undefined ? this.estado(e.de, f) : { x: e.x0, y: e.y0 };
+    const pp = e.para !== undefined ? this.estado(e.para, f) : { x: e.x1, y: e.y1 };
+    const a = paraTela(pe.x, pe.y), b = paraTela(pp.x, pp.y);
     const alt = 14; // altura do peito/mãos
     const ax = a.x, ay = a.y - alt, bx = b.x, by = b.y - alt;
     const claro = tom(e.cor, 1);

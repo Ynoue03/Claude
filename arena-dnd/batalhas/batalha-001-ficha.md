@@ -1,6 +1,6 @@
 # ARENA D20 #1 — batalha-001
 
-Semente: `1693993419` · 8 rodadas · vencedor: **Celeste** (Elfo Druida)
+Semente: `1693993419` · 8 rodadas · vencedor: **Zara** (Elfo Druida)
 
 Todos lutam no **nível 5** (regras SRD 5.2). Atributos: 4d6 descartando o menor, rolados 6 vezes; o maior vai no atributo principal da classe; +2/+1 do antecedente. PV: máximo do dado no 1º nível + dado rolado nos níveis 2–5 + CON.
 
@@ -8,7 +8,7 @@ Todos lutam no **nível 5** (regras SRD 5.2). Atributos: 4d6 descartando o menor
 
 ```
 10 heróis, 1 sobrevivente. Quem você escolheu? 🎲
-Vencedor: Celeste (Elfo Druida)
+Vencedor: Zara (Elfo Druida)
 Comente NOME + DESCRIÇÃO do seu personagem e os dados decidem o resto!
 #dnd #dungeonsanddragons #rpg #pixelart #rpgdemesa #d20 #retrogaming #batalha
 ```
@@ -116,145 +116,145 @@ Iniciativa (d20+DES): Mirela 19+1=20, Celeste 15+2=17, Faelan 15+1=16, Grumak 12
      Grumak: DES 6→7 falha → 27
      Ignis: DES 13→13 falha → 27
  Celeste (Druida, 38/38 PV):
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [1,10,3] = 14 elétrico, DES CD 15
-     Grumak: DES 2→3 falha → 14
+   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [3,1,5] = 9 elétrico, DES CD 15
+     Grumak: DES 6→7 falha → 9
    Grumak cairia, mas a Resistência Implacável o deixa com 1 PV!
  Faelan (Bárbaro, 56/56 PV):
    Faelan entra em Fúria!
-   Faelan → Seraphina: d20 (vantagem: 19/1) 19+7=26 vs CA 17 → acerta, 2d6[6,1]+4 +2 fúria = 13 cortante
-   Faelan → Seraphina: d20 (vantagem: 17/6) 17+7=24 vs CA 17 → acerta, 2d6[1,4]+4 +2 fúria = 11 cortante
+   Faelan → Ingrid: d20 (vantagem: 19/3) 19+7=26 vs CA 14 → acerta, 2d6[5,2]+4 +2 fúria = 13 cortante
+   Faelan → Ingrid: d20 (vantagem: 2/13) 13+7=20 vs CA 14 → acerta, 2d6[3,3]+4 +2 fúria = 12 cortante
  Grumak (Bárbaro, 1/35 PV):
    Grumak entra em Fúria!
-   Ignis conjura Escudo (+5 CA)!
-   Grumak → Ignis: d20 (vantagem: 8/10) 10+6=16 vs CA 18 → erra
-   Grumak → Ignis: d20 (vantagem: 12/4) 12+6=18 vs CA 18 → acerta, 1d12[9]+3 +2 fúria = 14 cortante
+   Grumak → Ignis: d20 (vantagem: 12/4) 12+6=18 vs CA 13 → acerta, 1d12[9]+3 +2 fúria = 14 cortante
+   Grumak → Ignis: d20 (vantagem: 13/17) 17+6=23 vs CA 13 → acerta, 1d12[12]+3 +2 fúria = 17 cortante
+   ☠ Ignis cai! (abatido por Grumak)
  Tobias (Guerreiro, 46/46 PV):
-   Tobias → Grumak: d20 (vantagem: 10/11) 11+5=16 vs CA 13 → acerta, 1d8[7]+2 = 9 cortante
+   Tobias → Grumak: d20 (vantagem: 17/20) 20+5=25 vs CA 13 → CRÍTICO! 2d8[2,4]+2 = 8 cortante
    ☠ Grumak cai! (abatido por Tobias)
-   (Inspiração Heroica: rerrola → 10)
-   Tobias → Ignis: d20 10+5=15 vs CA 18 → erra
-   Tobias usa Surto de Ação!
-   Tobias → Ignis: d20 7+5=12 vs CA 18 → erra
-   Tobias → Ignis: d20 13+5=18 vs CA 18 → acerta, 1d8[6]+2 = 8 cortante
-   ☠ Ignis cai! (abatido por Tobias)
  Bruna (Ladino, 42/42 PV):
-   Bruna → Ingrid: d20 19+7=26 vs CA 14 → acerta, 1d6[2]+4 = 6 perfurante
- Seraphina (Clérigo, 24/48 PV):
+   Bruna → Faelan: d20 (vantagem: 3/7) 7+7=14 vs CA 13 → acerta, 1d6[6]+4 +3d6[6,2,4] furtivo = 22 perfurante
+   Faelan reage com Repreensão Infernal: 2d10 [4,8] = 12; Bruna DES 10 vs CD 10 → 6
+ Seraphina (Clérigo, 48/48 PV):
    Seraphina conjura Guardiões Espirituais (3º círculo, concentração)
-   Seraphina conjura Guardiões Espirituais (3º círculo): 3d8 [2,6,8] = 16 radiante, SAB CD 14
-     Faelan: SAB 19→19 passa → 8
-   Faelan reage com Repreensão Infernal: 2d10 [2,2] = 4; Seraphina DES 2 vs CD 10 → 4
- Ingrid (Bardo, 25/31 PV):
-   Ingrid conjura Despedaçar (3º círculo): 4d8 [2,5,7,7] = 21 trovejante, CON CD 14
-     Seraphina: CON 7→9 falha → 21
-   ☠ Seraphina cai! (abatido por Ingrid)
-     Faelan: CON 4→9 falha → 21
+   Seraphina conjura Guardiões Espirituais (3º círculo): 3d8 [2,2,1] = 5 radiante, SAB CD 14
+     Bruna: SAB 8→9 falha → 5
+ Ingrid (Bardo, 6/31 PV):
+   Ingrid usa Palavra Curativa 2d4[1,3]+3 e recupera 7 PV (13/31)
+   Ingrid conjura Onda Trovejante (1º círculo): 2d8 [7,7] = 14 trovejante, CON CD 14
+     Bruna: CON 7→10 falha → 14
+     Faelan: CON 4→9 falha → 14
  Zara (Druida, 41/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [7,10,1] = 18 elétrico, DES CD 14
-     Faelan: DES 9→10 falha → 18
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [5,1,4] = 10 elétrico, DES CD 14
+     Mirela: DES 1→2 falha → 10
 
 — Rodada 2 —
- Mirela (Feiticeiro, 34/34 PV):
-   Mirela conjura Bola de Fogo (3º círculo): 8d6 [1,2,3,5,3,4,5,2] = 25 fogo, DES CD 15
-     Zara: DES 12→13 falha → 25
-     Faelan: DES 9→10 falha → 25
-   ☠ Faelan cai! (abatido por Mirela)
+ Mirela (Feiticeiro, 24/34 PV):
+   Mirela conjura Bola de Fogo (3º círculo): 8d6 [3,4,5,2,4,6,3,3] = 30 fogo, DES CD 15
+     Bruna: DES 3→10 falha → 30
+   ☠ Bruna cai! (abatido por Mirela)
+     Seraphina: DES 3→4 falha → 30
+     Ingrid: DES 11→17 passa → 15
+   ☠ Ingrid cai! (abatido por Mirela)
+     Faelan: DES 14→15 passa → 15
  Celeste (Druida, 38/38 PV):
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [4,5,10] = 19 elétrico, DES CD 15
-     Mirela: DES 1→2 falha → 19
+   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [4,9,5] = 18 elétrico, DES CD 15
+     Mirela: DES 5→6 falha → 18
+ Faelan (Bárbaro, 24/56 PV):
+   Faelan → Seraphina: d20 (vantagem: 13/14) 14+7=21 vs CA 17 → acerta, 2d6[4,4]+4 +2 fúria = 14 cortante
+   Seraphina perde a concentração em Guardiões Espirituais (CON 7 vs CD 10)
+   Faelan → Seraphina: d20 (vantagem: 7/20) 20+7=27 vs CA 17 → CRÍTICO! 4d6[3,2,2,2]+4 +2 fúria = 15 cortante
+   ☠ Seraphina cai! (abatido por Faelan)
  Tobias (Guerreiro, 46/46 PV):
    Tobias corre (Disparada) em direção a Celeste
- Bruna (Ladino, 42/42 PV):
-   Bruna → Ingrid: d20 (vantagem: 18/5) 18+7=25 vs CA 14 → acerta, 1d6[4]+4 +3d6[4,4,4] furtivo = 20 perfurante
- Ingrid (Bardo, 5/31 PV):
-   Ingrid usa Palavra Curativa 2d4[1,2]+3 e recupera 6 PV (11/31)
-   Ingrid conjura Onda Trovejante (1º círculo): 2d8 [8,1] = 9 trovejante, CON CD 14
-     Bruna: CON 2→5 falha → 9
- Zara (Druida, 16/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [6,8,5] = 19 elétrico, DES CD 14
-     Mirela: DES 20→21 passa → 9
+ Zara (Druida, 41/41 PV):
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [5,10,2] = 17 elétrico, DES CD 14
+     Mirela: DES 16→17 passa → 8
+   Mirela cairia, mas a Resistência Implacável o deixa com 1 PV!
 
 — Rodada 3 —
- Mirela (Feiticeiro, 6/34 PV):
-   Mirela conjura Despedaçar (2º círculo): 3d8 [7,1,6] = 14 trovejante, CON CD 15
+ Mirela (Feiticeiro, 1/34 PV):
+   Mirela conjura Despedaçar (2º círculo): 3d8 [1,6,8] = 15 trovejante, CON CD 15
      Celeste: CON 19→22 passa → 7
-     Tobias: CON 3→8 falha → 14
+   Celeste perde a concentração em Convocar Relâmpagos (CON 6 vs CD 10)
+     Tobias: CON 1→6 falha → 15
  Celeste (Druida, 31/38 PV):
    Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [7,3,5] = 15 elétrico, DES CD 15
      Mirela: DES 3→4 falha → 15
-   Mirela cairia, mas a Resistência Implacável o deixa com 1 PV!
- Tobias (Guerreiro, 32/46 PV):
-   Tobias → Mirela: d20 14+5=19 vs CA 14 → acerta, 1d8[3]+2 = 5 cortante
-   ☠ Mirela cai! (abatido por Tobias)
- Bruna (Ladino, 33/42 PV):
-   Bruna → Ingrid: d20 18+7=25 vs CA 14 → acerta, 1d6[4]+4 = 8 perfurante
- Ingrid (Bardo, 3/31 PV):
-   Ingrid usa Palavra Curativa 2d4[3,4]+3 e recupera 10 PV (13/31)
-   Ingrid conjura Onda Trovejante (1º círculo): 2d8 [8,2] = 10 trovejante, CON CD 14
-     Bruna: CON 5→8 falha → 10
- Zara (Druida, 16/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [8,3,3] = 14 elétrico, DES CD 14
-     Tobias: DES 20→21 passa → 7
+   ☠ Mirela cai! (abatido por Celeste)
+ Faelan (Bárbaro, 24/56 PV):
+   Faelan corre (Disparada) em direção a Tobias
+ Tobias (Guerreiro, 31/46 PV):
+   Tobias → Faelan: d20 1+5=6 vs CA 13 → falha crítica
+   Tobias → Faelan: d20 1+5=6 vs CA 13 → falha crítica
+   Tobias usa Surto de Ação!
+   Tobias → Faelan: d20 19+5=24 vs CA 13 → acerta, 1d8[5]+2 = 7 cortante
+   Tobias → Faelan: d20 15+5=20 vs CA 13 → acerta, 1d8[7]+2 = 9 cortante
+ Zara (Druida, 41/41 PV):
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [2,1,10] = 13 elétrico, DES CD 14
+     Celeste: DES 18→20 passa → 6
+   Celeste perde a concentração em Convocar Relâmpagos (CON 8 vs CD 10)
 
 — Rodada 4 —
- Celeste (Druida, 31/38 PV):
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [5,9,6] = 20 elétrico, DES CD 15
-     Tobias: DES 15→16 passa → 10
- Tobias (Guerreiro, 15/46 PV):
-   Tobias usa Retomar o Fôlego 1d10[7]+5 e recupera 12 PV (27/46)
-   Tobias → Celeste: d20 13+5=18 vs CA 15 → acerta, 1d8[7]+2 = 9 cortante
-   Tobias → Celeste: d20 13+5=18 vs CA 15 → acerta, 1d8[6]+2 = 8 cortante
-   Celeste perde a concentração em Convocar Relâmpagos (CON 6 vs CD 10)
- Bruna (Ladino, 23/42 PV):
-   Bruna → Ingrid: d20 14+7=21 vs CA 14 → acerta, 1d6[4]+4 = 8 perfurante
- Ingrid (Bardo, 5/31 PV):
-   Ingrid usa Palavra Curativa 3d4[2,3,1]+3 e recupera 9 PV (14/31)
-   Ingrid conjura Onda Trovejante (2º círculo): 3d8 [6,6,1] = 13 trovejante, CON CD 14
-     Bruna: CON 14→17 passa → 6
- Zara (Druida, 16/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [10,7,8] = 25 elétrico, DES CD 14
-     Celeste: DES 15→17 passa → 12
-     Tobias: DES 2→3 falha → 25
+ Celeste (Druida, 25/38 PV):
+   Celeste conjura Raio Lunar (2º círculo): 2d10 [7,5] = 12 radiante, CON CD 15
+     Zara: CON 11→13 falha → 12
+ Faelan (Bárbaro, 17/56 PV):
+   Faelan → Tobias: d20 (vantagem: 18/11) 18+7=25 vs CA 18 → acerta, 2d6[2,3]+4 +2 fúria = 11 cortante
+   Faelan → Tobias: d20 (vantagem: 10/10) 10+7=17 vs CA 18 → erra
+ Tobias (Guerreiro, 20/46 PV):
+   Tobias usa Retomar o Fôlego 1d10[2]+5 e recupera 7 PV (27/46)
+   (Inspiração Heroica: rerrola → 3)
+   Tobias → Faelan: d20 (vantagem: 3) 3+5=8 vs CA 13 → erra
+   Tobias → Faelan: d20 (vantagem: 13/12) 13+5=18 vs CA 13 → acerta, 1d8[6]+2 = 8 cortante
+ Zara (Druida, 29/41 PV):
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [9,6,7] = 22 elétrico, DES CD 14
+     Faelan: DES 14→15 passa → 11
+     Tobias: DES 14→15 passa → 11
 
 — Rodada 5 —
- Celeste (Druida, 2/38 PV):
-   Celeste usa Palavra Curativa 2d4[2,4]+4 e recupera 10 PV (12/38)
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [5,8,3] = 16 elétrico, DES CD 15
-     Tobias: DES 5→6 falha → 16
-   ☠ Tobias cai! (abatido por Celeste)
- Bruna (Ladino, 17/42 PV):
-   Bruna → Ingrid: d20 (vantagem: 4/16) 16+7=23 vs CA 14 → acerta, 1d6[6]+4 +3d6[2,2,2] furtivo = 16 perfurante
-   ☠ Ingrid cai! (abatido por Bruna)
- Zara (Druida, 16/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [9,3,10] = 22 elétrico, DES CD 14
-     Celeste: DES 14→16 passa → 11
+ Celeste (Druida, 25/38 PV):
+   Celeste conjura Raio Lunar (2º círculo): 2d10 [1,6] = 7 radiante, CON CD 15
+     Faelan: CON 7→12 falha → 7
+   ☠ Faelan cai! (abatido por Celeste)
+   Celeste → Tobias: d20 14+7=21 vs CA 18 → acerta, 2d8[1,5] = 6 fogo
+ Tobias (Guerreiro, 10/46 PV):
+   Tobias usa Retomar o Fôlego 1d10[7]+5 e recupera 12 PV (22/46)
+   Tobias → Celeste: d20 13+5=18 vs CA 15 → acerta, 1d8[6]+2 = 8 cortante
+   Tobias → Celeste: d20 2+5=7 vs CA 15 → erra
+ Zara (Druida, 29/41 PV):
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [8,1,5] = 14 elétrico, DES CD 14
+     Celeste: DES 16→18 passa → 7
+   Celeste perde a concentração em Raio Lunar (CON 9 vs CD 10)
+     Tobias: DES 5→6 falha → 14
 
 — Rodada 6 —
- Celeste (Druida, 1/38 PV):
-   Celeste usa Palavra Curativa 2d4[1,2]+4 e recupera 7 PV (8/38)
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [8,9,3] = 20 elétrico, DES CD 15
-     Zara: DES 13→14 falha → 20
-   ☠ Zara cai! (abatido por Celeste)
- Bruna (Ladino, 17/42 PV):
-   Bruna corre (Disparada) em direção a Celeste
+ Celeste (Druida, 10/38 PV):
+   Celeste usa Palavra Curativa 2d4[2,4]+4 e recupera 10 PV (20/38)
+   Celeste conjura Raio Lunar (2º círculo): 2d10 [9,4] = 13 radiante, CON CD 15
+     Tobias: CON 5→10 falha → 13
+   ☠ Tobias cai! (abatido por Celeste)
+ Zara (Druida, 29/41 PV):
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [4,9,3] = 16 elétrico, DES CD 14
+     Celeste: DES 19→21 passa → 8
 
 — Rodada 7 —
- Celeste (Druida, 8/38 PV):
-   Celeste usa Palavra Curativa 2d4[2,4]+4 e recupera 10 PV (18/38)
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [4,8,10] = 22 elétrico, DES CD 15
-     Bruna: DES 20→27 passa → 11
- Bruna (Ladino, 6/42 PV):
-   Bruna → Celeste: d20 18+7=25 vs CA 15 → acerta, 1d6[4]+4 = 8 perfurante
-   Celeste perde a concentração em Convocar Relâmpagos (CON 7 vs CD 10)
+ Celeste (Druida, 12/38 PV):
+   Celeste usa Palavra Curativa 2d4[4,1]+4 e recupera 9 PV (21/38)
+   Celeste → Zara: d20 15+7=22 vs CA 14 → acerta, 2d8[7,3] = 10 fogo
+ Zara (Druida, 19/41 PV):
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [10,1,8] = 19 elétrico, DES CD 14
+     Celeste: DES 8→10 falha → 19
 
 — Rodada 8 —
- Celeste (Druida, 10/38 PV):
-   Celeste usa Palavra Curativa 2d4[1,3]+4 e recupera 8 PV (18/38)
-   Celeste conjura Onda Trovejante (2º círculo): 3d8 [1,6,8] = 15 trovejante, CON CD 15
-     Bruna: CON 7→10 falha → 15
-   ☠ Bruna cai! (abatido por Celeste)
+ Celeste (Druida, 2/38 PV):
+   Celeste usa Palavra Curativa 2d4[4,4]+4 e recupera 12 PV (14/38)
+   Celeste → Zara: d20 4+7=11 vs CA 14 → erra
+ Zara (Druida, 19/41 PV):
+   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [10,4,7] = 21 elétrico, DES CD 14
+     Celeste: DES 11→13 falha → 21
+   ☠ Celeste cai! (abatido por Zara)
 
-🏆 Vencedor: Celeste (18/38 PV) após 8 rodadas.
+🏆 Vencedor: Zara (19/41 PV) após 8 rodadas.
 ```
 
 ---

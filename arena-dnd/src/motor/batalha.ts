@@ -14,7 +14,7 @@ export type Ev =
   | { k: "rotulo"; id: number; t: number; dur: number; texto: string; cor: string }
   | { k: "dado"; id: number; t: number; valor: number; total: number; cor: string; lados?: number }
   | { k: "numero"; id: number; t: number; texto: string; cor: string; grande?: boolean }
-  | { k: "fx"; t: number; dur: number; tipo: string; x0: number; y0: number; x1: number; y1: number; cor: string; raio?: number; n?: number }
+  | { k: "fx"; t: number; dur: number; tipo: string; x0: number; y0: number; x1: number; y1: number; cor: string; raio?: number; n?: number; de?: number; para?: number } // de/para: o efeito acompanha o personagem na tela
   | { k: "aura"; id: number; t0: number; t1: number; raio: number; cor: string; tipo: string }
   | { k: "status"; id: number; t0: number; t1: number; texto: string; cor: string }
   | { k: "banner"; t: number; dur: number; texto: string; cor: string }
@@ -235,7 +235,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       const s = salvaguarda(fonte, "DES", cd);
       const final = s.passou ? Math.floor(r.total / 2) : r.total;
       ev.push({ k: "rotulo", id: alvo.id, t: tq + 8, dur: 34, texto: "REPREENSÃO INFERNAL", cor: COR_DANO.fogo });
-      ev.push({ k: "fx", t: tq + 10, dur: 16, tipo: "coluna", x0: fonte.x, y0: fonte.y, x1: fonte.x, y1: fonte.y, cor: COR_DANO.fogo, raio: 5 });
+      ev.push({ k: "fx", t: tq + 10, dur: 16, tipo: "coluna", x0: fonte.x, y0: fonte.y, x1: fonte.x, y1: fonte.y, cor: COR_DANO.fogo, raio: 5, para: fonte.id });
       som(tq + 10, "fogo.wav", 0.7);
       log.push(`   ${alvo.f.nome} reage com Repreensão Infernal: ${r.expr} [${r.dados.join(",")}] = ${r.total}; ${fonte.f.nome} DES ${s.total} vs CD ${cd} → ${final}`);
       causarDano(alvo, fonte, final, "fogo", tq + 16);
@@ -258,7 +258,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     alvo.pv = Math.min(alvo.pvMax, alvo.pv + qtd);
     ev.push({ k: "numero", id: alvo.id, t: tq, texto: `+${alvo.pv - antes}`, cor: COR_DANO.cura });
     ev.push({ k: "anim", id: alvo.id, t: tq, tipo: "cura" });
-    ev.push({ k: "fx", t: tq - 4, dur: 24, tipo: "cura", x0: alvo.x, y0: alvo.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.cura });
+    ev.push({ k: "fx", t: tq - 4, dur: 24, tipo: "cura", x0: alvo.x, y0: alvo.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.cura, para: alvo.id });
     ev.push({ k: "pv", id: alvo.id, t: tq, pv: alvo.pv });
     som(tq - 4, "cura.wav", 0.7);
     log.push(`   ${l.f.nome} usa ${nome} e recupera ${alvo.pv - antes} PV (${alvo.pv}/${alvo.pvMax})`);
@@ -368,7 +368,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       caAlvo += 5;
       acertou = false;
       ev.push({ k: "rotulo", id: alvo.id, t: ta + 6, dur: 28, texto: "ESCUDO", cor: "#9fd8ff" });
-      ev.push({ k: "fx", t: ta + 6, dur: 14, tipo: "escudo", x0: alvo.x, y0: alvo.y, x1: alvo.x, y1: alvo.y, cor: "#9fd8ff" });
+      ev.push({ k: "fx", t: ta + 6, dur: 14, tipo: "escudo", x0: alvo.x, y0: alvo.y, x1: alvo.x, y1: alvo.y, cor: "#9fd8ff", para: alvo.id });
       som(ta + 6, "escudo.wav", 0.7);
       log.push(`   ${alvo.f.nome} conjura Escudo (+5 CA)!`);
     }
@@ -384,11 +384,11 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     if (op.distancia || op.efeito) {
       const viagem = op.efeito === "toque" ? 6 : Math.max(5, Math.round(dist(l, alvo) / 7));
       const tipoFx = op.efeito ?? (op.arma ? "flecha" : "projetil");
-      ev.push({ k: "fx", t: ta + 3, dur: viagem, tipo: tipoFx, x0: l.x, y0: l.y, x1: alvo.x + (acertou ? 0 : (rng() - 0.5) * 10), y1: alvo.y + (acertou ? 0 : (rng() - 0.5) * 10), cor: op.cor ?? COR_DANO[op.tipo] });
+      ev.push({ k: "fx", t: ta + 3, dur: viagem, tipo: tipoFx, x0: l.x, y0: l.y, x1: alvo.x + (acertou ? 0 : (rng() - 0.5) * 10), y1: alvo.y + (acertou ? 0 : (rng() - 0.5) * 10), cor: op.cor ?? COR_DANO[op.tipo], de: l.id, para: acertou ? alvo.id : undefined });
       som(ta + 2, op.arma ? "flecha.wav" : op.tipo === "fogo" ? "fogo.wav" : "magia.wav", 0.6);
       tq = ta + 3 + viagem;
     } else {
-      ev.push({ k: "fx", t: tq - 2, dur: 8, tipo: "corte", x0: l.x, y0: l.y, x1: alvo.x, y1: alvo.y, cor: "#ffffff" });
+      ev.push({ k: "fx", t: tq - 2, dur: 8, tipo: "corte", x0: l.x, y0: l.y, x1: alvo.x, y1: alvo.y, cor: "#ffffff", de: l.id, para: alvo.id });
       som(ta + 1, "golpe.wav", 0.6);
     }
     const desc = `d20${modo !== "normal" ? ` (${modo}: ${rol.dados.join("/")})` : ""} ${nat}${sinal(op.bonus)}=${total} vs CA ${caAlvo}`;
@@ -451,19 +451,19 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     let tq = ta + 8;
     if (magia.efeito === "explosao") {
       const viagem = Math.max(6, Math.round(Math.hypot(cx - l.x, cy - l.y) / 6));
-      ev.push({ k: "fx", t: ta + 3, dur: viagem, tipo: "projetil", x0: l.x, y0: l.y, x1: cx, y1: cy, cor: COR_DANO[magia.tipo!] });
+      ev.push({ k: "fx", t: ta + 3, dur: viagem, tipo: "projetil", x0: l.x, y0: l.y, x1: cx, y1: cy, cor: COR_DANO[magia.tipo!], de: l.id });
       tq = ta + 3 + viagem;
       ev.push({ k: "fx", t: tq, dur: 22, tipo: "explosao", x0: cx, y0: cy, x1: cx, y1: cy, cor: COR_DANO[magia.tipo!], raio: magia.raio });
       ev.push({ k: "tremor", t: tq, forca: magia.nivel >= 3 ? 5 : 3 });
       som(ta + 2, "magia.wav", 0.5);
       som(tq, magia.tipo === "fogo" ? "explosao.wav" : "trovao.wav", 0.9);
     } else if (magia.efeito === "linha") {
-      ev.push({ k: "fx", t: ta + 4, dur: 18, tipo: "relampago", x0: l.x, y0: l.y, x1: cx, y1: cy, cor: COR_DANO[magia.tipo!] });
+      ev.push({ k: "fx", t: ta + 4, dur: 18, tipo: "relampago", x0: l.x, y0: l.y, x1: cx, y1: cy, cor: COR_DANO[magia.tipo!], de: l.id });
       ev.push({ k: "tremor", t: ta + 6, forca: 4 });
       tq = ta + 8;
       som(ta + 4, "trovao.wav", 0.9);
     } else if (magia.efeito === "onda" || magia.efeito === "cone") {
-      ev.push({ k: "fx", t: ta + 3, dur: 16, tipo: magia.efeito, x0: l.x, y0: l.y, x1: cx, y1: cy, cor: COR_DANO[magia.tipo!], raio: magia.raio ?? 15 });
+      ev.push({ k: "fx", t: ta + 3, dur: 16, tipo: magia.efeito, x0: l.x, y0: l.y, x1: cx, y1: cy, cor: COR_DANO[magia.tipo!], raio: magia.raio ?? 15, de: l.id });
       tq = ta + 7;
       som(ta + 3, magia.tipo === "trovejante" ? "trovao.wav" : "sopro.wav", 0.8);
     } else if (magia.efeito === "coluna") {
@@ -471,7 +471,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       tq = ta + 9;
       som(ta + 3, magia.tipo === "elétrico" ? "trovao.wav" : "sagrado.wav", 0.8);
     } else if (magia.efeito === "palavras") {
-      for (const a of alvos) ev.push({ k: "fx", t: ta + 2, dur: 14, tipo: "palavras", x0: l.x, y0: l.y, x1: a.x, y1: a.y, cor: COR_DANO[magia.tipo!] });
+      for (const a of alvos) ev.push({ k: "fx", t: ta + 2, dur: 14, tipo: "palavras", x0: l.x, y0: l.y, x1: a.x, y1: a.y, cor: COR_DANO[magia.tipo!], de: l.id, para: a.id });
       tq = ta + 14;
       som(ta + 2, "zombaria.wav", 0.7);
     } else if (magia.efeito === "aura") {
@@ -546,7 +546,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   };
 
   // atirador: mantém distância (≥ 25 pés do inimigo mais próximo) e fica dentro do alcance
-  const posicionarDistancia = (l: Lutador, alvo: Lutador, alcance: number, t0: number, desloc: number) => {
+  const posicionarDistancia = (l: Lutador, alvo: Lutador, alcance: number, t0: number, desloc: number, ficarSePuder = false) => {
     const perto = vivos().filter((o) => o.id !== l.id).sort((a, b) => dist(l, a) - dist(l, b))[0];
     if (perto && dist(l, perto) < 18) {
       // recua para longe do mais próximo
@@ -554,12 +554,12 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       return mover(l, l.x + Math.cos(ang) * desloc, l.y + Math.sin(ang) * desloc, desloc, t0);
     }
     if (dist(l, alvo) > alcance) return mover(l, alvo.x, alvo.y, Math.min(desloc, dist(l, alvo) - alcance + 5), t0);
-    // pequeno reposicionamento para dar vida
-    if (rng() < 0.5) {
-      const ang = rng() * Math.PI * 2;
-      return mover(l, l.x + Math.cos(ang) * 8, l.y + Math.sin(ang) * 8, 8, t0);
-    }
-    return t0;
+    if (ficarSePuder) return t0; // ladino: parado para usar a Mira Firme
+    // atirador nunca fica parado: contorna o alvo mantendo 25–40 pés (o deslocamento do turno)
+    const angAtual = Math.atan2(l.y - alvo.y, l.x - alvo.x);
+    const ang = angAtual + (rng() < 0.5 ? -1 : 1) * (0.5 + rng() * 0.7);
+    const distAlvo = 25 + rng() * 15;
+    return mover(l, alvo.x + Math.cos(ang) * distAlvo, alvo.y + Math.sin(ang) * distAlvo, desloc, t0);
   };
 
   const opArma = (l: Lutador): OpAtaque => {
@@ -635,7 +635,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
         l.conc = { magia: hex, circulo: c, alvo: alvo.id, desde: t1 };
         l.marcaAlvo = alvo.id;
         ev.push({ k: "rotulo", id: l.id, t: t1, dur: 30, texto: "BRUXARIA", cor: COR_DANO.necrótico });
-        ev.push({ k: "fx", t: t1 + 4, dur: 14, tipo: "espectral", x0: l.x, y0: l.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.necrótico });
+        ev.push({ k: "fx", t: t1 + 4, dur: 14, tipo: "espectral", x0: l.x, y0: l.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.necrótico, de: l.id, para: alvo.id });
         ev.push({ k: "status", id: alvo.id, t0: t1 + 10, t1: 999999, texto: "MARCA", cor: COR_DANO.necrótico });
         som(t1 + 2, "magia.wav", 0.5);
         log.push(`   ${l.f.nome} lança Bruxaria em ${alvo.f.nome} (+1d6 necrótico por acerto)`);
@@ -725,7 +725,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
             let tt = posicionarDistancia(l, alvo, 120, t1, l.f.deslocamento);
             ev.push({ k: "rotulo", id: l.id, t: tt, dur: 34, texto: "MÍSSEIS MÁGICOS", cor: COR_DANO.energia });
             ev.push({ k: "anim", id: l.id, t: tt, tipo: "magia", dx: Math.sign(alvo.x - l.x) || 1 });
-            ev.push({ k: "fx", t: tt + 3, dur: 12, tipo: "misseis", x0: l.x, y0: l.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.energia, n: dardos });
+            ev.push({ k: "fx", t: tt + 3, dur: 12, tipo: "misseis", x0: l.x, y0: l.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.energia, n: dardos, de: l.id, para: alvo.id });
             som(tt + 3, "magia.wav", 0.7);
             const r = rolar(rng, `${dardos}d4+${dardos}`);
             log.push(`   ${l.f.nome} → ${alvo.f.nome}: Mísseis Mágicos (${dardos} dardos, acerto automático) ${r.expr}[${r.dados.join(",")}] = ${r.total} energia`);
@@ -998,7 +998,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     let parado = true;
     if (distancia) {
       const tAntes = t1;
-      t1 = posicionarDistancia(l, alvo, l.f.arma.alcance, t1, desloc);
+      t1 = posicionarDistancia(l, alvo, l.f.arma.alcance, t1, desloc, l.f.classe === "ladino");
       parado = t1 === tAntes;
     } else if (dist(l, alvo) > ALCANCE_CORPO) {
       parado = false;
@@ -1053,7 +1053,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
           const sm = rolar(rng, `${1 + c}d8`, r.critico);
           bonusUsado = true;
           ev.push({ k: "rotulo", id: l.id, t: t1 + 4, dur: 32, texto: "DESTRUIÇÃO DIVINA", cor: COR_DANO.radiante });
-          ev.push({ k: "fx", t: r.tq, dur: 18, tipo: "coluna", x0: alvo.x, y0: alvo.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.radiante, raio: 4 });
+          ev.push({ k: "fx", t: r.tq, dur: 18, tipo: "coluna", x0: alvo.x, y0: alvo.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.radiante, raio: 4, para: alvo.id });
           som(r.tq, "sagrado.wav", 0.8);
           log.push(`   Destruição Divina (${c}º círculo): ${sm.expr}[${sm.dados.join(",")}] = ${sm.total} radiante`);
           causarDano(l, alvo, sm.total, "radiante", r.tq + 6);
