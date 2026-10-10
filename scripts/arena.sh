@@ -13,6 +13,11 @@ CHROME_ARG=()
 [ -n "${CHROME:-}" ] && CHROME_ARG=(--browser-executable="$CHROME")
 
 cd "$RAIZ/remotion"
+SEED=$(python3 -c "import json;print(json.load(open('$EP')).get('seed',''))")
+if [ -z "$SEED" ]; then
+  echo "▸ 0/5 escolhendo a seed pelo ritmo (≥ 35 turnos, duelo de 3 a 8, sem compressão)"
+  node --no-warnings scripts/escolher-seed.ts "$EP" | tail -2
+fi
 echo "▸ 1/5 simulação, ficha e eventos de áudio"
 node --no-warnings scripts/arena.ts "$EP"
 echo "▸ 2/5 trilha e efeitos"
