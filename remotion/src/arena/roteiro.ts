@@ -5,7 +5,8 @@ import type { Episodio, Lutador, SubidaNivel } from "./personagem.ts";
 import { simular } from "./combate.ts";
 import type { Batida, Efeito, P, Resultado, Simulacao } from "./combate.ts";
 import { CLASSES, ESPECIES, espacos } from "./regras.ts";
-import { ITEM_IDS, tipoDe } from "./itens.ts";
+import { ITEM_IDS, podeUsar, tipoDe } from "./itens.ts";
+import { CHEFES } from "./chefes.ts";
 import type { ItemId } from "./itens.ts";
 import type { TipoDano } from "./regras.ts";
 
@@ -22,8 +23,8 @@ export const V = {
 // depois da vitória e o pergaminho fica um pouco mais rápido.
 export const BAU = 120; // 4 s
 export type Fases = typeof V & { bau: number; ritmo: number; digitacao: number };
-export const fasesDe = (ep: Episodio): Fases => {
-  const temBau = (ep.versao ?? 1) >= 3 && ep.numero % 5 === 0;
+export const fasesDe = (ep: Episodio, chefeVenceu = false): Fases => {
+  const temBau = (ep.versao ?? 1) >= 3 && ep.numero % 5 === 0 && !chefeVenceu;
   return temBau ? { ...V, bau: V.pergaminho, pergaminho: V.pergaminho + BAU, ritmo: 0.7, digitacao: 2.4 } : { ...V, bau: -1, ritmo: 1, digitacao: 1.5 };
 };
 export const CUTIN = 18; // 0,6 s congelado
@@ -94,7 +95,7 @@ const natural = (b: Batida, posAtor: P, posAlvo: P | undefined) => {
 
 export const criarRoteiro = (ep: Episodio): Roteiro => {
   const { lutadores, rng } = gerarLutadores(ep);
-  const sim = simular(lutadores, rng, { versao: ep.versao, focoCampeao: ep.focoCampeao, centro: ep.centro });
+  const sim = simular(lutadores, rng, { versao: ep.versao, focoCampeao: ep.focoCampeao, centro: ep.centro, arena: ep.arena, focoChefe: ep.focoChefe });
   const N = lutadores.length;
   const avisos: string[] = [];
 
@@ -325,14 +326,18 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   const ev = sim.evolucao[vencedor];
   const campeao = lutadores[vencedor];
   const base = { ...campeao, nivel: ev.nivel, pvMax: ev.pvMax, atributos: ev.atributos, pvRolagens: ev.pvRolagens, itens: ev.itens };
-  const subida = combinarSubidas([...ev.subidas, subirNivel(base, rng)]);
-  // baú: o campeão acha um item de um tipo que ainda não tem (rola d27 até sair)
-  const fases = fasesDe(ep);
+  const chefeVenceu = !!campeao.boss;
+  // se o chefe vence, ninguém sobe de nível (e não tem baú): a "subida" fica vazia
+  const subida = chefeVenceu ? subidaVazia(campeao) : combinarSubidas([...ev.subidas, subirNivel(base, rng)]);
+  // baú: o campeão acha um item de um tipo que ainda não tem e que serve para o estilo dele (rola d30 até sair)
+  const fases = fasesDe(ep, chefeVenceu);
   let itemBau: ItemId | null = null;
   if (fases.bau >= 0) {
     // 27 itens (9 tipos × 3 versões); só vale um item de cada tipo, então rerrola se sair um tipo que já tem
     const tiposTem = new Set(ev.itens.map(tipoDe));
-    const faltam = ITEM_IDS.filter((i) => !tiposTem.has(tipoDe(i)));
+    const distancia = CLASSES[campeao.classe].distancia || campeao.arma.distancia;
+    // só itens do estilo de luta dele (quem luta de longe não pega espada/machado/escudo; corpo a corpo não pega cajado/arco)
+    const faltam = ITEM_IDS.filter((i) => !tiposTem.has(tipoDe(i)) && podeUsar(i, distancia));
     for (let k = 0; k < 40 && faltam.length; k++) {
       const d = rng.roll(`${campeao.nome} · baú do campeão (d${ITEM_IDS.length})`, 1, ITEM_IDS.length).total;
       if (faltam.includes(ITEM_IDS[d - 1])) {
@@ -343,7 +348,7 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   }
   const itensFinais = itemBau ? [...ev.itens, itemBau] : [...ev.itens];
   subida.ficha.itens = itensFinais;
-  const historia = escreverHistoria(campeao, sim, subida, ep.arena);
+  const historia = chefeVenceu ? historiaChefe(campeao, sim) : escreverHistoria(campeao, sim, subida, ep.arena);
   const pergaminho = montarPergaminho(campeao, subida, sim, fases, itensFinais, itemBau);
 
   const r: Roteiro = {
@@ -481,6 +486,7 @@ export type ItemPergaminho = {
   desc?: string;
 };
 const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao, fases: Fases, itensC: ItemId[], itemBau: ItemId | null): ItemPergaminho[] => {
+  if (c.boss) return pergaminhoChefe(c, fases);
   const itens: ItemPergaminho[] = [];
   let v = fases.pergaminho + 34; // depois de desenrolar (1 s)
   const passo = (n: number) => {
@@ -529,6 +535,45 @@ const montarPergaminho = (c: Lutador, sub: SubidaNivel, sim: Simulacao, fases: F
   void sim;
   return itens;
 };
+const subidaVazia = (l: Lutador): SubidaNivel => ({
+  de: l.nivel,
+  para: l.nivel,
+  dado: 0,
+  rolagem: 0,
+  conMod: 0,
+  anao: 0,
+  pvGanho: 0,
+  pvAntes: l.pvMax,
+  pvDepois: l.pvMax,
+  atributosAntes: { ...l.atributos },
+  atributosDepois: { ...l.atributos },
+  poderesNovos: [],
+  espacosAntes: [],
+  espacosDepois: [],
+  rolagensTxt: [],
+  ficha: { nome: l.nome, especie: l.especie, classe: l.classe, nivel: l.nivel, atributos: l.atributos, pvMax: l.pvMax, visual: l.visual, vitorias: 0 },
+});
+const historiaChefe = (c: Lutador, sim: Simulacao) => {
+  const st = sim.stats[c.id];
+  return `Das profundezas da caverna, o ${c.nome} esmagou ${st.abates} heróis e ficou sozinho na arena. Nenhum campeão saiu vivo desta vez. A arena espera alguém capaz de derrubá-lo.`;
+};
+const pergaminhoChefe = (c: Lutador, fases: Fases): ItemPergaminho[] => {
+  const itens: ItemPergaminho[] = [];
+  let v = fases.pergaminho + 34;
+  const passo = (n: number) => (v += n);
+  itens.push({ v, tipo: "titulo", texto: c.nome });
+  for (const a of ["FOR", "DES", "CON", "INT", "SAB", "CAR"] as const) {
+    const md = Math.floor((c.atributos[a] - 10) / 2);
+    itens.push({ v: passo(8), tipo: "atributo", texto: `${a} ${c.atributos[a]} (${md >= 0 ? "+" : ""}${md})` });
+  }
+  const ch = CHEFES[c.boss!];
+  itens.push({ v: passo(14), tipo: "combate", texto: `PV ${ch.pv}` });
+  itens.push({ v: passo(8), tipo: "combate", texto: `CA ${ch.ca}` });
+  for (const q of ch.ataques.filter((x, i, arr) => arr.findIndex((y) => y.nome === x.nome) === i)) itens.push({ v: passo(8), tipo: "poder", texto: `${q.nome} ${q.n}d${q.d}+${q.bonus}` });
+  itens.push({ v: passo(8), tipo: "poder", texto: ch.especial.nome });
+  itens.push({ v: passo(20), tipo: "historia", texto: "" });
+  return itens;
+};
 export const ESPECIE_NOME = (l: Lutador) => ESPECIES[l.especie].nome;
 
 // ───────────── eventos de áudio (quadros do vídeo) ─────────────
@@ -569,6 +614,7 @@ const gerarSons = (r: Roteiro): SomEv[] => {
   // intro
   for (let i = 0; i < N; i++) add(8 + i * 4 + 10, "queda", 0.5);
   add(78, "banner", 0.9);
+  if (r.lutadores.some((l) => l.boss)) add(50, "rugido", 1);
   add(100, "conta", 1);
   add(115, "conta", 1);
   add(130, "conta", 1);
@@ -590,6 +636,8 @@ const gerarSons = (r: Roteiro): SomEv[] => {
     if (algumAcerto || !g.d20) add(vImp, base, 0.9);
     else add(vImp - 2, "swing", 0.6);
     if (g.subiu) add(vImp + 12, "levelup", 0.9);
+    if (r.lutadores[g.ator].boss && (g.especial >= 1 || g.fx === "sopro")) add(v0, "rugido", 0.9);
+    if (g.chefeDerrotado) add(vImp + 4, "rugido", 1);
     if (g.itensPegos) add(vImp + 16, "tesouro", 0.7);
     for (const x of g.resultados) {
       if (x.r === "critico") add(vImp, "sino", 1);

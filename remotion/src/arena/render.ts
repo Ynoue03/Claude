@@ -1,7 +1,8 @@
 // Monta cada quadro do vídeo: mundo (calabouço ou floresta + lutadores + efeitos) e interface (HUD, banners, cut-ins).
 import { cena, condicoesEm, posEm, valorEm, video, V, CUTIN, VS as DUR_VS } from "./roteiro.ts";
 import type { Golpe, Roteiro } from "./roteiro.ts";
-import { ALCANCE } from "./combate.ts";
+import { ALCANCE, geoDe } from "./combate.ts";
+import type { Geo } from "./combate.ts";
 import type { P } from "./combate.ts";
 import { W, H, fundo, aplicarLuz, luzesTochas, luzEm, desenharTochas, desenharAmbiente, vinheta, AMBIENTE } from "./cenario.ts";
 import type { Luz } from "./cenario.ts";
@@ -258,8 +259,18 @@ export type Camadas = { mundo: HTMLCanvasElement; ui: HTMLCanvasElement; zoom: n
 
 const golpeTxt = (r: Roteiro, g: Golpe) => (g.nome === "ATAQUE" || g.nome === "OPORTUNIDADE" ? r.lutadores[g.ator].arma.nome.toUpperCase() : g.nome);
 
+// tamanho do mundo da arena em uso (360×640 nas normais, 720×1280 na caverna dos chefes)
+let MW = W,
+  MH = H;
+let GEOM: Geo = geoDe();
+
 export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
-  if (!mundoC) mundoC = novoCanvas(W, H);
+  const arena = r.ep.arena ?? "calabouco";
+  GEOM = geoDe(arena);
+  MW = GEOM.w;
+  MH = GEOM.h;
+  const grande = MW > W; // arena maior que a tela: câmera segue a ação
+  if (!mundoC || mundoC.width !== MW || mundoC.height !== MH) mundoC = novoCanvas(MW, MH);
   if (!uiC) uiC = novoCanvas(W, H);
   const ctx = mundoC.getContext("2d")!;
   const ui = uiC.getContext("2d")!;
@@ -272,10 +283,9 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   // ── mundo ──
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha = 1;
-  const arena = r.ep.arena ?? "calabouco";
   const comAltar = r.ep.centro !== "livre";
   ctx.drawImage(fundo(arena, comAltar), 0, 0);
-  const luzes: Luz[] = luzesTochas(s);
+  const luzes: Luz[] = luzesTochas(s, arena);
   const estados = r.lutadores.map((_, i) => estado(r, i, s, v));
 
   // efeitos ativos (calcula luzes antes de iluminar)
@@ -396,9 +406,8 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     }
   });
   desenharTochas(ctx, s, arena);
-  vinheta(ctx);
+  if (!grande) vinheta(ctx);
   // confete (no mundo, cai sobre todos)
-  if (v >= V.vitoria && v < r.fases.pergaminho + 30) confete(ctx, v - V.vitoria);
 
   // ── marcadores sobre os lutadores (não escurecem) ──
   if (v >= V.batalha - 20 && v < r.fases.pergaminho) {
@@ -438,8 +447,8 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
       const k = pi - 8;
       const a = k > 44 ? 1 - (k - 44) / 8 : 1;
       const yb = b.y - PE_Y + alturaCabeca(r.lutadores[g.subiu.id]) - 30 - Math.min(10, k * 0.8);
-      if (Math.floor(k / 4) % 4 !== 3) texto(ctx, "SUBIU DE NÍVEL!", clamp(b.x, 60, W - 60), yb, { cor: DOURADO, contorno: TINTA, alinhar: "centro", alpha: a });
-      texto(ctx, `NV ${g.subiu.de} → ${g.subiu.para} · +${g.subiu.ganho} PV`, clamp(b.x, 60, W - 60), yb + 10, { cor: "#6aff7a", contorno: TINTA, alinhar: "centro", fonte: "p", alpha: a });
+      if (Math.floor(k / 4) % 4 !== 3) texto(ctx, "SUBIU DE NÍVEL!", clamp(b.x, 60, MW - 60), yb, { cor: DOURADO, contorno: TINTA, alinhar: "centro", alpha: a });
+      texto(ctx, `NV ${g.subiu.de} → ${g.subiu.para} · +${g.subiu.ganho} PV`, clamp(b.x, 60, MW - 60), yb + 10, { cor: "#6aff7a", contorno: TINTA, alinhar: "centro", fonte: "p", alpha: a });
       if (k < 30) colunaLuz(ctx, b.x, b.y, k + 20);
     }
     if (g.itensPegos && pi >= 14 && pi < 64) {
@@ -448,9 +457,9 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
       const a = k > 40 ? 1 - (k - 40) / 10 : 1;
       const yb = b.y - PE_Y + alturaCabeca(r.lutadores[g.itensPegos.id]) - 44 - Math.min(8, k * 0.6);
       const n = g.itensPegos.itens.length;
-      texto(ctx, n > 1 ? `PEGOU ${n} ITENS!` : "PEGOU O ITEM!", clamp(b.x, 60, W - 60), yb, { cor: "#ffd84a", contorno: TINTA, alinhar: "centro", alpha: a });
+      texto(ctx, n > 1 ? `PEGOU ${n} ITENS!` : "PEGOU O ITEM!", clamp(b.x, 60, MW - 60), yb, { cor: "#ffd84a", contorno: TINTA, alinhar: "centro", alpha: a });
       ctx.globalAlpha = a;
-      g.itensPegos.itens.forEach((it, j) => desenharIcone(ctx, it, Math.round(clamp(b.x, 60, W - 60) - (n * 17) / 2 + j * 17), Math.round(yb + 9)));
+      g.itensPegos.itens.forEach((it, j) => desenharIcone(ctx, it, Math.round(clamp(b.x, 60, MW - 60) - (n * 17) / 2 + j * 17), Math.round(yb + 9)));
       ctx.globalAlpha = 1;
     }
     if (pi >= 0 && pi < 32) {
@@ -463,18 +472,22 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
 
   // ── câmera: zoom 1,2× no duelo e tremor nos especiais ──
   let zoom = 1;
-  let foco: P = { x: W / 2, y: H / 2 };
+  let foco: P = grande ? cameraGrande(r, v, s) : { x: W / 2, y: H / 2 };
   const vsC = r.congela.find((c) => c.tipo === "vs")!;
   if (v >= vsC.v0 + DUR_VS && v < r.fases.pergaminho) {
     const k = ease((v - vsC.v0 - DUR_VS) / 20);
     zoom = 1 + 0.2 * k;
     const [a, b] = r.finalistas.map((i) => estados[i]);
     const alvo = v >= V.vitoria || !b ? { x: estados[r.vencedor].x, y: estados[r.vencedor].y - 20 } : { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 20 };
-    foco = { x: W / 2 + (alvo.x - W / 2) * k, y: H / 2 + (alvo.y - H / 2) * k };
+    foco = { x: foco.x + (alvo.x - foco.x) * k, y: foco.y + (alvo.y - foco.y) * k };
+  }
+  {
     const mx = W / (2 * zoom),
       my = H / (2 * zoom);
-    foco = { x: clamp(foco.x, mx, W - mx), y: clamp(foco.y, my, H - my) };
+    foco = { x: clamp(foco.x, mx, MW - mx), y: clamp(foco.y, my, MH - my) };
   }
+  // deslocamento mundo → tela (para desenhar rótulos da interface em cima de quem está no mundo)
+  const off: P = { x: W / 2 - foco.x * zoom, y: H / 2 - foco.y * zoom };
   let tremor: P = { x: 0, y: 0 };
   for (const g of r.golpes) {
     const pi = s - g.tImp;
@@ -485,8 +498,11 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   }
 
   // ── interface ──
+  if (grande) vinheta(ui);
+  if (v >= V.vitoria && v < r.fases.pergaminho + 30) confete(ui, v - V.vitoria);
   if (v < (r.fases.bau >= 0 ? r.fases.bau : r.fases.pergaminho)) hud(ui, r, s, v, estados);
-  if (v < V.batalha + 10) intro(ui, r, v, estados);
+  if (grande && v < (r.fases.bau >= 0 ? r.fases.bau : r.fases.pergaminho)) minimapa(ui, r, s, estados, foco);
+  if (v < V.batalha + 10) intro(ui, r, v, estados, off);
   bannersCaiu(ui, r, v);
   if (congelado?.tipo === "cutin" && congelado.golpe) cutin(ui, r, congelado.golpe, dentro);
   if (congelado?.tipo === "vs") telaVs(ui, r, dentro, estados);
@@ -624,8 +640,8 @@ const caixaGolpe = (ctx: Ctx, g: Golpe, x: number, y: number, dt: number) => {
   const h = 13;
   const sobe = dt < 4 ? (4 - dt) * 2 : 0;
   const alpha = dt > 24 ? 1 - (dt - 24) / 6 : 1;
-  const bx = clamp(x - w / 2, 30, W - 30 - w);
-  let by = clamp(y - h - sobe, 168, 520);
+  const bx = clamp(x - w / 2, 30, MW - 30 - w);
+  let by = clamp(y - h - sobe, GEOM.lim.y0 - 32, GEOM.lim.y1);
   // empilha se encostar em outra caixa
   for (let n = 0; n < 4; n++) {
     const bate = caixasUsadas.some((c) => bx < c.x + c.w && bx + w > c.x && by < c.y + c.h && by + h > c.y);
@@ -656,7 +672,7 @@ const numerosFlutuantes = (ctx: Ctx, x: number, y: number, res: Golpe["resultado
   let yy = y;
   ctx.globalAlpha = alpha;
   for (const ln of linhas) {
-    const xx = clamp(x, 40, W - 40);
+    const xx = clamp(x, 40, MW - 40);
     texto(ctx, ln.t, xx, Math.round(yy - pop), { cor: ln.cor, contorno: TINTA, escala: ln.esc, alinhar: "centro" });
     yy += ln.esc === 2 ? 16 : 10;
   }
@@ -719,14 +735,14 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
 };
 
 // ───────────── intro ─────────────
-const intro = (ui: Ctx, r: Roteiro, v: number, estados: EstadoL[]) => {
+const intro = (ui: Ctx, r: Roteiro, v: number, estados: EstadoL[], off: P = { x: 0, y: 0 }) => {
   // nomes embaixo de cada um
   if (v < V.batalha) {
     r.lutadores.forEach((l, i) => {
       if (v < POUSO(i) + 2) return;
       const e = estados[i];
-      const x = Math.round(e.x),
-        y = Math.round(e.y + 4);
+      const x = Math.round(e.x + off.x),
+        y = Math.round(e.y + 4 + off.y);
       const nome = l.nome.toUpperCase();
       const w = Math.max(larguraTexto(nome, "p"), larguraTexto(`${CLASSES[l.classe].nome} NV${l.nivel}`, "p")) + 4;
       ui.fillStyle = "rgba(10,8,16,0.75)";
@@ -1302,3 +1318,76 @@ const cenaBau = (ui: Ctx, r: Roteiro, t: number) => {
   ui.globalAlpha = 1;
 };
 const BAU_DUR = 120;
+
+// ───────────── câmera e minimapa da arena grande (caverna) ─────────────
+// A câmera é função pura do quadro: média do "ponto de interesse" numa janela de ±1 s (fica suave sem guardar estado).
+const interesse = (r: Roteiro, t: number): P | null => {
+  const ativos = r.turnos.filter((u) => t >= u.t0 && t < u.t1).map((u) => u.ator);
+  const ids = new Set<number>(ativos);
+  for (const g of r.golpes) if (t >= g.t0 && t <= g.t1 && ids.has(g.ator)) g.resultados.forEach((x) => ids.add(x.alvo));
+  const vivos = [...ids].filter((i) => t < r.morte[i] + 20);
+  const lista = vivos.length ? vivos : r.lutadores.map((_, i) => i).filter((i) => t < r.morte[i]);
+  if (!lista.length) return null;
+  const ps = lista.map((i) => posEm(r.pos[i], t));
+  return { x: ps.reduce((a, p) => a + p.x, 0) / ps.length, y: ps.reduce((a, p) => a + p.y, 0) / ps.length - 16 };
+};
+const cameraGrande = (r: Roteiro, v: number, s: number): P => {
+  const centro = { x: GEOM.centro.x, y: GEOM.centro.y };
+  if (v < V.batalha - 30) return centro;
+  if (v >= V.vitoria) {
+    const p = posEm(r.pos[r.vencedor], s);
+    return { x: p.x, y: p.y - 20 };
+  }
+  if (s >= r.sDuelo && r.finalistas.length === 2) {
+    const [a, b] = r.finalistas.map((i) => posEm(r.pos[i], s));
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 20 };
+  }
+  let sx = 0,
+    sy = 0,
+    n = 0;
+  for (let k = -30; k <= 30; k += 6) {
+    const p = interesse(r, Math.max(V.batalha, s + k));
+    if (!p) continue;
+    const w = 1 - Math.abs(k) / 36;
+    sx += p.x * w;
+    sy += p.y * w;
+    n += w;
+  }
+  const alvo = n ? { x: sx / n, y: sy / n } : centro;
+  // entra suave saindo do centro no começo da batalha
+  const k = clamp((v - (V.batalha - 30)) / 40, 0, 1);
+  return { x: centro.x + (alvo.x - centro.x) * k, y: centro.y + (alvo.y - centro.y) * k };
+};
+let miniFundo: HTMLCanvasElement | null = null;
+const minimapa = (ui: Ctx, r: Roteiro, s: number, estados: EstadoL[], foco: P) => {
+  const esc = 12;
+  const w = Math.round(MW / esc),
+    h = Math.round(MH / esc);
+  const x0 = W - 30 - w,
+    y0 = 170;
+  if (!miniFundo || miniFundo.width !== w) {
+    miniFundo = novoCanvas(w, h);
+    const m = miniFundo.getContext("2d")!;
+    m.imageSmoothingEnabled = true;
+    m.drawImage(fundo(r.ep.arena ?? "calabouco"), 0, 0, w, h);
+    m.fillStyle = "rgba(0,0,0,0.35)";
+    m.fillRect(0, 0, w, h);
+  }
+  ui.fillStyle = TINTA;
+  ui.fillRect(x0 - 2, y0 - 2, w + 4, h + 4);
+  ui.drawImage(miniFundo, x0, y0);
+  // retângulo da câmera
+  ui.strokeStyle = "rgba(255,255,255,0.7)";
+  ui.lineWidth = 1;
+  ui.strokeRect(Math.round(x0 + (foco.x - W / 2) / esc) + 0.5, Math.round(y0 + (foco.y - H / 2) / esc) + 0.5, Math.round(W / esc), Math.round(H / esc));
+  r.lutadores.forEach((l, i) => {
+    const e = estados[i];
+    if (!e.vis || e.morto) return;
+    const px = Math.round(x0 + e.x / esc),
+      py = Math.round(y0 + e.y / esc);
+    const chefe = !!(l as { boss?: string }).boss;
+    ui.fillStyle = chefe ? "#ff3a3a" : l.campeao ? DOURADO : CLASSES[l.classe].cor;
+    ui.fillRect(px - (chefe ? 2 : 1), py - (chefe ? 2 : 1), chefe ? 4 : 2, chefe ? 4 : 2);
+  });
+  void s;
+};

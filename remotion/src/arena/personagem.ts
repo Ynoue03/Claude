@@ -21,6 +21,8 @@ import {
 } from "./regras.ts";
 import type { Ancestralidade, Atributo, ClasseId, EspecieId, Poder, TipoDano } from "./regras.ts";
 import type { ItemId } from "./itens.ts";
+import { CHEFES, chefeDoEpisodio } from "./chefes.ts";
+import type { ChefeId } from "./chefes.ts";
 
 export type Cabeca =
   | "nada"
@@ -133,6 +135,7 @@ export type Lutador = {
   campeao: boolean; // veio do episódio anterior (coroa)
   vitorias: number;
   itens?: ItemId[]; // itens mágicos que já carrega
+  boss?: ChefeId; // é o chefe do episódio (não é herói)
 };
 
 // ───────────── leitura simples da descrição de um comentário ─────────────
@@ -474,7 +477,9 @@ export type Episodio = {
   // força do foco dos lutadores no campeão (versão 2+): 1 = leve (padrão), 5 = forte, 0 = nenhum,
   // "auto" = cresce com o nível do campeão (2,5 por nível acima do 2)
   focoCampeao?: number | "auto";
-  arena?: "calabouco" | "floresta"; // cenário (padrão: calabouço)
+  chefe?: ChefeId | ""; // força um chefe (padrão: um a cada 10 episódios na versão 3+)
+  focoChefe?: number; // quanto os heróis preferem atacar o chefe (padrão 2)
+  arena?: "calabouco" | "floresta" | "caverna"; // cenário (padrão: calabouço; caverna = arena 4× maior dos chefes)
   centro?: "altar" | "livre"; // "livre" = sem tablado de degraus e sem pedra d20 no meio (nem obstáculo)
 };
 
@@ -589,6 +594,39 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
       campeao: true,
       vitorias: camp.vitorias,
       itens: camp.itens ?? [],
+    });
+  }
+  // chefe do episódio entra por último (17º lutador)
+  const chefeId = chefeDoEpisodio(ep);
+  if (chefeId) {
+    const c = CHEFES[chefeId];
+    const a0 = c.ataques[0];
+    const base = lutadores[0];
+    lutadores.push({
+      ...base,
+      id: 0,
+      nome: c.nome,
+      especie: "HUMANO",
+      classe: "GUERREIRO",
+      nivel: 5,
+      ancestralidade: undefined,
+      atributos: { ...c.atributos },
+      rolagens: [],
+      tentativas: 0,
+      antecedente: "",
+      pvMax: c.pv,
+      pvRolagens: [],
+      ca: c.ca,
+      caDesc: `armadura natural (${c.fonte})`,
+      arma: { nome: a0.nome, n: a0.n, d: a0.d, tipo: a0.tipo, atributo: "FOR", distancia: false, duasMaos: true },
+      armaDistancia: undefined,
+      deslocamento: c.deslocamento,
+      autor: "",
+      descricao: "",
+      campeao: false,
+      vitorias: 0,
+      itens: [],
+      boss: chefeId,
     });
   }
   lutadores.forEach((l, i) => (l.id = i));

@@ -1,7 +1,14 @@
 // Itens mágicos do baú (episódios 5, 10, 15…): 9 tipos × 3 versões, cada uma com um poder na luta.
 // O campeão guarda os itens enquanto vencer; quem derrubar o portador pega os itens dele.
-export type TipoItem = "espada" | "armadura" | "elmo" | "botas" | "luvas" | "capa" | "arco" | "machado" | "escudo";
-export const TIPOS: TipoItem[] = ["espada", "armadura", "elmo", "botas", "luvas", "capa", "arco", "machado", "escudo"];
+export type TipoItem = "espada" | "armadura" | "elmo" | "botas" | "luvas" | "capa" | "arco" | "machado" | "escudo" | "cajado";
+export const TIPOS: TipoItem[] = ["espada", "armadura", "elmo", "botas", "luvas", "capa", "arco", "machado", "escudo", "cajado"];
+
+// Cada estilo de luta só pega equipamento do seu jeito de lutar:
+// quem luta à distância (conjuradores, patrulheiro, ladino com arco) não usa espada, machado nem escudo;
+// quem luta corpo a corpo não usa cajado nem arco. Armadura, elmo, botas, luvas e capa servem para todos.
+const SO_CORPO: TipoItem[] = ["espada", "machado", "escudo"];
+const SO_DISTANCIA: TipoItem[] = ["cajado", "arco"];
+export const podeUsar = (id: ItemId, distancia: boolean) => !(distancia ? SO_CORPO : SO_DISTANCIA).includes(ITENS[id].tipo);
 
 // 3 versões de cada tipo, cada uma com um poder diferente (o campeão só carrega 1 item de cada tipo)
 export type ItemId =
@@ -31,7 +38,10 @@ export type ItemId =
   | "machadoFendedor"
   | "escudoPrimeiroGolpe"
   | "escudoEspelhado"
-  | "escudoGuardiao";
+  | "escudoGuardiao"
+  | "cajadoArcano"
+  | "cajadoSabedoria"
+  | "cajadoRenovacao";
 
 export type Item = { id: ItemId; tipo: TipoItem; nome: string; poder: string; cor: string };
 
@@ -64,6 +74,9 @@ export const ITENS: Record<ItemId, Item> = {
   escudoPrimeiroGolpe: I("escudoPrimeiroGolpe", "escudo", "Escudo do Primeiro Golpe", "bloqueia o primeiro ataque que causaria dano", "#5ad0a0"),
   escudoEspelhado: I("escudoEspelhado", "escudo", "Escudo Espelhado", "devolve metade do dano de magias de ataque a quem lançou", "#d0e0f0"),
   escudoGuardiao: I("escudoGuardiao", "escudo", "Escudo Guardião", "+1 na CA e todo dano recebido cai 2", "#e0b060"),
+  cajadoArcano: I("cajadoArcano", "cajado", "Cajado Arcano", "magias de ataque causam +1d6 de dano", "#d23ab4"),
+  cajadoSabedoria: I("cajadoSabedoria", "cajado", "Cajado da Sabedoria", "+2 na CD das magias: fica mais difícil resistir", "#6a8af0"),
+  cajadoRenovacao: I("cajadoRenovacao", "cajado", "Cajado da Renovação", "recupera um espaço de magia a cada 2 rodadas", "#5ad08a"),
 };
 export const ITEM_IDS = Object.keys(ITENS) as ItemId[];
 export const tipoDe = (id: ItemId) => ITENS[id].tipo;
@@ -211,6 +224,24 @@ const ICONES: Record<TipoItem, string[]> = {
     "kwk.............",
     "kwk.............",
     "kk..............",
+    "................",
+    "................",
+  ],
+  cajado: [
+    "................",
+    "..........kk....",
+    ".........kbak...",
+    "........kbaaak..",
+    ".........kaak...",
+    "........kwkk....",
+    ".......kwk......",
+    "......kwk.......",
+    ".....kwk........",
+    "....kwk.........",
+    "...kwk..........",
+    "..kwk...........",
+    ".kwk............",
+    ".kk.............",
     "................",
     "................",
   ],

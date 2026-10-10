@@ -6,12 +6,14 @@ import {
   desenharLanternas,
   desenharVidaFloresta,
 } from "./floresta.ts";
+import { fundoCaverna, desenharVidaCaverna, TOCHAS_CAVERNA } from "./caverna.ts";
 
-export type Arena = "calabouco" | "floresta";
+export type Arena = "calabouco" | "floresta" | "caverna";
 // luz ambiente fora das poças de luz: penumbra azul-esverdeada (calabouço) / entardecer na mata (floresta)
 export const AMBIENTE: Record<Arena, [number, number, number]> = {
   calabouco: [46, 66, 82],
   floresta: [86, 112, 110],
+  caverna: [58, 62, 80],
 };
 
 export const W = 360,
@@ -60,6 +62,7 @@ export const fundo = (
   comAltar = true,
 ): HTMLCanvasElement => {
   if (arena === "floresta") return fundoFloresta(comAltar);
+  if (arena === "caverna") return fundoCaverna();
   const chave = comAltar ? "altar" : "livre";
   const c0 = cacheFundo.get(chave);
   if (c0) return c0;
@@ -584,8 +587,9 @@ export type Luz = {
 };
 
 let luzCanvas: HTMLCanvasElement | null = null;
-export const luzesTochas = (f: number): Luz[] =>
-  TOCHAS.map((t, i) => {
+export const tochasDe = (arena: Arena = "calabouco"): Tocha[] => (arena === "caverna" ? TOCHAS_CAVERNA : TOCHAS);
+export const luzesTochas = (f: number, arena: Arena = "calabouco"): Luz[] =>
+  tochasDe(arena).map((t, i) => {
     const fl =
       1 +
       0.07 * Math.sin(f * 0.53 + i * 1.7) +
@@ -593,9 +597,9 @@ export const luzesTochas = (f: number): Luz[] =>
       (hash3(Math.floor(f / 2), i) - 0.5) * 0.06;
     const y = t.tipo === "parede" ? t.y + 18 : t.y;
     return {
-      x: t.x + (t.tipo === "lateral" ? (t.x < 180 ? 14 : -14) : 0),
+      x: t.x + (t.tipo === "lateral" ? (t.x < (arena === "caverna" ? 360 : 180) ? 14 : -14) : 0),
       y,
-      r: (t.tipo === "braseiro" ? 70 : 74) * fl,
+      r: (t.tipo === "braseiro" ? 70 : 74) * fl * (arena === "caverna" ? 1.7 : 1),
       cor: [255, 170, 90],
       i: 0.9 * fl,
     };
@@ -607,11 +611,13 @@ export const aplicarLuz = (
   luzes: Luz[],
   ambiente: [number, number, number] = [46, 66, 82],
 ) => {
-  if (!luzCanvas) luzCanvas = novoCanvas(W, H);
+  const lw = ctx.canvas.width,
+    lh = ctx.canvas.height;
+  if (!luzCanvas || luzCanvas.width !== lw || luzCanvas.height !== lh) luzCanvas = novoCanvas(lw, lh);
   const lc = luzCanvas.getContext("2d")!;
   lc.globalCompositeOperation = "source-over";
   lc.fillStyle = `rgb(${ambiente.join(",")})`;
-  lc.fillRect(0, 0, W, H);
+  lc.fillRect(0, 0, lw, lh);
   lc.globalCompositeOperation = "lighter";
   for (const l of luzes) {
     const g = lc.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
@@ -658,7 +664,7 @@ export const desenharTochas = (
   arena: Arena = "calabouco",
 ) => {
   if (arena === "floresta") return desenharLanternas(ctx, f, TOCHAS);
-  TOCHAS.forEach((t, i) => {
+  tochasDe(arena).forEach((t, i) => {
     const q = Math.floor(f / 4 + i) % 4;
     // suporte
     ctx.fillStyle = "#2a2a30";
@@ -721,6 +727,7 @@ export const desenharAmbiente = (
   comAltar = true,
 ) => {
   if (arena === "floresta") return desenharVidaFloresta(ctx, f, comAltar);
+  if (arena === "caverna") return desenharVidaCaverna(ctx, f);
   if (comAltar) {
     // runas que respiram em azul
     const pulso = 0.45 + 0.35 * Math.sin(f * 0.06);

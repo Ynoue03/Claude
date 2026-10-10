@@ -4,7 +4,9 @@ import { Rng } from "./rng.ts";
 import { ARMAS, fmt, subirNivel } from "./personagem.ts";
 import type { Arma, Lutador, SubidaNivel } from "./personagem.ts";
 import { CLASSES, COR_DANO, espacos, mod, proficiencia } from "./regras.ts";
-import { tipoDe } from "./itens.ts";
+import { ITEM_IDS, podeUsar, tipoDe } from "./itens.ts";
+import { CHEFES } from "./chefes.ts";
+import type { AtaqueChefe } from "./chefes.ts";
 import type { ItemId } from "./itens.ts";
 import type { Atributo, TipoDano } from "./regras.ts";
 
@@ -13,7 +15,17 @@ export const PE = 4; // 1 pé = 4 px  →  5 pés = 20 px, 30 pés = 120 px
 export const ALCANCE = 26; // corpo a corpo (5 pés + folga de sprite)
 export const CONTATO = 22;
 export const SEPARACAO = 18;
-export const LIMITES = { x0: 46, x1: 314, y0: 200, y1: 520 };
+// Tamanho de cada arena (mundo em pixels internos) e área onde dá para lutar.
+// A caverna dos chefes tem 4× a área das arenas normais (o dobro de largura e de altura).
+export type Geo = { w: number; h: number; lim: { x0: number; x1: number; y0: number; y1: number }; centro: P; raio: P };
+export const GEO: Record<string, Geo> = {
+  calabouco: { w: 360, h: 640, lim: { x0: 46, x1: 314, y0: 200, y1: 520 }, centro: { x: 180, y: 360 }, raio: { x: 118, y: 140 } },
+  floresta: { w: 360, h: 640, lim: { x0: 46, x1: 314, y0: 200, y1: 520 }, centro: { x: 180, y: 360 }, raio: { x: 118, y: 140 } },
+  caverna: { w: 720, h: 1280, lim: { x0: 80, x1: 640, y0: 170, y1: 1150 }, centro: { x: 360, y: 660 }, raio: { x: 148, y: 205 } },
+};
+export const geoDe = (arena?: string): Geo => GEO[arena ?? "calabouco"] ?? GEO.calabouco;
+// limites da simulação em andamento (ajustados no início de cada simulação)
+export let LIMITES = { ...GEO.calabouco.lim };
 export const ALTAR = { x: 180, y: 352, r: 24 };
 // Arenas com centro livre (sem tablado e sem pedra d20) não têm obstáculo; ligado/desligado no início de cada simulação.
 let altarAtivo = true;
@@ -131,6 +143,7 @@ export type Batida =
       // quem derrubou o campeão sobe de nível na hora
       subiu?: { id: number; de: number; para: number; ganho: number; pvDepois: number; pvMax: number; rolagem: string };
       itensPegos?: { id: number; itens: ItemId[] };
+      chefeDerrotado?: boolean;
     }
   | { k: "estado"; cond: { id: number; add?: string; del?: string }[] };
 
@@ -200,6 +213,7 @@ type Est = {
   invisivel: number; // turnos restantes
   espadaTurno: boolean;
   miragem: boolean; // Capa da Miragem já desviou um ataque nesta rodada
+  especialPronto: boolean; // chefe: habilidade especial carregada
   lento: boolean;
   desvantagem: boolean;
   vantagemContra: boolean;
@@ -213,8 +227,11 @@ type Est = {
 // foco 0 / 2,5 / 5 / 7,5 → cresce 2,5 por nível acima do 2.
 export const focoPorNivel = (nivel: number) => Math.max(0, 2.5 * (nivel - 2));
 
-export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number | "auto"; centro?: "altar" | "livre" } = {}): Simulacao => {
-  altarAtivo = opcoes.centro !== "livre";
+export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number | "auto"; centro?: "altar" | "livre"; arena?: string; focoChefe?: number } = {}): Simulacao => {
+  const geo = geoDe(opcoes.arena);
+  const focoChefe = opcoes.focoChefe ?? 2;
+  LIMITES = { ...geo.lim };
+  altarAtivo = opcoes.centro !== "livre" && geo.w === 360;
   const versao = opcoes.versao ?? 1;
   // força da preferência por atacar o campeão: 1 = leve (padrão da versão 2); 0 = nenhuma;
   // "auto" = cresce com o nível do campeão (calibrado para ele vencer ~50% das lutas)
@@ -236,6 +253,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       invisivel: 0,
       espadaTurno: false,
       miragem: false,
+      especialPronto: true,
       pv: l.pvMax,
       pvTemp: 0,
       vivo: true,
@@ -266,6 +284,10 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       amaldicoadoPor: new Set(),
       stats: { abates: 0, dano: 0, criticos: 0, menorPv: l.pvMax, golpeFinal: "", derrubados: [], derrubadoPor: "", primeiroCritico: "", curou: 0 },
     };
+    // chefe não usa recursos de classe nem de espécie
+    if (l.boss) {
+      Object.assign(e, { furiaUsos: 0, folego: 0, surto: 0, curaMaos: 0, sopro: 0, inspiracao: false, implacavel: false, pedra: 0, adrenalina: 0, inata: 0, foco: 0, centelha: 0, slots: [] });
+    }
     // Mago lança Armadura Arcana antes da luta (gasta 1 espaço de 1º círculo).
     if (l.classe === "MAGO" && e.slots[0] > 0) e.slots[0]--;
     return e;
@@ -275,7 +297,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const N = E.length;
   const posIniciais: P[] = E.map((_, i) => {
     const a = -Math.PI / 2 + (i / N) * Math.PI * 2;
-    return clampP({ x: 180 + Math.cos(a) * 118, y: 360 + Math.sin(a) * 140 });
+    return clampP({ x: geo.centro.x + Math.cos(a) * geo.raio.x, y: geo.centro.y + Math.sin(a) * geo.raio.y });
   });
   E.forEach((e, i) => (e.pos = { ...posIniciais[i] }));
 
@@ -293,12 +315,14 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   // ─── utilidades de regra ───
   const m = (e: Est, a: Atributo) => mod(e.at[a]);
   const conj = (e: Est) => (CLASSES[e.l.classe].conjuracao ? m(e, CLASSES[e.l.classe].conjuracao!) : Math.max(m(e, "INT"), m(e, "SAB"), m(e, "CAR")));
-  const cd = (e: Est) => 8 + e.prof + conj(e) + (e.inataAtiva ? 1 : 0);
+  const cd = (e: Est) => 8 + e.prof + conj(e) + (e.inataAtiva ? 1 : 0) + (e.itens.has("cajadoSabedoria") ? 2 : 0);
   const caAtual = (e: Est) => e.l.ca + (e.escudo ? 5 : 0) + (e.itens.has("armaduraBastiao") ? 2 : 0) + (e.itens.has("botasFirmes") ? 1 : 0) + (e.itens.has("escudoGuardiao") ? 1 : 0);
   const armaCorpo = (e: Est): Arma => (e.l.arma.distancia ? { ...ARMAS.adaga, nome: e.l.classe === "PATRULHEIRO" ? "Espada Curta" : "Adaga", d: e.l.classe === "PATRULHEIRO" ? 6 : 4 } : e.l.arma);
   const modArma = (e: Est, a: Arma) => (a.atributo === "DES" ? Math.max(m(e, "DES"), m(e, "FOR")) : m(e, "FOR"));
   const podeCorpo = (e: Est) => e.vivo;
-  const adjacente = (a: Est, b: Est) => dist(a.pos, b.pos) <= ALCANCE;
+  // chefes têm corpo maior: alcance, contato e espaço em volta crescem com o raio deles
+  const tam = (e: Est) => (e.l.boss ? CHEFES[e.l.boss].raio : 0);
+  const adjacente = (a: Est, b: Est) => dist(a.pos, b.pos) <= ALCANCE + tam(a) + tam(b);
   const ameacas = (e: Est) => inimigos(e).filter((o) => adjacente(e, o));
   const nomeArma = (a: Arma) => a.nome.toUpperCase();
   const dadoMarcial = (e: Est) => (e.nivel >= 5 ? 8 : 6);
@@ -331,6 +355,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
 
   const resistente = (alvo: Est, tipo: TipoDano) => {
     if (tipo === "cura") return false;
+    if (alvo.l.boss && CHEFES[alvo.l.boss].resistencias.includes(tipo)) return true;
     if (alvo.furia > 0 && (tipo === "cortante" || tipo === "perfurante" || tipo === "concussao")) return true;
     if (alvo.l.especie === "TIEFLING" && tipo === "fogo") return true;
     if (alvo.l.especie === "ANAO" && tipo === "veneno") return true;
@@ -395,11 +420,31 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       if (alvo.conc) alvo.conc = null;
       if (batida.especial < 2) batida.especial = 2;
       // derrubou o campeão: sobe um nível na hora
-      if (versao >= 2 && alvo.l.campeao && fonte.id !== alvo.id && fonte.vivo) subirNaLuta(fonte, batida);
+      if (versao >= 2 && alvo.l.campeao && fonte.id !== alvo.id && fonte.vivo && !fonte.l.boss) subirNaLuta(fonte, batida);
+      // derrubou o chefe: sobe um nível na hora e pega o item que ele deixa cair
+      if (alvo.l.boss && fonte.id !== alvo.id && fonte.vivo && !fonte.l.boss) {
+        log(`  ★ ${fonte.l.nome} DERROTA O CHEFE ${alvo.l.nome.toUpperCase()}!`);
+        subirNaLuta(fonte, batida);
+        const tiposF = new Set([...fonte.itens].map(tipoDe));
+        const dist_ = ehDistancia(fonte);
+        const possiveis = ITEM_IDS.filter((i) => !tiposF.has(tipoDe(i)) && podeUsar(i, dist_));
+        for (let k = 0; k < 40 && possiveis.length; k++) {
+          const d = rng.roll(`${fonte.l.nome} · item que o chefe deixou cair (d${ITEM_IDS.length})`, 1, ITEM_IDS.length).total;
+          const it = ITEM_IDS[d - 1];
+          if (possiveis.includes(it)) {
+            fonte.itens.add(it);
+            batida.itensPegos = { id: fonte.id, itens: [it] };
+            log(`  ⚑ o chefe deixa cair ${it}: fica com ${fonte.l.nome}`);
+            break;
+          }
+        }
+        batida.chefeDerrotado = true;
+        batida.especial = 3;
+      }
       // quem derruba o portador pega os itens dele
-      if (alvo.itens.size && fonte.id !== alvo.id && fonte.vivo) {
+      if (alvo.itens.size && fonte.id !== alvo.id && fonte.vivo && !fonte.l.boss) {
         const tiposFonte = new Set([...fonte.itens].map(tipoDe));
-        const pegos = [...alvo.itens].filter((it) => !tiposFonte.has(tipoDe(it)));
+        const pegos = [...alvo.itens].filter((it) => !tiposFonte.has(tipoDe(it)) && podeUsar(it, ehDistancia(fonte)));
         pegos.forEach((it) => fonte.itens.add(it));
         alvo.itens.clear();
         if (pegos.length) {
@@ -642,6 +687,11 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         b.especial = Math.max(b.especial, 1) as 1;
       }
       // itens que somam dano
+      if (a.itens.has("cajadoArcano") && op.magia) {
+        const f = rolarDano(a, "Cajado Arcano", 1, 6, critico);
+        total2 += f.total;
+        extraTxt += ` + cajado ${f.txt}=${f.total}`;
+      }
       if (a.itens.has("luvasTrovao") && critico) {
         const f = rolarDano(a, "Manoplas do Trovão", 2, 8, false);
         total2 += f.total;
@@ -787,7 +837,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         if (!desengajar && !a.itens.has("botasLigeiras")) {
           for (const o of inimigos(a)) {
             if (!o.reacao || naoProvocou.has(o.id) || !podeCorpo(o)) continue;
-            if (dist(pos, o.pos) <= ALCANCE && dist(q, o.pos) > ALCANCE) {
+            const al = ALCANCE + tam(o) + tam(a);
+            if (dist(pos, o.pos) <= al && dist(q, o.pos) > al) {
               // sai do alcance: ataque de oportunidade
               atual.push(pos);
               batidas.push({ k: "mover", ator: a.id, pts: atual, recua, corre });
@@ -862,6 +913,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       const d = dist(a.pos, o.pos);
       let s = distancia ? o.pv * 0.6 + d * 0.02 : d / 40 + o.pv * 0.35;
       if (o.pv <= 4) s -= 3;
+      // chefe: o PV enorme dele não conta contra; só a distância e o foco (todo mundo quer derrubá-lo)
+      if (o.l.boss) s = (distancia ? d * 0.02 + 4 : d / 40 + 2.5) - focoChefe + rng.next() * 1.5;
       if (a.conc && a.conc.alvo === o.id) s -= 4;
       if (o.l.campeao) s -= foco * (distancia ? 2 : 1.2); // foco no campeão
       s += rng.next() * 1.5;
@@ -872,13 +925,14 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     }
     return melhor;
   };
-  const livre = (a: Est, p: P) => E.every((o) => !o.vivo || o.id === a.id || dist(o.pos, p) >= SEPARACAO) && (!altarAtivo || dist(p, ALTAR) > ALTAR.r + 6);
+  const livre = (a: Est, p: P) => E.every((o) => !o.vivo || o.id === a.id || dist(o.pos, p) >= SEPARACAO + tam(o) + tam(a)) && (!altarAtivo || dist(p, ALTAR) > ALTAR.r + 6);
   const pontoContato = (a: Est, alvo: Est): P | undefined => {
     let best: P | undefined;
     let bd = Infinity;
     for (let k = 0; k < 16; k++) {
       const ang = (k / 16) * Math.PI * 2;
-      const p = { x: alvo.pos.x + Math.cos(ang) * CONTATO, y: alvo.pos.y + Math.sin(ang) * CONTATO * 0.8 };
+      const rc = CONTATO + tam(alvo) + tam(a);
+      const p = { x: alvo.pos.x + Math.cos(ang) * rc, y: alvo.pos.y + Math.sin(ang) * rc * 0.8 };
       if (p.x < LIMITES.x0 || p.x > LIMITES.x1 || p.y < LIMITES.y0 || p.y > LIMITES.y1) continue;
       if (!livre(a, p)) continue;
       const d = compPath(caminho(a.pos, p));
@@ -934,6 +988,14 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     // início do turno
     a.reacao = true;
     a.espadaTurno = false;
+    // Cajado da Renovação: recupera um espaço de magia de 1º círculo a cada 2 rodadas
+    if (a.itens.has("cajadoRenovacao") && rodada % 2 === 0) {
+      const max = espacos(a.l.classe, a.nivel)[0] ?? 0;
+      if (max > 0 && a.slots[0] < max) {
+        a.slots[0]++;
+        log(`  ${a.l.nome}: o Cajado da Renovação devolve um espaço de magia (${a.slots[0]}/${max})`);
+      }
+    }
     if (a.itens.has("capaCurativa") && a.pv < a.pvMax) {
       curar(a, a, "CAPA DA SEIVA", 2, "+2 PV", "cura", batidas, false);
     }
@@ -1189,7 +1251,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const acaoDistancia = (a: Est, alvo: Est, batidas: Batida[], bonusUsada: boolean) => {
     const cl = a.l.classe;
     const T = truque(a);
-    const perto = inimigos(a).filter((o) => dist(o.pos, a.pos) <= 44);
+    const perto = inimigos(a).filter((o) => dist(o.pos, a.pos) <= 44 + tam(o));
     const onda = (nome = "ONDA TROVEJANTE") =>
       salvaguarda(
         a,
@@ -1203,7 +1265,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
           atributo: "CON",
           metade: true,
           extra: (alvo2, res, falhou) => {
-            if (falhou && alvo2.vivo && !alvo2.itens.has("botasFirmes")) {
+            if (falhou && alvo2.vivo && !(alvo2.itens.has("botasFirmes") || !!alvo2.l.boss)) {
               const ang = Math.atan2(alvo2.pos.y - a.pos.y, alvo2.pos.x - a.pos.x);
               const np = clampP({ x: alvo2.pos.x + Math.cos(ang) * 40, y: alvo2.pos.y + Math.sin(ang) * 40 });
               alvo2.pos = np;
@@ -1289,7 +1351,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
             alvo,
             {
               ...opMagia(a, "CHICOTE DE ESPINHOS", T, 6, "perfurante", "espinhos", 0, (t, res) => {
-                if (t.vivo && !t.itens.has("botasFirmes")) {
+                if (t.vivo && !(t.itens.has("botasFirmes") || !!t.l.boss)) {
                   const ang = Math.atan2(a.pos.y - t.pos.y, a.pos.x - t.pos.x);
                   const d = Math.max(0, Math.min(40, dist(a.pos, t.pos) - CONTATO - 6));
                   const np = clampP({ x: t.pos.x + Math.cos(ang) * d, y: t.pos.y + Math.sin(ang) * d });
@@ -1326,7 +1388,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
               atributo: "SAB",
               metade: true,
               extra: (t, res, falhou) => {
-                if (falhou && t.vivo && t.reacao && !t.itens.has("botasFirmes")) {
+                if (falhou && t.vivo && t.reacao && !(t.itens.has("botasFirmes") || !!t.l.boss)) {
                   t.reacao = false;
                   const ang = Math.atan2(t.pos.y - a.pos.y, t.pos.x - a.pos.x);
                   const np = clampP({ x: t.pos.x + Math.cos(ang) * 60, y: t.pos.y + Math.sin(ang) * 60 });
@@ -1373,16 +1435,148 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     void bonusUsada;
   };
 
+  // ─── turno do chefe: move, usa o especial quando carregado e ataca várias vezes ───
+  const jogarTurnoChefe = (a: Est, rodada: number) => {
+    const c = CHEFES[a.l.boss!];
+    const batidas: Batida[] = [];
+    turnoAtual = { rodada, ator: a.id, batidas, log: [] };
+    log(`[R${rodada}] Turno do chefe ${a.l.nome} (${a.pv}/${a.pvMax} PV)`);
+    a.reacao = true;
+    if (!a.especialPronto) {
+      const r = rng.roll(`${a.l.nome} · recarga de ${c.especial.nome} (d6 ≥ ${c.recarga})`, 1, 6);
+      if (r.total >= c.recarga) {
+        a.especialPronto = true;
+        log(`  ${c.especial.nome} recarregado`);
+      }
+    }
+    const fim = () => {
+      if (a.lento) {
+        a.lento = false;
+        batidas.push({ k: "estado", cond: [{ id: a.id, del: "LNT" }] });
+      }
+      if (a.desvantagem) {
+        a.desvantagem = false;
+        batidas.push({ k: "estado", cond: [{ id: a.id, del: "ZMB" }] });
+      }
+      turnos.push(turnoAtual);
+    };
+    const ini = inimigos(a);
+    if (!ini.length) return fim();
+    const score = (o: Est) => dist(a.pos, o.pos) / 40 + o.pv * 0.12 - (o.l.campeao ? 1.5 : 0);
+    let alvo = ini.reduce((m, o) => (score(o) < score(m) ? o : m), ini[0]);
+    const vel = velocidade(a);
+    const op = (q: AtaqueChefe, extra?: Partial<OpAtaque>): OpAtaque => ({ nome: q.nome, n: q.n, d: q.d, bonusDano: q.bonus, tipo: q.tipo, fx: q.fx, distancia: false, magia: false, bonusAcerto: q.acerto, rotulo: q.nome, ...extra });
+    const irAte = (t: Est, alcance = vel) => {
+      const ponto = adjacente(a, t) ? a.pos : pontoContato(a, t);
+      if (!ponto) return;
+      mover(a, cortar(caminho(a.pos, ponto), alcance), batidas, false, alcance > vel, c.voa);
+    };
+    const esp = c.especial;
+    if (a.especialPronto) {
+      if (esp.k === "sopro") {
+        const cone = (centro: Est) => inimigos(a).filter((o) => dist(a.pos, o.pos) <= esp.alcance + c.raio && angulo(a.pos, centro.pos, o.pos) < Math.PI / 4);
+        // escolhe o alvo que põe mais gente no cone
+        const melhor = ini.reduce((m, o) => (cone(o).length > cone(m).length ? o : m), alvo);
+        if (dist(a.pos, melhor.pos) > esp.alcance * 0.7 + c.raio) {
+          const d = dist(a.pos, melhor.pos) - esp.alcance * 0.6 - c.raio;
+          mover(a, cortar(caminho(a.pos, melhor.pos), Math.min(vel, Math.max(0, d))), batidas, false, false, c.voa);
+          if (!a.vivo) return fim();
+        }
+        const alvos = cone(melhor);
+        if (alvos.length >= 2 || (alvos.length === 1 && ini.length <= 3)) {
+          a.especialPronto = false;
+          salvaguarda(a, alvos, { nome: esp.nome, n: esp.n, d: esp.d, tipo: esp.tipo, fx: "sopro", atributo: "DES", metade: true, especial: 3, cdOverride: esp.cd }, batidas);
+          return fim();
+        }
+      } else if (esp.k === "pedra") {
+        const longe = ini.filter((o) => dist(a.pos, o.pos) > 90).sort((x, y) => x.pv - y.pv)[0];
+        if (longe) {
+          a.especialPronto = false;
+          atacar(a, longe, { nome: esp.nome, n: esp.n, d: esp.d, bonusDano: esp.bonus, tipo: "concussao", fx: "orbe", distancia: true, magia: false, bonusAcerto: esp.acerto, rotulo: esp.nome, especial: 1 }, batidas);
+          return fim();
+        }
+      } else if (esp.k === "rasante") {
+        const presa = ini.slice().sort((x, y) => x.pv - y.pv)[0];
+        a.especialPronto = false;
+        const ponto = pontoContato(a, presa);
+        if (ponto) mover(a, [a.pos, ponto], batidas, false, true, true);
+        if (!a.vivo) return fim();
+        if (adjacente(a, presa)) {
+          for (const q of c.ataques) {
+            if (!presa.vivo) break;
+            presa.vantagemContra = true;
+            atacar(a, presa, op(q, { nome: esp.nome, especial: 1 }), batidas);
+          }
+        }
+        return fim();
+      } else if (esp.k === "investida") {
+        if (dist(a.pos, alvo.pos) > 60) {
+          a.especialPronto = false;
+          irAte(alvo, vel * 2);
+          if (!a.vivo) return fim();
+          if (adjacente(a, alvo)) {
+            const q = c.ataques[1] ?? c.ataques[0];
+            atacar(
+              a,
+              alvo,
+              op(q, {
+                nome: esp.nome,
+                n: q.n + esp.extraN,
+                especial: 1,
+                extra: (t, res) => {
+                  if (t.vivo && !t.itens.has("botasFirmes")) {
+                    const ang = Math.atan2(t.pos.y - a.pos.y, t.pos.x - a.pos.x);
+                    const np = clampP({ x: t.pos.x + Math.cos(ang) * 40, y: t.pos.y + Math.sin(ang) * 40 });
+                    t.pos = np;
+                    res.novaPos = np;
+                  }
+                },
+              }),
+              batidas,
+            );
+          }
+          return fim();
+        }
+      } else if (esp.k === "cabecas") {
+        const perto = ini.filter((o) => adjacente(a, o) || dist(a.pos, o.pos) <= ALCANCE + c.raio + 20);
+        if (perto.length >= 2) {
+          a.especialPronto = false;
+          for (const t of perto.slice(0, 5)) if (t.vivo) atacar(a, t, op(c.ataques[0], { nome: esp.nome, especial: 1 }), batidas);
+          return fim();
+        }
+      }
+    }
+    // ataque normal: chega no alvo e ataca várias vezes (cada ataque no inimigo colado mais conveniente)
+    irAte(alvo);
+    if (!a.vivo) return fim();
+    if (!adjacente(a, alvo)) {
+      const colado = ameacas(a)[0];
+      if (!colado) return fim();
+      alvo = colado;
+    }
+    c.ataques.forEach((q, k) => {
+      const colados = ameacas(a);
+      if (!colados.length) return;
+      // a hidra espalha as mordidas; os outros insistem no mesmo alvo enquanto ele estiver de pé
+      const t = a.l.boss === "HIDRA" ? colados[k % colados.length] : alvo.vivo && adjacente(a, alvo) ? alvo : colados[0];
+      atacar(a, t, op(q), batidas);
+    });
+    return fim();
+  };
+
   // ─── laço de rodadas ───
   let rodada = 0;
   while (vivos().length > 1 && rodada < 80) {
     rodada++;
     E.forEach((e) => (e.miragem = false));
-    for (const ini of iniciativa) {
+    // o chefe age duas vezes por rodada: na sua iniciativa e de novo no meio da rodada
+    const chefe = E.find((e) => e.l.boss);
+    for (const [idx, ini] of iniciativa.entries()) {
+      if (chefe && chefe.vivo && idx === Math.floor(iniciativa.length / 2) && vivos().length > 1) jogarTurnoChefe(chefe, rodada);
       const a = E[ini.id];
       if (!a.vivo) continue;
       if (vivos().length <= 1) break;
-      turnoSeguro(() => jogarTurno(a, rodada));
+      turnoSeguro(() => (a.l.boss ? jogarTurnoChefe(a, rodada) : jogarTurno(a, rodada)));
     }
   }
   const vencedor = vivos()[0]?.id ?? -1;
