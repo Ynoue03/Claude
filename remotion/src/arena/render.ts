@@ -6,7 +6,8 @@ import type { Geo } from "./combate.ts";
 import type { P } from "./combate.ts";
 import { W, H, fundo, aplicarLuz, luzesTochas, luzEm, desenharTochas, desenharAmbiente, vinheta, AMBIENTE } from "./cenario.ts";
 import type { Luz } from "./cenario.ts";
-import { PE_X, PE_Y, quadro, retrato, mini, alturaCabeca } from "./sprite.ts";
+import { PE_Y, quadro, retrato, mini, alturaCabeca, ancora } from "./sprite.ts";
+import { CHEFES } from "./chefes.ts";
 import type { Anim, Dir, Expr } from "./sprite.ts";
 import { texto, larguraTexto, quebrar } from "./fonte.ts";
 import type { OpTexto } from "./fonte.ts";
@@ -121,7 +122,11 @@ const dirDe = (dx: number, dy: number, atual: Dir = "S"): Dir => {
   return Math.abs(dx) > Math.abs(dy) * 0.9 ? (dx > 0 ? "E" : "W") : dy > 0 ? "S" : "N";
 };
 
-const POUSO = (i: number) => 10 + i * 4;
+const POUSO = (i: number) => (i >= 16 ? 4 : 10 + i * 4); // o chefe (17º) chega primeiro
+// textos que mudam quando o lutador é o chefe
+const classeTxt = (l: Lutador) => (l.boss ? "CHEFE" : CLASSES[l.classe].nome.toUpperCase());
+const corDe = (l: Lutador) => (l.boss ? "#e04040" : CLASSES[l.classe].cor);
+const VERMELHO = "#ff4a3a";
 
 const ondaOffset = (i: number, s: number) => {
   const w = 0.045 + hash3(i, 41) * 0.02;
@@ -151,6 +156,25 @@ export const posViva = (r: Roteiro, i: number, s: number): P & { amp: number; vx
 };
 
 const estado = (r: Roteiro, i: number, s: number, v: number): EstadoL => {
+  const st = estadoBase(r, i, s, v);
+  // o chefe só tem lados (E/W): de frente/costas vira para o herói vivo mais perto
+  if (r.lutadores[i].boss && (st.dir === "N" || st.dir === "S")) {
+    let melhor = Infinity,
+      dx = MW / 2 - st.x;
+    r.lutadores.forEach((_, j) => {
+      if (j === i || s >= r.morte[j]) return;
+      const q = posEm(r.pos[j], s);
+      const d = Math.hypot(q.x - st.x, q.y - st.y);
+      if (d < melhor) {
+        melhor = d;
+        dx = q.x - st.x;
+      }
+    });
+    st.dir = dx < 0 ? "W" : "E";
+  }
+  return st;
+};
+const estadoBase = (r: Roteiro, i: number, s: number, v: number): EstadoL => {
   const l = r.lutadores[i];
   const d = deriv(r);
   const pvK = valorEm(r.pv[i], s);
@@ -348,9 +372,10 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
 
   // sombras no chão
   const ordem = estados.map((e, i) => ({ e, i })).filter(({ e }) => e.vis);
-  for (const { e } of ordem) {
+  for (const { e, i } of ordem) {
     const k = e.caindo > 0 ? clamp(1 - e.caindo / 150, 0.3, 1) : 1;
-    sombra(ctx, e.x, e.y, k * (e.anim === "derrota" && e.q >= 2 ? 1.4 : 1));
+    const b = r.lutadores[i].boss;
+    sombra(ctx, e.x, e.y, k * (b ? CHEFES[b].raio / 6 : 1) * (e.anim === "derrota" && e.q >= 2 ? 1.4 : 1));
   }
   // coluna de luz dourada do vencedor (atrás)
   if (v >= V.vitoria && v < r.fases.pergaminho + 10) colunaLuz(ctx, estados[r.vencedor].x, estados[r.vencedor].y, v - V.vitoria);
@@ -360,8 +385,9 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   for (const { e, i } of ordem) {
     const l = r.lutadores[i];
     const sp = quadro(l, { anim: e.anim, q: e.q, dir: e.dir, expr: e.expr, rasgado: e.rasgado });
-    const x = Math.round(e.x - PE_X),
-      y = Math.round(e.y - PE_Y - e.caindo);
+    const an = ancora(l);
+    const x = Math.round(e.x - an.x),
+      y = Math.round(e.y - an.y - e.caindo);
     const lum = luzEm(luzes, e.x, e.y - 20);
     if (!e.morto && condicoesEm(r, i, s).includes("INV")) e.alpha *= Math.floor(v / 3) % 2 ? 0.25 : 0.4;
     ctx.globalAlpha = e.alpha * (0.28 + lum * 0.4);
@@ -372,7 +398,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     ctx.filter = "none";
     ctx.globalAlpha = 1;
     // coroa do campeão que volta
-    if (l.campeao && e.vis) coroa(ctx, Math.round(e.x), y + alturaCabeca(l) - 14 - (l.visual.cabeca === "chapeu" ? 10 : 0));
+    if (l.campeao && e.vis) coroa(ctx, Math.round(e.x), Math.round(e.y - PE_Y - e.caindo) + alturaCabeca(l) - 14 - (l.visual.cabeca === "chapeu" ? 10 : 0));
     // aura de escudo
     if (!e.morto && condicoesEm(r, i, s).includes("ESC")) {
       ctx.globalAlpha = 0.5 + 0.2 * Math.sin(s * 0.5);
@@ -504,6 +530,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   if (grande && v < (r.fases.bau >= 0 ? r.fases.bau : r.fases.pergaminho)) minimapa(ui, r, s, estados, foco);
   if (v < V.batalha + 10) intro(ui, r, v, estados, off);
   bannersCaiu(ui, r, v);
+  bannerChefe(ui, r, s);
   if (congelado?.tipo === "cutin" && congelado.golpe) cutin(ui, r, congelado.golpe, dentro);
   if (congelado?.tipo === "vs") telaVs(ui, r, dentro, estados);
   if (v >= V.vitoria && v < (r.fases.bau >= 0 ? r.fases.bau + 6 : r.fases.pergaminho + 6)) vitoria(ui, r, v - V.vitoria);
@@ -696,6 +723,7 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
   texto(ui, v < V.batalha ? `VIVOS ${r.lutadores.length}` : `RODADA ${rodada} · VIVOS ${vivos}`, W - 34, y0 + 9, { cor: "#ffffff", contorno: TINTA, alinhar: "dir" });
   const ativos = new Set(r.turnos.filter((t) => s >= t.t0 && s < t.t1).map((t) => t.ator));
   r.lutadores.forEach((l, i) => {
+    if (l.boss) return barraChefe(ui, l, estados[i], v >= POUSO(i), s >= r.morte[i], ativos.has(i) && Math.floor(v / 3) % 2 === 0);
     const col = i % 4,
       row = Math.floor(i / 4);
     const x = 32 + col * 74,
@@ -727,11 +755,39 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
     }
     ui.fillStyle = TINTA;
     ui.fillRect(x + 19, y + 10, 5, 5);
-    ui.fillStyle = morto ? "#5a5460" : CLASSES[l.classe].cor;
+    ui.fillStyle = morto ? "#5a5460" : corDe(l);
     ui.fillRect(x + 20, y + 11, 3, 3);
     texto(ui, `NV${nivel}`, x + 26, y + 10, { fonte: "p", cor: nivel > 1 ? DOURADO : "#c8c0b8" });
     barraPv(ui, x + 40, y + 11, 32, morto ? 0 : frac);
   });
+};
+
+// barra de vida do chefe (embaixo do HUD)
+const barraChefe = (ui: Ctx, l: Lutador, e: EstadoL, visivel: boolean, morto: boolean, ativo: boolean) => {
+  if (!visivel) return;
+  const y = 168;
+  ui.fillStyle = "rgba(10,8,16,0.82)";
+  ui.fillRect(28, y, W - 56, 20);
+  ui.fillStyle = ativo ? DOURADO : "#7a1e22";
+  ui.fillRect(28, y, W - 56, 1);
+  ui.fillRect(28, y + 19, W - 56, 1);
+  ui.fillStyle = "#2a2430";
+  ui.fillRect(32, y + 2, 16, 16);
+  ui.drawImage(mini(l, "neutra", morto), 32, y + 2);
+  texto(ui, l.nome.toUpperCase(), 52, y + 3, { cor: morto ? "#6a6470" : VERMELHO, contorno: TINTA });
+  texto(ui, "CHEFE", 52, y + 12, { cor: "#c8c0b8", fonte: "p" });
+  const bx = 52 + Math.max(larguraTexto(l.nome.toUpperCase()), 30) + 8,
+    bw = W - 34 - bx;
+  const frac = morto ? 0 : clamp(e.pv / e.pvMax, 0, 1);
+  ui.fillStyle = TINTA;
+  ui.fillRect(bx - 1, y + 5, bw + 2, 10);
+  ui.fillStyle = "#3a1418";
+  ui.fillRect(bx, y + 6, bw, 8);
+  ui.fillStyle = "#c82a2a";
+  ui.fillRect(bx, y + 6, Math.round(bw * frac), 8);
+  ui.fillStyle = "#ff6a5a";
+  ui.fillRect(bx, y + 6, Math.round(bw * frac), 2);
+  texto(ui, `${morto ? 0 : e.pv}/${e.pvMax}`, bx + bw / 2, y + 7, { fonte: "p", cor: "#ffffff", contorno: TINTA, alinhar: "centro" });
 };
 
 // ───────────── intro ─────────────
@@ -744,12 +800,25 @@ const intro = (ui: Ctx, r: Roteiro, v: number, estados: EstadoL[], off: P = { x:
       const x = Math.round(e.x + off.x),
         y = Math.round(e.y + 4 + off.y);
       const nome = l.nome.toUpperCase();
-      const w = Math.max(larguraTexto(nome, "p"), larguraTexto(`${CLASSES[l.classe].nome} NV${l.nivel}`, "p")) + 4;
-      ui.fillStyle = "rgba(10,8,16,0.75)";
+      const sub = l.boss ? "CHEFE" : `${CLASSES[l.classe].nome.toUpperCase()} NV${l.nivel}`;
+      const w = Math.max(larguraTexto(nome, "p"), larguraTexto(sub, "p")) + 4;
+      ui.fillStyle = l.boss ? "rgba(60,8,12,0.85)" : "rgba(10,8,16,0.75)";
       ui.fillRect(x - Math.round(w / 2), y, w, 14);
-      texto(ui, nome, x, y + 1, { fonte: "p", cor: "#ffffff", alinhar: "centro" });
-      texto(ui, `${CLASSES[l.classe].nome.toUpperCase()} NV${l.nivel}`, x, y + 8, { fonte: "p", cor: CLASSES[l.classe].cor, alinhar: "centro" });
+      texto(ui, nome, x, y + 1, { fonte: "p", cor: l.boss ? VERMELHO : "#ffffff", alinhar: "centro" });
+      texto(ui, sub, x, y + 8, { fonte: "p", cor: corDe(l), alinhar: "centro" });
     });
+  }
+  // banner do chefe: "CUIDADO: O MINOTAURO!" antes da escolha
+  const chefe = r.lutadores.find((l) => l.boss);
+  if (chefe && v >= 16 && v < 66) {
+    const t = v - 16;
+    const k = ease(t / 6) * (v > 60 ? (66 - v) / 6 : 1);
+    const txt = `CUIDADO: ${chefe.nome.toUpperCase()}!`;
+    const esc = larguraTexto(txt, "g", 2) + 30 > W - 48 ? 1 : 2;
+    const w = larguraTexto(txt, "g", esc) + 30;
+    const y = 318;
+    caixa(ui, W / 2 - (w / 2) * k, y, w * k, 26, "#5a0e16", "#ff6a4a", 2);
+    if (k > 0.95) texto(ui, txt, W / 2, y + (esc === 2 ? 6 : 9), { cor: "#ffd0a0", contorno: TINTA, escala: esc, alinhar: "centro" });
   }
   // banner "ESCOLHA SEU CAMPEÃO!"
   if (v >= 72 && v < V.batalha) {
@@ -807,6 +876,25 @@ const bannersCaiu = (ui: Ctx, r: Roteiro, v: number) => {
     linhaPx(ui, x + 17, y + 5, x + 6, y + 16, "#e03a3a");
     texto(ui, txt, x + 24, y + (escB === 2 ? 5 : 8), { cor: "#ffffff", contorno: TINTA, escala: escB });
     pilha++;
+  }
+};
+
+// ───────────── "CHEFE DERROTADO!" ─────────────
+const bannerChefe = (ui: Ctx, r: Roteiro, s: number) => {
+  const g = r.golpes.find((x) => x.chefeDerrotado);
+  if (!g) return;
+  const t = s - g.tImp - 2;
+  if (t < 0 || t > 50) return;
+  const chefe = r.lutadores.find((l) => l.boss)!;
+  const k = ease(t / 6) * (t > 44 ? (50 - t) / 6 : 1);
+  const w = 280,
+    y = 236;
+  caixa(ui, W / 2 - (w / 2) * k, y, w * k, 44, "#3a1e2a", "#e8c060", 2);
+  if (k > 0.95) {
+    brilhoCaixa(ui, W / 2 - w / 2, y, w);
+    ui.drawImage(retrato(chefe, "derrota"), 0, 8, 96, 48, W / 2 - w / 2 + 4, y + 4, 48, 24);
+    if (Math.floor(t / 4) % 4 !== 3) texto(ui, "CHEFE DERROTADO!", W / 2 + 22, y + 7, { cor: DOURADO, contorno: TINTA, escala: 2, alinhar: "centro" });
+    texto(ui, `${r.lutadores[g.ator].nome.toUpperCase()} DERRUBOU O ${chefe.nome.toUpperCase()}`, W / 2, y + 31, { cor: "#ffffff", contorno: TINTA, alinhar: "centro" });
   }
 };
 
@@ -894,7 +982,7 @@ const telaVs = (ui: Ctx, r: Roteiro, k: number, estados: EstadoL[]) => {
     ui.translate(Math.round(desliza), 0);
     const y0 = y,
       y1 = y + 132;
-    ui.fillStyle = CLASSES[l.classe].cor;
+    ui.fillStyle = corDe(l);
     ui.beginPath();
     ui.moveTo(0, y0 + (lado < 0 ? 16 : 0));
     ui.lineTo(W, y0 + (lado < 0 ? 0 : 16));
@@ -919,8 +1007,8 @@ const telaVs = (ui: Ctx, r: Roteiro, k: number, estados: EstadoL[]) => {
     texto(ui, prim, tx, y0 + 26, { cor: "#ffffff", contorno: TINTA, escala: 2 });
     if (resto.length) texto(ui, resto.join(" "), tx, y0 + 43, { cor: "#ffffff", contorno: TINTA });
     const nvAgora = valorEm(r.niveis[i], r.sDuelo)?.nivel ?? l.nivel;
-    texto(ui, `${CLASSES[l.classe].nome.toUpperCase()} NV${nvAgora}`, tx, y0 + 54, { cor: DOURADO, contorno: TINTA });
-    texto(ui, ESPECIES[l.especie].nome.toUpperCase(), tx, y0 + 65, { cor: "#c8c0b8", contorno: TINTA });
+    texto(ui, l.boss ? "CHEFE" : `${classeTxt(l)} NV${nvAgora}`, tx, y0 + 54, { cor: l.boss ? VERMELHO : DOURADO, contorno: TINTA });
+    texto(ui, l.boss ? "CRIATURA LENDÁRIA" : ESPECIES[l.especie].nome.toUpperCase(), tx, y0 + 65, { cor: "#c8c0b8", contorno: TINTA });
     texto(ui, `PV ${e.pv}/${e.pvMax}`, tx, y0 + 78, { cor: "#6aff7a", contorno: TINTA });
     texto(ui, `CA ${l.ca}`, tx, y0 + 90, { cor: "#9ad8ff", contorno: TINTA });
     texto(ui, `ABATES ${r.sim.stats[i].abates}`, tx, y0 + 102, { cor: "#ff9a6a", contorno: TINTA });
@@ -943,7 +1031,7 @@ const telaVs = (ui: Ctx, r: Roteiro, k: number, estados: EstadoL[]) => {
 // ───────────── vitória ─────────────
 const vitoria = (ui: Ctx, r: Roteiro, t: number) => {
   const l = r.lutadores[r.vencedor];
-  const txt = `VITÓRIA DE ${l.nome.toUpperCase()}!`;
+  const txt = l.boss ? `O ${l.nome.toUpperCase()} VENCEU!` : `VITÓRIA DE ${l.nome.toUpperCase()}!`;
   const esc = larguraTexto(txt, "g", 2) + 24 > W - 64 ? 1 : 2;
   const w = larguraTexto(txt, "g", esc) + 24;
   const k = ease(t / 10);
@@ -958,7 +1046,8 @@ const vitoria = (ui: Ctx, r: Roteiro, t: number) => {
     ui.drawImage(retrato(l, "vitoria"), W / 2 - 96, ry + 4, 192, 128);
     ui.globalAlpha = 1;
   }
-  if (t >= 38 && Math.floor(t / 5) % 3 !== 2) {
+  if (l.boss && t >= 38 && Math.floor(t / 5) % 3 !== 2) texto(ui, "NENHUM HERÓI SOBREVIVEU", W / 2, 474, { cor: VERMELHO, contorno: TINTA, escala: 2, alinhar: "centro" });
+  if (!l.boss && t >= 38 && Math.floor(t / 5) % 3 !== 2) {
     texto(ui, r.ep.textos.subiu, W / 2, 474, { cor: DOURADO, contorno: TINTA, escala: 2, alinhar: "centro" });
     texto(ui, `NÍVEL ${r.subida.de} → ${r.subida.para}`, W / 2, 494, { cor: "#ffffff", contorno: TINTA, alinhar: "centro" });
   }
@@ -1072,11 +1161,17 @@ const pergaminho = (ui: Ctx, r: Roteiro, v: number) => {
       ui.drawImage(retrato(l, "vitoria"), 40, 94);
       const esc = larguraTexto(l.nome.toUpperCase(), "g", 2) > 180 ? 1 : 2;
       texto(ui, l.nome.toUpperCase(), 146, 98, { cor: TINTA_P, escala: esc });
-      texto(ui, `${ESPECIES[l.especie].nome.toUpperCase()} · ${CLASSES[l.classe].nome.toUpperCase()}`, 146, 118, { cor: "#6a4428" });
-      texto(ui, `NÍVEL ${sub.de} →`, 146, 134, { cor: TINTA_P });
-      const pisca = Math.floor(v / 6) % 2 === 0;
-      texto(ui, String(sub.para), 146 + larguraTexto(`NÍVEL ${sub.de} →`) + 6, 130, { cor: pisca ? "#d8a020" : "#a87010", contorno: pisca ? "#fff2b0" : "", escala: 2 });
-      texto(ui, `VITÓRIAS ${sub.ficha.vitorias}`, 146, 148, { cor: "#6a4428", fonte: "p" });
+      if (l.boss) {
+        texto(ui, "CHEFE · CRIATURA LENDÁRIA", 146, 118, { cor: "#8a1e1e" });
+        texto(ui, "INVICTO NA ARENA", 146, 134, { cor: TINTA_P });
+        texto(ui, CHEFES[l.boss].fonte.toUpperCase(), 146, 148, { cor: "#6a4428", fonte: "p" });
+      } else {
+        texto(ui, `${ESPECIES[l.especie].nome.toUpperCase()} · ${CLASSES[l.classe].nome.toUpperCase()}`, 146, 118, { cor: "#6a4428" });
+        texto(ui, `NÍVEL ${sub.de} →`, 146, 134, { cor: TINTA_P });
+        const pisca = Math.floor(v / 6) % 2 === 0;
+        texto(ui, String(sub.para), 146 + larguraTexto(`NÍVEL ${sub.de} →`) + 6, 130, { cor: pisca ? "#d8a020" : "#a87010", contorno: pisca ? "#fff2b0" : "", escala: 2 });
+        texto(ui, `VITÓRIAS ${sub.ficha.vitorias}`, 146, 148, { cor: "#6a4428", fonte: "p" });
+      }
       if (l.autor) texto(ui, `CRIADO POR ${l.autor}`, 146, 156, { cor: "#6a4428", fonte: "p" });
     }
     ui.fillStyle = "#a88a5a";
@@ -1165,7 +1260,7 @@ const pergaminho = (ui: Ctx, r: Roteiro, v: number) => {
       });
       y += 8 + linhas.length * 10;
       if (resta > 0) {
-        texto(ui, r.ep.textos.defende, W / 2, Math.min(y + 4, 482), { cor: "#8a1e1e", alinhar: "centro" });
+        texto(ui, l.boss ? "A ARENA ESPERA UM NOVO CAMPEÃO" : r.ep.textos.defende, W / 2, Math.min(y + 4, 482), { cor: "#8a1e1e", alinhar: "centro" });
         if (l.autor) texto(ui, `CRIADO POR ${l.autor}`, W / 2, Math.min(y + 16, 494), { cor: "#6a4428", alinhar: "centro", fonte: "p" });
       }
     }
@@ -1185,8 +1280,11 @@ const cta = (ui: Ctx, r: Roteiro, t: number) => {
   ui.globalAlpha = a;
   const l = r.lutadores[r.vencedor];
   const sp = quadro(l, { anim: "vitoria", q: Math.floor(t / 6) % 4, dir: "S", expr: "vitoria", rasgado: false });
-  ui.drawImage(sp, W / 2 - 48, 120, 96, 128);
-  coroa(ui, W / 2, 120 + (alturaCabeca(l) - 14) * 2);
+  if (l.boss) ui.drawImage(sp, W / 2 - 112, 248 - 212, 224, 224);
+  else {
+    ui.drawImage(sp, W / 2 - 48, 120, 96, 128);
+    coroa(ui, W / 2, 120 + (alturaCabeca(l) - 14) * 2);
+  }
   const partes = r.ep.textos.cta.split(" · ");
   const linhas: { t: string; dourado: boolean }[] = [];
   partes.forEach((pt, k) => quebrar(pt, W - 72, "g", 2).forEach((t) => linhas.push({ t, dourado: k === partes.length - 1 && partes.length > 1 })));
@@ -1364,7 +1462,7 @@ const minimapa = (ui: Ctx, r: Roteiro, s: number, estados: EstadoL[], foco: P) =
   const w = Math.round(MW / esc),
     h = Math.round(MH / esc);
   const x0 = W - 30 - w,
-    y0 = 170;
+    y0 = r.lutadores.some((l) => l.boss) ? 192 : 170;
   if (!miniFundo || miniFundo.width !== w) {
     miniFundo = novoCanvas(w, h);
     const m = miniFundo.getContext("2d")!;
@@ -1385,7 +1483,7 @@ const minimapa = (ui: Ctx, r: Roteiro, s: number, estados: EstadoL[], foco: P) =
     if (!e.vis || e.morto) return;
     const px = Math.round(x0 + e.x / esc),
       py = Math.round(y0 + e.y / esc);
-    const chefe = !!(l as { boss?: string }).boss;
+    const chefe = !!l.boss;
     ui.fillStyle = chefe ? "#ff3a3a" : l.campeao ? DOURADO : CLASSES[l.classe].cor;
     ui.fillRect(px - (chefe ? 2 : 1), py - (chefe ? 2 : 1), chefe ? 4 : 2, chefe ? 4 : 2);
   });

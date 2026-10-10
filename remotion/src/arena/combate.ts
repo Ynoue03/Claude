@@ -229,7 +229,7 @@ export const focoPorNivel = (nivel: number) => Math.max(0, 2.5 * (nivel - 2));
 
 export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number | "auto"; centro?: "altar" | "livre"; arena?: string; focoChefe?: number } = {}): Simulacao => {
   const geo = geoDe(opcoes.arena);
-  const focoChefe = opcoes.focoChefe ?? 2;
+  const focoChefe = opcoes.focoChefe ?? 1.25;
   LIMITES = { ...geo.lim };
   altarAtivo = opcoes.centro !== "livre" && geo.w === 360;
   const versao = opcoes.versao ?? 1;
@@ -293,9 +293,10 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     return e;
   });
 
-  // posições iniciais: círculo em volta do centro
-  const N = E.length;
-  const posIniciais: P[] = E.map((_, i) => {
+  // posições iniciais: círculo em volta do centro (o chefe começa no meio do círculo)
+  const N = E.filter((e) => !e.l.boss).length;
+  const posIniciais: P[] = E.map((e, i) => {
+    if (e.l.boss) return { ...geo.centro };
     const a = -Math.PI / 2 + (i / N) * Math.PI * 2;
     return clampP({ x: geo.centro.x + Math.cos(a) * geo.raio.x, y: geo.centro.y + Math.sin(a) * geo.raio.y });
   });
@@ -424,7 +425,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       // derrubou o chefe: sobe um nível na hora e pega o item que ele deixa cair
       if (alvo.l.boss && fonte.id !== alvo.id && fonte.vivo && !fonte.l.boss) {
         log(`  ★ ${fonte.l.nome} DERROTA O CHEFE ${alvo.l.nome.toUpperCase()}!`);
-        subirNaLuta(fonte, batida);
+        subirNaLuta(fonte, batida, "derrotou o chefe");
         const tiposF = new Set([...fonte.itens].map(tipoDe));
         const dist_ = ehDistancia(fonte);
         const possiveis = ITEM_IDS.filter((i) => !tiposF.has(tipoDe(i)) && podeUsar(i, dist_));
@@ -499,7 +500,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     res.pvTempDepois = alvo.pvTemp;
   };
 
-  const subirNaLuta = (e: Est, batida: Batida & { k: "golpe" }) => {
+  const subirNaLuta = (e: Est, batida: Batida & { k: "golpe" }, porque = "derrubou o campeão") => {
     const base = { ...e.l, nivel: e.nivel, pvMax: e.pvMax, atributos: e.at, pvRolagens: e.pvRolagens };
     const sub = subirNivel(base, rng);
     const cl = e.l.classe;
@@ -521,7 +522,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     const rol = `d${sub.dado} = ${sub.rolagem} ${fmt(sub.conMod)} CON`;
     batida.subiu = { id: e.id, de: sub.de, para: sub.para, ganho: sub.pvGanho, pvDepois: e.pv, pvMax: e.pvMax, rolagem: rol };
     batida.especial = 3;
-    log(`  ★ ${e.l.nome} derrubou o campeão e SOBE DE NÍVEL na hora: NV ${sub.de} → ${sub.para}, ${rol} = +${sub.pvGanho} PV (${e.pv}/${e.pvMax})${sub.poderesNovos.length ? `, ganha ${sub.poderesNovos.map((x) => x.nome).join(", ")}` : ""}`);
+    log(`  ★ ${e.l.nome} ${porque} e SOBE DE NÍVEL na hora: NV ${sub.de} → ${sub.para}, ${rol} = +${sub.pvGanho} PV (${e.pv}/${e.pvMax})${sub.poderesNovos.length ? `, ganha ${sub.poderesNovos.map((x) => x.nome).join(", ")}` : ""}`);
   };
 
   const novoGolpe = (ator: Est, nome: string, tipo: TipoDano, fx: Efeito, corpo: boolean, magia: boolean, reacao = false): Batida & { k: "golpe" } => ({

@@ -478,7 +478,7 @@ export type Episodio = {
   // "auto" = cresce com o nível do campeão (2,5 por nível acima do 2)
   focoCampeao?: number | "auto";
   chefe?: ChefeId | ""; // força um chefe (padrão: um a cada 10 episódios na versão 3+)
-  focoChefe?: number; // quanto os heróis preferem atacar o chefe (padrão 2)
+  focoChefe?: number; // quanto os heróis preferem atacar o chefe (padrão 1,25: o chefe vence ~30%)
   arena?: "calabouco" | "floresta" | "caverna"; // cenário (padrão: calabouço; caverna = arena 4× maior dos chefes)
   centro?: "altar" | "livre"; // "livre" = sem tablado de degraus e sem pedra d20 no meio (nem obstáculo)
 };

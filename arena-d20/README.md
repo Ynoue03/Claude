@@ -45,7 +45,9 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `textos` | banners: `escolha`, `lutem`, `subiu`, `defende`, `cta` (no CTA, o trecho depois de ` · ` sai em dourado) |
 | `versao` | `2` (padrão para episódios novos): nome **e sobrenome** que nunca se repetem na série, leve foco dos lutadores no campeão e **+1 nível na hora para quem derrubar o campeão** (vencendo, soma +2). Sem o campo = regras dos episódios 1–3 (reproduzem a mesma luta de antes) |
 | `focoCampeao` | preferência dos lutadores por atacar o campeão (versão 2+): `"auto"` (recomendado) cresce com o nível do campeão — `2,5 × (nível − 2)`, calibrado para ele vencer ~50% (30 lutas por nível com a Yara nos níveis 2–5); ou um número fixo: `1` = leve (padrão), `5` = forte |
-| `arena` | `"calabouco"` (padrão) ou `"floresta"` — clareira ao entardecer com lanternas, fogueiras, lagos e vaga-lumes; muda também o som ambiente |
+| `arena` | `"calabouco"` (padrão), `"floresta"` — clareira ao entardecer com lanternas, fogueiras, lagos e vaga-lumes; muda também o som ambiente — ou `"caverna"`: arena dos chefes, **4× maior** (720×1280), escura, com 8 tochas, cristais, lago subterrâneo, morcegos; a câmera segue a ação e aparece um minimapa |
+| `chefe` | força um chefe (`"MINOTAURO"`, `"GRIFO"`, `"HIDRA"`, `"GIGANTE"`, `"QUIMERA"`, `"DRAGAO"`). Sem o campo, na versão 3 os episódios **10, 20, 30…** têm chefe automaticamente, nessa ordem |
+| `focoChefe` | quanto os heróis preferem atacar o chefe (padrão `1.25`, calibrado para o chefe vencer ~30%) |
 | `centro` | `"livre"` (recomendado para episódios novos): sem tablado de degraus e sem pedra d20 no meio, e sem obstáculo na luta. Sem o campo = com o tablado e o altar (episódios 1–6 reproduzem igual) |
 | `versao` `3` | tudo da versão 2 + **baú do campeão** e **itens mágicos** (abaixo). Use em episódios novos |
 | `audio` | WAV em `remotion/public/` (`arena/epNN.wav`); vazio = sem áudio |
@@ -55,10 +57,14 @@ Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo 
 ## Baú do campeão e itens (versão 3)
 
 Nos episódios **5, 10, 15…** entra uma cena de 4 s depois da vitória: o campeão abre um baú e acha um item
-(d27, rerrola se sair um **tipo** que ele já tem — só vale 1 item de cada tipo). O pergaminho fica um pouco mais rápido
+(d30, rerrola se sair um **tipo** que ele já tem — só vale 1 item de cada tipo — ou um item que não é da classe dele). O pergaminho fica um pouco mais rápido
 para caber nos 90 s. Os itens ficam na ficha (`campeao.json` → `itens`) e valem em todas as lutas seguintes.
 **Quem derrubar o portador pega os itens dele** na hora (só os de tipos que ainda não tem; aparece "PEGOU O ITEM!"),
 e se vencer leva para o próximo episódio. Catálogo com ícones: `itens.png` (composição `ArenaItens`).
+
+**Itens por classe:** quem luta à distância (Mago, Feiticeiro, Bruxo, Clérigo, Druida, Bardo, Patrulheiro, ou quem tem arma de disparo) não pega
+espada, machado nem escudo; quem luta corpo a corpo (Bárbaro, Guerreiro, Paladino, Ladino, Monge) não pega cajado nem
+arco. Vale no baú, no item que o chefe deixa cair e ao derrubar o portador (o item que não serve fica para trás).
 
 | Tipo | Versão 1 | Versão 2 | Versão 3 |
 | --- | --- | --- | --- |
@@ -70,7 +76,34 @@ e se vencer leva para o próximo episódio. Catálogo com ícones: `itens.png` (
 | Capa | **Capa das Sombras**: invisível 2 turnos ao chegar à metade dos PV | **Capa da Miragem**: 1º ataque contra ele por rodada tem desvantagem | **Capa da Seiva**: +2 PV no início de cada turno |
 | Arco | **Arco Sussurrante**: dispara sozinho 1d6 por turno | **Arco das Chamas**: ataques à distância +1d6 de fogo | **Arco do Caçador**: vantagem contra quem está com metade dos PV ou menos |
 | Machado | **Machado Ceifador**: ao derrubar alguém, +1d8 PV | **Machado da Ira**: +1d6 de dano com metade dos PV ou menos | **Machado Fendedor**: ignora resistências |
+| Cajado | **Cajado Arcano**: magias de ataque +1d6 | **Cajado da Sabedoria**: +2 na CD das magias | **Cajado da Renovação**: recupera 1 espaço de magia a cada 2 rodadas |
 | Escudo | **Escudo do Primeiro Golpe**: bloqueia o 1º ataque que causaria dano | **Escudo Espelhado**: devolve metade do dano de magias de ataque | **Escudo Guardião**: +1 CA e todo dano recebido −2 |
+
+## Chefes (versão 3, episódios 10, 20, 30…)
+
+Uma criatura grande do SRD 5.2 entra como **17º lutador**, no meio da caverna, cercada pelos 16 heróis. É todos contra
+todos: os heróis também se atacam, mas preferem o chefe. Barra de vida própria embaixo do HUD, banner
+"CUIDADO: …!" na abertura e rugido. Regras:
+
+- age **2 vezes por rodada** (no seu número de iniciativa e no meio da ordem), com todos os ataques em cada turno;
+- corpo grande: alcança e ocupa mais espaço, não é empurrado; quem voa não provoca ataque de oportunidade;
+- especial com recarga (d6): sopro em cone, arremesso de pedra, rasante com vantagem, investida ou uma mordida por cabeça;
+- **quem derrubar o chefe sobe 1 nível na hora e ganha um item** (d30, só da sua classe) — aparece "CHEFE DERROTADO!";
+- se o chefe vencer: sem baú, o pergaminho mostra a ficha dele, e o próximo episódio começa sem campeão
+  (`campeao.json` sai `null`).
+
+| Chefe | Ficha do SRD 5.2 | CA | PV | Ataques | Especial | Vence* |
+| --- | --- | --- | --- | --- | --- | --- |
+| Minotauro | Minotaur | 14 | 110 | Machado grande 2d12+4, chifrada 2d8+4 | Investida (+2d8, empurra) | 32% |
+| Grifo | Griffon | 12 | 135 | Bico 1d8+4, garras 2d6+4 | Rasante (voa, vantagem) | 26% |
+| Hidra | Hydra | 15 | 100 | 3 mordidas 1d10+5 | Fúria das cabeças | 34% |
+| Gigante da Colina | Hill Giant | 13 | 160 | 2× clava grande 3d8+5 | Arremesso de pedra 3d10+5 | 22% |
+| Quimera | Chimera | 14 | 90 | Mordida, chifres, garras | Sopro de fogo 7d8 (CD 15) | 40% |
+| Dragão Vermelho | Young Red Dragon | 18 | 85 | Mordida 2d10+6, garras 2d6+6 | Sopro de fogo 6d6 (CD 14), resiste a fogo | 52% |
+
+\* 50 lutas simuladas por chefe com `focoChefe` 1,25 e o campeão do ep. 8 (Bárbaro nv 4). PV ajustados (o dragão
+jovem tem bem mais na ficha) para o chefe perder na maioria das vezes, mas ser sempre ameaça. O Beholder não está no
+SRD, então o chefe "de muitos olhos" virou a Quimera.
 
 ## Nomes
 
@@ -90,6 +123,8 @@ sem sobrenome ganha um, fixo, na primeira luta da versão 2 (Yara → Yara Rubra
 | `remotion/src/arena/roteiro.ts` | mostra os turnos em **grupos de 4 lutadores agindo ao mesmo tempo** (constante `GRUPO`; as regras continuam em ordem de iniciativa), distribui os grupos nos 90 s (só o ritmo muda, nunca as regras), escolhe os cut-ins (crítico > abate > recurso, um a cada 4,5 s), agenda sons, história e pergaminho |
 | `remotion/src/arena/pixel.ts` + `sprite.ts` | motor de pixel art: rampas com hue shifting, sombreamento em 4 tons, sel-out, rim light; sprites 48×64, retratos 96×64 e 16×16, 7 expressões, versões rasgadas |
 | `remotion/src/arena/floresta.ts` | floresta: grama e terra batida, linha de árvores, arcos em ruína, estandartes, monte de terra em degraus com pedras rúnicas, pedra d20 com musgo, lanternas, fogueiras, lagos, vaga-lumes, folhas caindo, coelhos |
+| `remotion/src/arena/chefes.ts` + `chefes-arte.ts` | fichas dos chefes e os sprites deles (112×112, vista de lado), retrato e mini |
+| `remotion/src/arena/caverna.ts` | caverna dos chefes: paredes de rocha, estalagmites, cristais, lago, ossadas, gotas, morcegos, 8 tochas |
 | `remotion/src/arena/cenario.ts` | calabouço: lajotas, paredes, portões, correntes, estandartes, tablado de degraus com runas, altar d20, 10 tochas com luz, poças, ratos, poeira |
 | `remotion/src/arena/efeitos.ts` | golpes: cortes, flechas, raio de fogo, mísseis, raio de gelo, onda trovejante, chama sagrada, espinhos, notas da zombaria, sopro em cone, cura… |
 | `remotion/src/arena/render.ts` | monta cada quadro: mundo + luz, HUD 4×4, caixas de golpe, d20 girando, números, "CAIU!", cut-in, VS, vitória, pergaminho, CTA |

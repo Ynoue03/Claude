@@ -417,7 +417,24 @@ def sfx_tesouro(i):
     return norm(out, 0.7)
 
 
+def sfx_rugido(i):
+    """Rugido do chefe: dente de serra grave que sobe e cai, com rosnado (ruído modulado) e eco curto."""
+    dur = 1.1
+    n = int(dur * SR)
+    t = t_(dur)
+    f = 70 + 55 * np.sin(np.pi * np.minimum(t / 0.7, 1)) + 6 * np.sin(2 * np.pi * 23 * t)
+    fase = np.cumsum(f) / SR
+    serra = 2 * (fase % 1) - 1
+    rosnado = lp_fft(ruido(dur, 190 + i), hi=900) * (0.6 + 0.4 * np.sin(2 * np.pi * 31 * t))
+    x = lp_fft(serra * 0.8 + rosnado * 0.7, hi=1600) * env(n, a=0.06, d=0.9, s=0.2, r=0.15)
+    eco = np.zeros(n)
+    k = int(0.13 * SR)
+    eco[k:] = x[:-k] * 0.35
+    return norm(x + eco, 0.75)
+
+
 SFX = {
+    "rugido": sfx_rugido,
     "passo": sfx_passo,
     "queda": sfx_queda,
     "dado": sfx_dado,

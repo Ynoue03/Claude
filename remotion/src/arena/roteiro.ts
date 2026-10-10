@@ -348,7 +348,7 @@ export const criarRoteiro = (ep: Episodio): Roteiro => {
   }
   const itensFinais = itemBau ? [...ev.itens, itemBau] : [...ev.itens];
   subida.ficha.itens = itensFinais;
-  const historia = chefeVenceu ? historiaChefe(campeao, sim) : escreverHistoria(campeao, sim, subida, ep.arena);
+  const historia = chefeVenceu ? historiaChefe(campeao, sim) : escreverHistoria(campeao, sim, subida, ep.arena, lutadores);
   const pergaminho = montarPergaminho(campeao, subida, sim, fases, itensFinais, itemBau);
 
   const r: Roteiro = {
@@ -460,16 +460,26 @@ const FEITO: Record<string, string> = {
   BARDO: "venceu com versos afiados",
 };
 const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const escreverHistoria = (c: Lutador, sim: Simulacao, sub: SubidaNivel, arena = "calabouco"): string => {
+// o que fez o campeão subir de nível no meio da luta (derrubar o campeão anterior e/ou o chefe)
+export const motivoSubidas = (c: Lutador, lut: Lutador[], sim: Simulacao) => {
+  const chefe = lut.find((l) => l.boss && sim.stats[l.id].derrubadoPor === c.nome);
+  const campeao = lut.some((l) => l.campeao && l.id !== c.id && sim.stats[l.id].derrubadoPor === c.nome);
+  return { chefe: chefe?.nome ?? "", campeao };
+};
+const escreverHistoria = (c: Lutador, sim: Simulacao, sub: SubidaNivel, arena = "calabouco", lut: Lutador[] = []): string => {
   const st = sim.stats[c.id];
   const origem = c.especie === "DRACONATO" ? `${ORIGEM.DRACONATO} ${c.ancestralidade?.nome ?? ""}`.trim() : ORIGEM[c.especie];
   const abates = st.abates === 0 ? "sem derrubar ninguém até o fim" : st.abates === 1 ? "derrubou um rival" : `derrubou ${st.abates} rivais`;
   const frases: string[] = [];
-  const feito = FEITO[c.classe].replace("ao calabouço", arena === "floresta" ? "à clareira" : "ao calabouço");
+  const feito = FEITO[c.classe].replace("ao calabouço", arena === "floresta" ? "à clareira" : arena === "caverna" ? "à caverna" : "ao calabouço");
   frases.push(`${origem}, ${c.nome} ${feito} e ${abates}.`);
   if (st.menorPv <= Math.max(3, c.pvMax * 0.3)) frases.push(`Resistiu com ${st.menorPv} PV quando tudo parecia perdido.`);
   else if (st.primeiroCritico) frases.push(`Acertou um crítico (${st.primeiroCritico}) que ficou na memória da arena.`);
-  if (sim.evolucao[c.id].subidas.length) frases.push(`Derrubou o campeão e subiu de nível ali mesmo, no meio da luta.`);
+  if (sim.evolucao[c.id].subidas.length) {
+    const m = motivoSubidas(c, lut, sim);
+    if (!m.chefe) frases.push(`Derrubou o campeão e subiu de nível ali mesmo, no meio da luta.`);
+    else frases.push(`Derrubou o ${m.chefe}${m.campeao ? " e o campeão" : ""} e subiu de nível ali mesmo, no meio da luta.`);
+  }
   if (st.golpeFinal) frases.push(`Golpe final: ${capital(st.golpeFinal.toLowerCase())}.`);
   const novo = sub.poderesNovos[sub.poderesNovos.length - 1];
   frases.push(novo ? `Agora, no nível ${sub.para}, domina: ${novo.nome}.` : `Agora, no nível ${sub.para}, volta mais forte.`);
@@ -555,7 +565,7 @@ const subidaVazia = (l: Lutador): SubidaNivel => ({
 });
 const historiaChefe = (c: Lutador, sim: Simulacao) => {
   const st = sim.stats[c.id];
-  return `Das profundezas da caverna, o ${c.nome} esmagou ${st.abates} heróis e ficou sozinho na arena. Nenhum campeão saiu vivo desta vez. A arena espera alguém capaz de derrubá-lo.`;
+  return `Das profundezas da caverna, o ${c.nome} esmagou ${st.abates} heróis e ficou sozinho na arena. Nenhum herói saiu vivo desta vez.`;
 };
 const pergaminhoChefe = (c: Lutador, fases: Fases): ItemPergaminho[] => {
   const itens: ItemPergaminho[] = [];
@@ -612,9 +622,9 @@ const gerarSons = (r: Roteiro): SomEv[] => {
   const add = (v: number, s: string, vol = 1) => S.push({ v: Math.round(v), s, vol });
   const N = r.lutadores.length;
   // intro
-  for (let i = 0; i < N; i++) add(8 + i * 4 + 10, "queda", 0.5);
+  for (let i = 0; i < N; i++) add(i >= 16 ? 14 : 8 + i * 4 + 10, i >= 16 ? "impacto" : "queda", i >= 16 ? 1 : 0.5); // o chefe chega primeiro
   add(78, "banner", 0.9);
-  if (r.lutadores.some((l) => l.boss)) add(50, "rugido", 1);
+  if (r.lutadores.some((l) => l.boss)) add(17, "rugido", 1);
   add(100, "conta", 1);
   add(115, "conta", 1);
   add(130, "conta", 1);
