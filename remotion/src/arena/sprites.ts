@@ -4,7 +4,9 @@ import { brilho, CONTORNO, mistura, sombra, tom } from "./cores";
 import { PENTEADOS } from "./penteados";
 import type { Lutador, Visual } from "./tipos";
 
-export type Pose = "parado" | "passo1" | "passo2" | "ataque" | "dano" | "vitoria";
+export type Pose = "parado" | "passo1" | "passo2" | "preparo" | "ataque" | "dano" | "vitoria";
+// Tamanho do quadro na escala base (personagem 24×32 + 1 px de contorno). Em 64 e 128 px o mesmo
+// quadro é gerado 2× e 4× maior, com detalhe extra (ver `sprite`).
 export const SW = 26;
 export const SH = 34;
 
@@ -138,6 +140,11 @@ const tronco = (g: Grade, v: Visual, dir: string, pose: Pose) => {
 
   // braços
   if (lado) {
+    if (pose === "preparo") {
+      g.rect(8, 19, 10, 21, manga);
+      g.rect(6, 21, 8, 23, mao);
+      return;
+    }
     if (pose === "ataque") {
       g.rect(12, 19, 18, 20, manga);
       g.rect(19, 18, 21, 21, mao);
@@ -162,6 +169,11 @@ const tronco = (g: Grade, v: Visual, dir: string, pose: Pose) => {
     g.rect(16, 19, 17, 21, manga);
     g.rect(8, 21, 15, 21, manga);
     g.rect(10, 20, 13, 22, mao);
+  } else if (pose === "preparo") {
+    g.rect(6, 19, 7, 22, manga);
+    g.rect(16, 19, 17, 22, manga);
+    g.rect(5, 22, 7, 24, mao);
+    g.rect(16, 22, 18, 24, mao);
   } else if (pose === "dano") {
     g.rect(5, 19, 6, 22, manga);
     g.rect(17, 19, 18, 22, manga);
@@ -348,13 +360,16 @@ const manoplas = (g: Grade, v: Visual, dir: string, pose: Pose) => {
   }
 };
 
-const capa = (g: Grade, v: Visual, dir: string) => {
+const capa = (g: Grade, v: Visual, dir: string, pose: Pose) => {
   if (!v.capa) return;
   const c = v.capa;
   const chamas = v.padrao === "chamas" && v.padraoCor;
   const [x0, x1] = dir === "lado" ? [5, 10] : dir === "cima" ? [6, 17] : [5, 18];
-  g.rect(x0, 18, x1, 29, c);
-  g.rect(x0, 18, x0, 29, sombra(c, 0.25));
+  // movimento secundário: a barra da capa balança ao andar e voa para trás no golpe
+  const bal = pose === "passo1" ? 1 : pose === "passo2" ? -1 : pose === "ataque" && dir === "lado" ? -2 : 0;
+  g.rect(x0, 18, x1, 26, c);
+  g.rect(x0 + bal, 27, x1 + bal, 29, c);
+  g.rect(x0, 18, x0, 26, sombra(c, 0.25));
   if (chamas) {
     for (let x = x0; x <= x1; x++) {
       const h = x % 3 === 0 ? 4 : x % 3 === 1 ? 2 : 3;
@@ -384,12 +399,12 @@ const montar = (v0: Visual, dir: string, pose: Pose): Grade => {
   const g = new Grade();
   const acc = v.acessorios ?? [];
   const grande = acc.includes("espada-grande");
-  if (dir !== "cima") capa(g, v, dir);
+  if (dir !== "cima") capa(g, v, dir, pose);
   if (grande && dir !== "cima") espadaGrande(g, dir);
   if (dir === "lado") katanas(g, v, dir);
   pernas(g, v, dir, pose);
   tronco(g, v, dir, pose);
-  if (dir === "cima") capa(g, v, dir);
+  if (dir === "cima") capa(g, v, dir, pose);
   cachecol(g, v, dir);
   cabeca(g, v, dir, pose);
   if (grande && dir === "cima") espadaGrande(g, dir);
@@ -428,6 +443,145 @@ const acabamento = (px: Px): Px => {
   return fim;
 };
 
+// ── alta resolução (64 e 128 px) ───────────────────────
+// 1) EPX/Scale2x: cada pixel vira 2×2 e os cantos seguem as diagonais vizinhas (curvas sem serrilhado).
+const epx = (px: Px, w: number, h: number): Px => {
+  const out: Px = new Array(w * 2 * h * 2).fill(null);
+  const at = (x: number, y: number) => px[Math.min(h - 1, Math.max(0, y)) * w + Math.min(w - 1, Math.max(0, x))];
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const P = at(x, y);
+      const A = at(x, y - 1);
+      const B = at(x + 1, y);
+      const C = at(x - 1, y);
+      const D = at(x, y + 1);
+      const o = (dx: number, dy: number, c: string | null) => (out[(y * 2 + dy) * w * 2 + x * 2 + dx] = c);
+      o(0, 0, C === A && C !== D && A !== B ? A : P);
+      o(1, 0, A === B && A !== C && B !== D ? B : P);
+      o(0, 1, D === C && D !== B && C !== A ? C : P);
+      o(1, 1, B === D && B !== A && D !== C ? D : P);
+    }
+  return out;
+};
+
+// Para sombrear, detalhes pequenos (olho, boca, marcas, < 7 px) contam como o material em volta;
+// assim o rosto ganha volume sem "sujeira" de sombra em volta de cada detalhe.
+const massas = (px: Px): Px => {
+  const out = px.slice();
+  const area = new Array(px.length).fill(0);
+  const visto = new Array(px.length).fill(false);
+  for (let i = 0; i < px.length; i++) {
+    if (!px[i] || visto[i]) continue;
+    const fila = [i];
+    const comp: number[] = [];
+    visto[i] = true;
+    while (fila.length) {
+      const j = fila.pop()!;
+      comp.push(j);
+      const x = j % SW;
+      for (const n of [j - 1, j + 1, j - SW, j + SW]) {
+        if (n < 0 || n >= px.length || visto[n] || px[n] !== px[i]) continue;
+        if ((n === j - 1 && x === 0) || (n === j + 1 && x === SW - 1)) continue;
+        visto[n] = true;
+        fila.push(n);
+      }
+    }
+    for (const j of comp) area[j] = comp.length;
+  }
+  for (let passo = 0; passo < 4; passo++)
+    for (let i = 0; i < px.length; i++) {
+      if (!out[i] || area[i] >= 7) continue;
+      for (const n of [i + SW, i - 1, i + 1, i - SW]) {
+        if (n >= 0 && n < px.length && out[n] && area[n] >= 7) {
+          out[i] = out[n];
+          area[i] = 7;
+          break;
+        }
+      }
+    }
+  return out;
+};
+
+// 2) Rampa de 4–5 tons por material com transição pontilhada (dithering), luz do alto à esquerda.
+//    3) Contorno seletivo com espessura proporcional. 4) Olhos redesenhados na resolução final.
+const acabamentoHD = (px: Px, massa: Px, w: number, h: number, k: number): Px => {
+  const at = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? null : massa[y * w + x]);
+  const out = px.slice();
+  const lim = Math.ceil(k * 1.6);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const real = px[y * w + x];
+      const c = massa[y * w + x];
+      if (!real || !c) continue;
+      if (real !== c) continue; // detalhe: mantém a cor desenhada
+      let dS = lim + 1;
+      for (let d = 1; d <= lim; d++)
+        if (at(x + d, y + d) !== c || at(x, y + d) !== c || at(x + d, y) !== c) { dS = d; break; }
+      let dL = lim + 1;
+      for (let d = 1; d <= lim; d++)
+        if (at(x - d, y - d) !== c || at(x, y - d) !== c) { dL = d; break; }
+      const pont = (x + y) % 2 === 0;
+      let cor = c;
+      if (dS <= k * 0.5) cor = sombra(c, 0.32);
+      else if (dS <= k) cor = sombra(c, 0.18);
+      else if (dS <= k * 1.5 && pont) cor = sombra(c, 0.18);
+      else if (dL <= k * 0.5) cor = brilho(c, 0.2);
+      else if (dL <= k && pont) cor = brilho(c, 0.1);
+      out[y * w + x] = cor;
+    }
+  const t = Math.max(1, k >> 1);
+  const fim = out.slice();
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      if (px[y * w + x]) continue;
+      let viz: string | null = null;
+      let claro = false;
+      for (let dy = -t; dy <= t && !viz; dy++)
+        for (let dx = -t; dx <= t; dx++) {
+          const v = at(x + dx, y + dy);
+          if (v) {
+            viz = v;
+            claro = dy > 0 || dx > 0;
+            break;
+          }
+        }
+      if (viz) fim[y * w + x] = claro ? mistura(viz, CONTORNO, 0.7) : CONTORNO;
+    }
+  return fim;
+};
+
+// olho detalhado (só onde o olho base ficou visível: vendas, máscaras e tapa-olho são respeitados)
+const olhosHD = (out: Px, base: Px, w: number, k: number, v: Visual, dir: string, pose: Pose) => {
+  if (pose === "dano" || pose === "vitoria" || dir === "cima") return;
+  const lista: [number, string][] = dir === "baixo" ? [[8, v.olhos], [14, v.olhos2 ?? v.olhos]] : [[14, v.olhos]];
+  for (const [ex, iris] of lista) {
+    const bx = ex + 1;
+    const by = 12 + 1;
+    if (base[by * SW + bx + 1] !== "#FFFFFF" && base[(by + 1) * SW + bx] !== tom(iris, -0.35)) continue;
+    const X = bx * k;
+    const Y = (by - 1) * k;
+    const set = (x: number, y: number, c: string) => {
+      if (x >= 0 && y >= 0 && x < w) out[y * w + x] = c;
+    };
+    for (let y = 0; y < 3 * k; y++)
+      for (let x = 0; x < 2 * k; x++) {
+        let c: string;
+        if (y < Math.max(1, k >> 1)) c = CONTORNO; // cílios
+        else if (y < k) c = x < k * 0.3 ? "#F4F0F0" : sombra(iris, 0.35);
+        else c = y < 2 * k ? iris : brilho(iris, 0.25);
+        if (y >= k && x >= k * 0.6 && x < k * 1.4 && y >= k * 1.2 && y < k * 2.3) c = sombra(iris, 0.6); // pupila
+        set(X + x, Y + y, c);
+      }
+    // dois brilhos
+    set(X + 2 * k - Math.max(1, k >> 1) - 1, Y + k + 1, "#FFFFFF");
+    if (k >= 4) {
+      set(X + 2 * k - 2, Y + k + 1, "#FFFFFF");
+      set(X + 2 * k - 3, Y + k + 2, "#FFFFFF");
+      set(X + 1, Y + 2 * k + 1, "#FFFFFF");
+    }
+  }
+};
+
 const novoCanvas = (w: number, h: number) => {
   const c = document.createElement("canvas");
   c.width = w;
@@ -435,48 +589,77 @@ const novoCanvas = (w: number, h: number) => {
   return c;
 };
 
-const paraCanvas = (px: Px, espelhar: boolean, branco: boolean) => {
-  const c = novoCanvas(SW, SH);
+const paraCanvas = (px: Px, w: number, h: number, espelhar: boolean, branco: boolean) => {
+  const c = novoCanvas(w, h);
   const ctx = c.getContext("2d")!;
-  for (let y = 0; y < SH; y++)
-    for (let x = 0; x < SW; x++) {
-      const p = px[y * SW + x];
+  const img = ctx.createImageData(w, h);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const p = px[y * w + x];
       if (!p) continue;
-      ctx.fillStyle = branco ? (p === CONTORNO ? "#FFFFFF" : "#FFFFFF") : p;
-      ctx.fillRect(espelhar ? SW - 1 - x : x, y, 1, 1);
+      const n = parseInt(branco ? "FFFFFF" : p.slice(1), 16);
+      const i = (y * w + (espelhar ? w - 1 - x : x)) * 4;
+      img.data[i] = (n >> 16) & 255;
+      img.data[i + 1] = (n >> 8) & 255;
+      img.data[i + 2] = n & 255;
+      img.data[i + 3] = 255;
     }
+  ctx.putImageData(img, 0, 0);
   return c;
 };
 
 const cache = new Map<string, HTMLCanvasElement>();
 const grades = new Map<string, Px>();
 
+// k = 1 (sprite de 32 px), 2 (64 px) ou 4 (128 px). O quadro sempre ocupa SW×SH na escala base;
+// em k > 1 ele tem k² vezes mais pixels de detalhe.
+export const escalaSprite = (tamanho?: number) => (tamanho && tamanho >= 128 ? 4 : tamanho && tamanho >= 64 ? 2 : 1);
+
+const gerar = (l: Lutador, d: string, pose: Pose, k: number): Px => {
+  const gk = `${l.id}|${d}|${pose}|${k}|${JSON.stringify(l.visual)}`;
+  const pronto = grades.get(gk);
+  if (pronto) return pronto;
+  const base = montar(l.visual, d, pose).px;
+  let px: Px;
+  if (k === 1) px = acabamento(base);
+  else {
+    let hi = base;
+    let hm = massas(base);
+    let w = SW;
+    let h = SH;
+    for (let e = 1; e < k; e *= 2) {
+      hi = epx(hi, w, h);
+      hm = epx(hm, w, h);
+      w *= 2;
+      h *= 2;
+    }
+    px = acabamentoHD(hi, hm, w, h, k);
+    olhosHD(px, base, w, k, resolverVisual(l.visual), d, pose);
+  }
+  grades.set(gk, px);
+  return px;
+};
+
 // dir: 0 baixo · 1 cima · 2 esquerda · 3 direita
-export const sprite = (l: Lutador, dir: number, pose: Pose, branco = false) => {
-  const chave = `${l.id}|${dir}|${pose}|${branco}`;
+export const sprite = (l: Lutador, dir: number, pose: Pose, branco = false, k = 1) => {
+  const chave = `${l.id}|${dir}|${pose}|${branco}|${k}`;
   const c = cache.get(chave);
   if (c) return c;
   const d = dir === 0 ? "baixo" : dir === 1 ? "cima" : "lado";
-  const gk = `${l.id}|${d}|${pose}|${JSON.stringify(l.visual)}`;
-  let px = grades.get(gk);
-  if (!px) {
-    px = acabamento(montar(l.visual, d, pose).px);
-    grades.set(gk, px);
-  }
-  const canvas = paraCanvas(px, dir === 2, branco);
+  const canvas = paraCanvas(gerar(l, d, pose, k), SW * k, SH * k, dir === 2, branco);
   cache.set(chave, canvas);
   return canvas;
 };
 
 // derrotado: sprite de dano deitado (90°)
-export const spriteCaido = (l: Lutador) => {
-  const chave = `${l.id}|caido`;
+export const spriteCaido = (l: Lutador, k = 1) => {
+  const chave = `${l.id}|caido|${k}`;
   const c = cache.get(chave);
   if (c) return c;
-  const base = sprite(l, 0, "dano");
-  const out = novoCanvas(SH, SW);
+  const base = sprite(l, 0, "dano", false, k);
+  const out = novoCanvas(SH * k, SW * k);
   const ctx = out.getContext("2d")!;
-  ctx.translate(SH, 0);
+  ctx.translate(SH * k, 0);
   ctx.rotate(Math.PI / 2);
   ctx.drawImage(base, 0, 0);
   cache.set(chave, out);

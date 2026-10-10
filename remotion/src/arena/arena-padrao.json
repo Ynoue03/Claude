@@ -1,6 +1,7 @@
 {
   "titulo": "ANIME PIXEL ARENA",
   "seed": 2026,
+  "sprite": 128,
   "vencedor": null,
   "perfil": "@seuperfil",
   "audio": "audio/arena/arena.mp3",

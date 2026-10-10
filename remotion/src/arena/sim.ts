@@ -530,7 +530,8 @@ export const simular = (ep: EpisodioPronto): Sim => {
         if (a.andou) a.passo++;
         const ciclo = Math.floor(a.passo / 5) % 4;
         let pose: Pose = "parado";
-        if (a.estado === "ataque") pose = "ataque";
+        if (a.estado === "ataque")
+          pose = a.atq && a.atq.golpe.efeito !== "escudo" && f < a.atq.ini + Math.ceil(a.atq.carga * 0.5) ? "preparo" : "ataque";
         else if (f - a.hitF < 8) pose = "dano";
         else if (a.andou) pose = ciclo === 0 ? "passo1" : ciclo === 2 ? "passo2" : "parado";
         let salto = 0;

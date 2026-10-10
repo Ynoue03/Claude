@@ -533,3 +533,44 @@ export const desenharVinheta = (ctx: Ctx, t: Tema) => {
   ctx.fillStyle = g;
   ctx.fillRect(-M, -M, MW, MH);
 };
+
+// versão do cenário na escala dos sprites (EPX/Scale2x sobre a imagem): bordas e curvas acompanham
+// o detalhe dos personagens em vez de ficarem em blocos 2×/4× maiores.
+const hd = new Map<string, HTMLCanvasElement>();
+export const estaticoHD = (t: Tema, k: number) => {
+  const base = estatico(t).canvas;
+  if (k === 1) return base;
+  const chave = `${t.id}|${k}`;
+  const c0 = hd.get(chave);
+  if (c0) return c0;
+  let w = base.width;
+  let h = base.height;
+  let px = new Uint32Array(base.getContext("2d")!.getImageData(0, 0, w, h).data.buffer.slice(0));
+  for (let e = 1; e < k; e *= 2) {
+    const out = new Uint32Array(w * 2 * h * 2);
+    const at = (x: number, y: number) => px[Math.min(h - 1, Math.max(0, y)) * w + Math.min(w - 1, Math.max(0, x))];
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < w; x++) {
+        const P = at(x, y);
+        const A = at(x, y - 1);
+        const B = at(x + 1, y);
+        const C = at(x - 1, y);
+        const D = at(x, y + 1);
+        const i = y * 2 * w * 2 + x * 2;
+        out[i] = C === A && C !== D && A !== B ? A : P;
+        out[i + 1] = A === B && A !== C && B !== D ? B : P;
+        out[i + w * 2] = D === C && D !== B && C !== A ? C : P;
+        out[i + w * 2 + 1] = B === D && B !== A && D !== C ? D : P;
+      }
+    px = out;
+    w *= 2;
+    h *= 2;
+  }
+  const c = novo(w, h);
+  const ctx = c.getContext("2d")!;
+  const img = ctx.createImageData(w, h);
+  img.data.set(new Uint8ClampedArray(px.buffer));
+  ctx.putImageData(img, 0, 0);
+  hd.set(chave, c);
+  return c;
+};

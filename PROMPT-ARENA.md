@@ -53,13 +53,27 @@ Uma de 8 arenas top-down estilo GBA/SNES, sorteada pela seed (ou `"arena": "<id>
 - Placa "STAGE: <LOCAL>" na abertura e nome do local no HUD durante a luta.
 
 ## Lutadores (sprites chibi pixel art desenhados do zero)
-- ~24×32 px, 4 direções, passos, ataque, dano, derrota e comemoração.
+- Resolução escolhida no JSON: `"sprite": 32 | 64 | 128` (padrão 128). O personagem ocupa o mesmo
+  espaço na tela; o que muda é o detalhe: 32 px = 1 pixel do sprite vira 4×4 na tela, 64 px = 2×2,
+  128 px = 1×1 (o mundo inteiro é renderizado 2× ou 4× mais fino, com escala inteira e sem suavização).
+- O desenho base (24×32) é ampliado com EPX/Scale2x (curvas e diagonais sem serrilhado) e recebe
+  acabamento na resolução final: rampa de 4–5 tons por material com transição pontilhada (dithering),
+  contorno seletivo com espessura proporcional, olhos redesenhados (cílios, íris em degradê, pupila e
+  dois brilhos). O cenário passa pelo mesmo EPX para não misturar tamanhos de pixel ("mixels").
+- 4 direções e 7 poses: parado, passo 1, passo 2, preparo (antecipação), ataque, dano, comemoração; derrota deitada.
 - Roupa, cabelo, cores e acessórios fiéis (bandana, máscara do Kakashi, cabeça de javali do Inosuke,
   turbante e antenas do Piccolo, chifres da Power, capa do Saitama, cachecol da Mikasa…).
 - Acabamento profissional: sombreamento com hue shifting (sombra puxa para roxo, luz para amarelo),
   contorno seletivo (sel-out: escuro embaixo, colorido em cima), luz no topo da silhueta, sombra do queixo.
-- Animação: respiração parado, balanço ao andar, poeira nos passos, aura de energia ao carregar especiais,
-  rastro (afterimage) nas investidas, brilho dos golpes iluminando o cenário.
+- Animação (princípios clássicos aplicados a sprite):
+  - caminhada em 4 tempos (contato, passagem, contato, passagem), quadros "em 5" (6 fps de pose num vídeo de 30 fps);
+  - respiração parado em 4 tempos com pausas longas (≈400 ms), deformação de 1–2 px;
+  - antecipação: pose "preparo" agachada antes do golpe; esticada de 1 px no disparo;
+  - squash & stretch: achata ao levar dano e ao aterrissar do pulo de vitória;
+  - hit-stop: atacante e alvo congelam 3–4 quadros no impacto dos especiais, com tremor de tela;
+  - movimento secundário: capa balança ao andar e voa para trás no golpe;
+  - posições em subpixel (grade fina do sprite) para deslocamento suave;
+  - poeira nos passos, aura de energia na carga, rastro (afterimage) nas investidas, luz dos golpes no cenário.
 
 ## Golpes e mecânica (IA simples)
 - 1–2 golpes por personagem com nome e cor do elemento (Rasengan, Kamehameha, Raikiri, Amaterasu,
@@ -89,7 +103,7 @@ Uma de 8 arenas top-down estilo GBA/SNES, sorteada pela seed (ou `"arena": "<id>
 - MP4 1080×1920, 30 fps, 90 s, com áudio masterizado (`remotion/out/<nome>-master.mp4`).
 - Episódio novo = um JSON curto, por exemplo:
   ```json
-  { "seed": 4242, "arena": "aleatoria", "sorteio": { "quantidade": 16, "maxPorAnime": 2 }, "perfil": "@seuperfil" }
+  { "seed": 4242, "sprite": 128, "arena": "aleatoria", "sorteio": { "quantidade": 16, "maxPorAnime": 2 }, "perfil": "@seuperfil" }
   ```
   Variações: `"sorteio": { "animes": ["Dragon Ball"] }` (só Dragon Ball), `"arena": "shibuya"`,
   `"vencedor": "GOJO"`, `"lutadores": [...]` (elenco fixo).

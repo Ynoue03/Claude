@@ -3,7 +3,7 @@ import { CONTORNO, tom } from "./cores";
 import { anel, disco, linha, px, zigue, type Ctx } from "./pixel";
 import { hash } from "./rng";
 import type { Ataque, Sim } from "./sim";
-import { sprite } from "./sprites";
+import { SH, SW, sprite } from "./sprites";
 import type { EpisodioPronto as Episodio } from "./tipos";
 
 type P = { x: number; y: number };
@@ -93,7 +93,7 @@ export const desenharAtaque = (ctx: Ctx, atq: Ataque, f: number, sim: Sim, ep: E
           const p1 = { x: alvoP.x + (-dy / d) * 7 * lado, y: alvoP.y + (dx / d) * 5 * lado };
           const p = lerp(p0, p1, k * k);
           ctx.globalAlpha = 0.85;
-          ctx.drawImage(sprite(L, qa.dir, Math.floor(t / 3) % 2 ? "passo1" : "passo2"), Math.round(p.x - 13), Math.round(p.y - 19));
+          ctx.drawImage(sprite(L, qa.dir, Math.floor(t / 3) % 2 ? "passo1" : "passo2", false, ep.k), Math.round(p.x - 13), Math.round(p.y - 19), SW, SH);
           ctx.globalAlpha = 1;
           if (t < 6) poeira(ctx, p0, t, s + lado, "#FFFFFF", 5);
         }

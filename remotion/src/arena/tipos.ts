@@ -101,6 +101,7 @@ export type Episodio = {
   perfil: string;
   textos: Textos;
   audio?: string | null; // arquivo em public/ (gerado por scripts/arena.sh)
+  sprite?: 32 | 64 | 128; // resolução dos sprites (detalhe); o tamanho na tela é o mesmo
   arena?: string; // id do tema (temas.ts) ou "aleatoria" (sorteada pela seed)
   sorteio?: Sorteio; // usado quando `lutadores` está vazio
   lutadores?: Lutador[]; // elenco fixo (vazio = sorteio no elenco.json)
@@ -120,4 +121,5 @@ export type EpisodioPronto = Omit<Episodio, "lutadores"> & {
   lutadores: LutadorPronto[];
   tema: string;
   obstaculo: boolean;
+  k: number; // escala do mundo: 1 (32 px), 2 (64 px) ou 4 (128 px)
 };

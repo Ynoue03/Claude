@@ -2,6 +2,7 @@
 // poder canônico e escolhe a arena. Usado igual no navegador (vídeo) e no Node (áudio) → mesmo resultado.
 import elenco from "./elenco.json";
 import { criarRng } from "./rng";
+import { escalaSprite } from "./sprites";
 import { TEMAS } from "./temas";
 import type { Episodio, EpisodioPronto, Lutador, LutadorPronto } from "./tipos";
 
@@ -58,5 +59,11 @@ export const montarEpisodio = (ep: Episodio): EpisodioPronto => {
   const rng = criarRng((ep.seed ^ 0xa7e7a) >>> 0);
   const pedido = (ep.arena ?? "aleatoria").toLowerCase();
   const tema = TEMAS.find((t) => t.id === pedido) ?? TEMAS[rng.int(TEMAS.length)];
-  return { ...ep, lutadores: base.map(pronto), tema: tema.id, obstaculo: tema.centro !== "nada" };
+  return {
+    ...ep,
+    lutadores: base.map(pronto),
+    tema: tema.id,
+    obstaculo: tema.centro !== "nada",
+    k: escalaSprite(ep.sprite ?? 64),
+  };
 };

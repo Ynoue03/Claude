@@ -4,7 +4,7 @@ import { desenharAtaque, poeira } from "./efeitos";
 import { larguraTexto, texto } from "./fonte";
 import {
   BASE_CENTRO, desenharAnimado, desenharCentro, desenharFundo, desenharNoite, desenharParticulas, desenharVinheta,
-  estatico, M, MH, MW, tema,
+  estaticoHD, M, MH, MW, tema,
 } from "./mapa";
 import { anel, disco, elipse, linha, px, ret, type Ctx } from "./pixel";
 import { brilho } from "./cores";
@@ -79,14 +79,27 @@ export const camera = (sim: Sim, f: number) => {
 
 // ── mundo ───────────────────────────────────────────────
 const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
+  const k = ep.k;
+  ctx.setTransform(k, 0, 0, k, 0, 0);
   ctx.save();
   ctx.translate(M, M);
   const tm = tema(ep.tema);
   desenharFundo(ctx, tm, f);
-  ctx.drawImage(estatico(tm).canvas, -M, -M);
+  ctx.drawImage(estaticoHD(tm, ep.k), -M, -M, MW, MH);
   desenharAnimado(ctx, tm, f);
-  const q = sim.quadros[f];
+  // hit-stop: no impacto de um especial, atacante e alvo ficam congelados 3 quadros (peso do golpe)
+  const congela = new Map<number, number>();
+  for (const atq of sim.ataques) {
+    if (!atq.golpe.especial || !atq.acertou) continue;
+    const d = f - atq.impacto;
+    if (d >= 0 && d < 4) {
+      congela.set(atq.atk, atq.impacto);
+      congela.set(atq.alvo, atq.impacto);
+    }
+  }
+  const q = sim.quadros[f].map((s, i) => (congela.has(i) ? sim.quadros[congela.get(i)!][i] : s));
   const L = ep.lutadores;
+  const snap = (v: number) => Math.round(v * k) / k; // posições na grade fina do sprite (subpixel)
 
   // marcas no chão: crateras e queimados que ficam depois dos golpes fortes
   for (const atq of sim.ataques) {
@@ -124,14 +137,14 @@ const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
       y: s.y,
       d: () => {
         const l = L[i];
-        const X = Math.round(s.x) - Math.floor(SW / 2);
-        const Y = Math.round(s.y) - SH + 1 - s.salto;
+        const X = snap(s.x) - SW / 2;
+        const Y = snap(s.y) - SH + 1 - s.salto;
         if (morto) {
           if (tm < 14) {
-            if (tm % 4 < 2) ctx.drawImage(sprite(l, s.dir, "dano", tm % 8 < 2), X, Y);
+            if (tm % 4 < 2) ctx.drawImage(sprite(l, s.dir, "dano", tm % 8 < 2, k), X, Y, SW, SH);
           } else if (tm < 30) {
-            const c = spriteCaido(l);
-            if (tm < 24 || tm % 2 === 0) ctx.drawImage(c, Math.round(s.x) - 17, Math.round(s.y) - 22);
+            const c = spriteCaido(l, k);
+            if (tm < 24 || tm % 2 === 0) ctx.drawImage(c, snap(s.x) - 17, snap(s.y) - 22, SH, SW);
           }
           return;
         }
@@ -155,13 +168,24 @@ const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
             const p = sim.quadros[Math.max(0, f - atras)][i];
             if (Math.hypot(p.x - s.x, p.y - s.y) < 3) continue;
             ctx.globalAlpha = atras === 4 ? 0.25 : 0.45;
-            ctx.drawImage(sprite(l, dir, "ataque", true), Math.round(p.x) - 13, Math.round(p.y) - SH + 1);
+            ctx.drawImage(sprite(l, dir, "ataque", true, k), snap(p.x) - 13, snap(p.y) - SH + 1, SW, SH);
             ctx.globalAlpha = 1;
           }
         }
-        // respiração parado e balanço ao andar
-        const bob = s.pose === "parado" && !s.salto ? ((f + i * 7) % 32 < 16 ? 0 : 1) : s.pose === "passo1" || s.pose === "passo2" ? -1 : 0;
-        ctx.drawImage(sprite(l, dir, s.pose, flash), X, Y + bob);
+        // squash & stretch (deformações de 1–2 px, como nos jogos 16 bits):
+        // respiração em 4 tempos parado, agachar na antecipação, esticar no golpe, achatar ao levar dano
+        // e ao aterrissar da comemoração; balanço de meio pixel no passo.
+        let sx = 1;
+        let sy = 1;
+        if (s.pose === "parado" && !s.salto) sy -= [0, 1, 2, 1][Math.floor((f + i * 7) / 12) % 4] / (SH * Math.max(1, 4 / k));
+        if (s.pose === "preparo") [sx, sy] = [1.05, 0.93];
+        if (atq && s.pose === "ataque" && f - (atq.ini + Math.ceil(atq.carga * 0.5)) < 3) [sx, sy] = [0.95, 1.06];
+        if (f - s.hitF >= 0 && f - s.hitF < 3) [sx, sy] = [1.08, 0.92];
+        const antes = sim.quadros[Math.max(0, f - 1)][i];
+        if (s.pose === "vitoria" && s.salto === 0 && antes.salto > 0) [sx, sy] = [1.1, 0.88];
+        const dw = SW * sx;
+        const dh = SH * sy;
+        ctx.drawImage(sprite(l, dir, s.pose, flash, k), snap(s.x - dw / 2), snap(s.y + 1 - s.salto - dh), dw, dh);
         // status sobre o sprite
         if (s.status === "FRZ") {
           ctx.fillStyle = "rgba(120,230,255,0.45)";
@@ -301,9 +325,11 @@ const desenharMundo = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
     ret(ctx, c.x + 2 + enc, c.y + 2, c.w - 4 - enc * 2, 1, tom(cor, 0.35));
     ret(ctx, c.x + 2 + enc, c.y + c.h - 3, c.w - 4 - enc * 2, 1, tom(cor, -0.3));
     {
-      const sombra = luz(cor) > 0.55 ? tom(cor, -0.65) : tom(cor, -0.5);
+      // texto branco; em fundos muito claros (branco, prata) vira escuro para continuar legível
+      const claro = luz(cor) > 0.68;
+      const sombra = claro ? "#FFFFFF" : tom(cor, -0.55);
       texto(ctx, c.atq.golpe.nome, c.x + 5 + 1, c.y + 4 + 1, sombra);
-      texto(ctx, c.atq.golpe.nome, c.x + 5, c.y + 4, "#FFFFFF");
+      texto(ctx, c.atq.golpe.nome, c.x + 5, c.y + 4, claro ? "#1E1A2E" : "#FFFFFF");
     }
     // seta para o lutador
     px(ctx, c.x + c.w / 2 - 1, c.y + c.h, CONTORNO, 2);
@@ -537,7 +563,7 @@ const desenharUI = (ctx: Ctx, ep: Episodio, sim: Sim, f: number) => {
 
 // ── quadro completo ─────────────────────────────────────
 export const desenharQuadro = (alvo: HTMLCanvasElement, ep: Episodio, sim: Sim, f: number) => {
-  mundo ??= canvas(MW, MH);
+  if (!mundo || mundo.width !== MW * ep.k) mundo = canvas(MW * ep.k, MH * ep.k);
   ui ??= canvas(W, H);
   const mctx = mundo.getContext("2d")!;
   mctx.imageSmoothingEnabled = false;
@@ -554,6 +580,7 @@ export const desenharQuadro = (alvo: HTMLCanvasElement, ep: Episodio, sim: Sim, 
   const vh = H / cam.z;
   const sx = cam.cx - vw / 2 + M;
   const sy = cam.cy - vh / 2 + M;
-  ctx.drawImage(mundo, sx, sy, vw, vh, 0, 0, W * ESCALA, H * ESCALA);
+  const k = ep.k;
+  ctx.drawImage(mundo, sx * k, sy * k, vw * k, vh * k, 0, 0, W * ESCALA, H * ESCALA);
   ctx.drawImage(ui, 0, 0, W, H, 0, 0, W * ESCALA, H * ESCALA);
 };

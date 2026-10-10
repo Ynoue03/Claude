@@ -21,6 +21,7 @@ Prompt completo para recriar/gerar episódios: [`PROMPT-ARENA.md`](../../../PROM
 
 | Campo | O que faz |
 |---|---|
+| `sprite` | 32, 64 ou 128 — resolução/detalhe dos sprites (padrão 128); veja `ArenaSprites` no Studio |
 | `seed` | define tudo: elenco sorteado, arena, movimentos, ordem das quedas, vencedor |
 | `arena` | `"aleatoria"` ou um id de `temas.ts` (vale-do-fim, budokai, marineford, shibuya, sokyoku, trem-infinito, ua-festival, namek) |
 | `sorteio` | `quantidade`, `maxPorAnime`, `animes`, `incluir`, `excluir` — sorteia no `elenco.json` (50 personagens, 18 animes) |
