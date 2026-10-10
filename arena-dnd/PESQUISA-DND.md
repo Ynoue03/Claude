@@ -1,5 +1,9 @@
 # Pesquisa: regras de D&D usadas na Arena D20
 
+> **Atualização:** os episódios agora começam todos no **nível 1** e só o campeão sobe de nível.
+> A progressão nível a nível (poderes, magias, espaços, proficiência) está em `src/motor/niveis.ts`
+> e na tabela "Poderes por nível" do `PROMPT-ARENA-D20.md`. As tabelas abaixo descrevem o nível 5.
+
 Base: **System Reference Document 5.2 (SRD 5.2)** — o "núcleo aberto" das regras de 2024 da 5ª edição,
 publicado pela Wizards of the Coast sob **Creative Commons CC-BY-4.0**. Isso permite usar regras, classes,
 espécies e magias do SRD em conteúdo próprio (inclusive monetizado), **desde que se dê o crédito**

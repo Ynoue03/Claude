@@ -116,9 +116,9 @@ def efeitos():
 BPM = 150
 
 
-def musica(compassos=32):
+def musica(compassos=32, bpm=None):
     """Batalha em lá menor: baixo em triângulo, arpejo em pulso 12,5%, melodia em pulso 25%, bateria em ruído."""
-    seminima = 60 / BPM
+    seminima = 60 / (bpm or BPM)
     colcheia = seminima / 2
     total = int(SR * compassos * 4 * seminima)
     out = np.zeros(total)
@@ -185,8 +185,51 @@ def vitoria():
     return out
 
 
+def extras():
+    """Efeitos do calabouço, cut-in, duelo e pergaminho."""
+    s = {}
+    # cut-in: whoosh subindo + estalo
+    w = ruido(0.28, 1) * env(int(SR * 0.28), a=0.12, d=0.06)
+    s["cutin"] = np.concatenate([w * 0.7, 0.9 * pulso(varre(1400, 2400, 0.06), 0.06, 0.125) * env(int(SR * 0.06), d=0.03)])
+    # VS: impacto grave + acorde
+    s["vs"] = pulso(varre(110, 40, 0.5), 0.5) * env(int(SR * 0.5), d=0.25) + 0.6 * ruido(0.5, 16) * env(int(SR * 0.5), d=0.15) + sum(
+        0.25 * pulso(nota(n), 0.5, 0.25) * env(int(SR * 0.5), a=0.01, d=0.3) for n in (57, 64, 69))
+    # level up: arpejo subindo brilhante
+    s["levelup"] = np.concatenate([pulso(nota(n), 0.08, 0.25) * env(int(SR * 0.08), d=0.12) for n in (72, 76, 79, 84, 88, 91)] + [
+        (pulso(nota(96), 0.5, 0.25) * 0.7 + triangulo(nota(84), 0.5) * 0.5) * env(int(SR * 0.5), d=0.25)])
+    # papel desenrolando
+    s["papel"] = ruido(0.7, 3) * env(int(SR * 0.7), a=0.05, d=0.3) * (0.6 + 0.4 * np.sign(np.sin(t_(0.7) * 90)))
+    # "plim" de cada + verde (5 alturas, sobem na escala)
+    for i, n in enumerate((84, 86, 88, 91, 93)):
+        s[f"plim{i + 1}"] = (pulso(nota(n), 0.14, 0.125) * 0.7 + triangulo(nota(n + 12), 0.14) * 0.4) * env(int(SR * 0.14), d=0.06)
+    # dado rolando (para o pergaminho)
+    s["dado"] = np.concatenate([ruido(0.03, 2) * env(int(SR * 0.03), d=0.01) * (0.4 + 0.1 * i) for i in range(6)])
+    for nome, x in s.items():
+        salvar(os.path.join(SFX, f"{nome}.wav"), x, 0.8)
+
+
+def ambiente(seg=30):
+    """Calabouço: crepitar de tochas (estalos de ruído) + gotas + ronco grave, em loop."""
+    n = int(SR * seg)
+    out = 0.05 * np.repeat(rng.uniform(-1, 1, n // 40 + 1), 40)[:n]  # ronco
+    for _ in range(int(seg * 22)):  # estalos
+        i = rng.integers(0, n - 2000)
+        out[i : i + 600] += rng.uniform(0.1, 0.35) * ruido(600 / SR, 1) * env(600, d=0.004)
+    for k in range(int(seg / 2.3)):  # gotas com eco
+        i = int((k * 2.3 + rng.uniform(0, 1)) * SR)
+        g = triangulo(varre(1700, 900, 0.09), 0.09) * env(int(SR * 0.09), d=0.03) * 0.5
+        for e, a in ((0, 1), (0.18, 0.35), (0.36, 0.15)):
+            j = i + int(e * SR)
+            if j + len(g) < n:
+                out[j : j + len(g)] += g * a
+    return out
+
+
 if __name__ == "__main__":
     nomes = efeitos()
     salvar(os.path.join(RAIZ, "musica-batalha.wav"), musica(), 0.6)
     salvar(os.path.join(RAIZ, "vitoria.wav"), vitoria(), 0.7)
+    salvar(os.path.join(RAIZ, "musica-duelo.wav"), musica(16, 172), 0.6)
+    salvar(os.path.join(RAIZ, "ambiente-calabouco.wav"), ambiente(), 0.5)
+    extras()
     print(f"✓ {len(nomes)} efeitos em public/audio/sfx/ + musica-batalha.wav + vitoria.wav")

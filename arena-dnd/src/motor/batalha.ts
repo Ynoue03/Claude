@@ -2,7 +2,8 @@
 // Cada rolagem acontece de verdade (dados com semente) e vira um evento com tempo
 // em quadros (30 fps) para o vídeo. O mesmo resultado sai no log da ficha.
 
-import { Atributo, CLASSES, COR_DANO, MAGIAS, Magia, PROFICIENCIA, TipoDano } from "./srd";
+import { Atributo, CLASSES, COR_DANO, MAGIAS, Magia, TipoDano } from "./srd";
+import { dadosTruque, magiasDe, profDe } from "./niveis";
 import { criarRng, d, d20, embaralhar, mod, Rng, rolar, sinal } from "./dados";
 import { Ficha } from "./personagem";
 
@@ -21,7 +22,10 @@ export type Ev =
   | { k: "som"; t: number; arquivo: string; vol: number }
   | { k: "morte"; id: number; t: number }
   | { k: "turno"; id: number; t: number; rodada: number }
-  | { k: "tremor"; t: number; forca: number };
+  | { k: "tremor"; t: number; forca: number }
+  // golpe especial: congela a ação e mostra o rosto (o episódio escolhe quais viram cut-in)
+  | { k: "cutin"; id: number; t: number; texto: string; sub: string; cor: string; prio: number }
+  | { k: "duelo"; t: number; ids: [number, number] };
 
 export type Resultado = {
   semente: number;
@@ -72,6 +76,8 @@ type Lutador = {
   repreensao: boolean;
   inspiracao: boolean;
   adrenalina: number;
+  centelha: boolean;
+  vexAlvo?: number; // Maestria "Irritar" (ladino): vantagem no próximo ataque contra esse alvo
   lentoAte: number;
 };
 
@@ -95,31 +101,32 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     return {
       f,
       id: f.id,
-      x: Math.cos(ang) * 44,
-      y: Math.sin(ang) * 44,
+      x: Math.cos(ang) * (i % 2 ? 36 : 47),
+      y: Math.sin(ang) * (i % 2 ? 36 : 47),
       pv: f.pv,
       pvMax: f.pv,
       temp: 0,
       vivo: true,
       espacos: [...f.espacos] as [number, number, number],
       furia: false,
-      usosFuria: 3,
+      usosFuria: f.nivel >= 3 ? 3 : 2,
       descuidadoAte: -1,
       atordoadoAte: -1,
       guiado: false,
       zombado: false,
       escudoAte: -1,
       esquivaRodada: -1,
-      surto: f.classe === "guerreiro" ? 1 : 0,
+      surto: f.classe === "guerreiro" && f.nivel >= 2 ? 1 : 0,
       folego: f.classe === "guerreiro" ? 2 : 0,
-      curaMaos: f.classe === "paladino" ? 25 : 0,
-      foco: f.classe === "monge" ? 5 : 0,
-      sopro: f.especie === "draconato" ? PROFICIENCIA : 0,
-      pedra: f.especie === "golias" ? PROFICIENCIA : 0,
+      curaMaos: f.classe === "paladino" ? 5 * f.nivel : 0,
+      foco: f.classe === "monge" && f.nivel >= 2 ? f.nivel : 0,
+      sopro: f.especie === "draconato" ? profDe(f.nivel) : 0,
+      pedra: f.especie === "golias" ? profDe(f.nivel) : 0,
       implacavel: f.especie === "orc",
-      repreensao: f.especie === "tiefling",
+      repreensao: f.especie === "tiefling" && f.nivel >= 3,
       inspiracao: f.especie === "humano",
-      adrenalina: f.especie === "orc" ? PROFICIENCIA : 0,
+      adrenalina: f.especie === "orc" ? profDe(f.nivel) : 0,
+      centelha: f.classe === "clerigo" && f.nivel >= 2,
       lentoAte: -1,
     };
   });
@@ -138,6 +145,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   log.push(`Iniciativa (d20+DES): ${iniciativa.map((i) => `${porId(i.id).f.nome} ${i.d20}${sinal(m(porId(i.id), "DES"))}=${i.total}`).join(", ")}`);
 
   let t = INTRO;
+  let duelo = false;
   let turnoGlobal = 0;
   let rodada = 0;
 
@@ -154,7 +162,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     const vant = alvo.f.especie === "gnomo" && (atr === "INT" || atr === "SAB" || atr === "CAR");
     let r = d20(rng, vant ? "vantagem" : "normal").valor;
     if (r === 1 && alvo.f.especie === "halfling") r = d(rng, 20); // Sortudo
-    const prof = CLASSES[alvo.f.classe].salvaguardas.includes(atr) ? PROFICIENCIA : 0;
+    const prof = CLASSES[alvo.f.classe].salvaguardas.includes(atr) ? profDe(alvo.f.nivel) : 0;
     const total = r + m(alvo, atr) + prof;
     return { passou: total >= cd, dado: r, total, auto: false };
   };
@@ -166,15 +174,15 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     let dano = bruto;
     if (resistente(alvo, tipo)) dano = Math.floor(dano / 2);
     // Esquiva Sobrenatural (ladino): metade do dano de um ataque por rodada
-    if (ataque && alvo.f.classe === "ladino" && alvo.esquivaRodada !== rodada && dano >= 6 && alvo.atordoadoAte < turnoGlobal) {
+    if (ataque && alvo.f.classe === "ladino" && alvo.f.nivel >= 5 && alvo.esquivaRodada !== rodada && dano >= 6 && alvo.atordoadoAte < turnoGlobal) {
       alvo.esquivaRodada = rodada;
       dano = Math.floor(dano / 2);
       ev.push({ k: "rotulo", id: alvo.id, t: tq, dur: 30, texto: "ESQUIVA SOBRENATURAL", cor: "#9aa3b5" });
     }
     // Defletir Ataques (monge): reação, reduz 1d10 + DES + nível de dano cortante/perfurante/concussão
-    if (ataque && alvo.f.classe === "monge" && alvo.esquivaRodada !== rodada && dano >= 8 && (tipo === "cortante" || tipo === "perfurante" || tipo === "concussão") && alvo.atordoadoAte < turnoGlobal) {
+    if (ataque && alvo.f.classe === "monge" && alvo.f.nivel >= 3 && alvo.esquivaRodada !== rodada && dano >= 8 && (tipo === "cortante" || tipo === "perfurante" || tipo === "concussão") && alvo.atordoadoAte < turnoGlobal) {
       alvo.esquivaRodada = rodada;
-      const red = d(rng, 10) + m(alvo, "DES") + 5;
+      const red = d(rng, 10) + m(alvo, "DES") + alvo.f.nivel;
       dano = Math.max(0, dano - red);
       ev.push({ k: "rotulo", id: alvo.id, t: tq, dur: 30, texto: "DEFLETIR ATAQUES", cor: "#51a5c5" });
       log.push(`   ${alvo.f.nome} deflete o ataque: −${red}`);
@@ -214,6 +222,12 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
         som(tq + 4, "derrota.wav", 0.8);
         if (fonte && fonte.id !== alvo.id) abates[fonte.id] = (abates[fonte.id] ?? 0) + 1;
         log.push(`   ☠ ${alvo.f.nome} cai!${fonte ? ` (abatido por ${fonte.f.nome})` : ""}`);
+        if (vivos().length === 2 && !duelo) {
+          duelo = true;
+          const [a, b] = vivos();
+          ev.push({ k: "duelo", t: tq + 30, ids: [a.id, b.id] });
+          log.push(`   ⚔ DUELO FINAL: ${a.f.nome} × ${b.f.nome}`);
+        }
         return dano;
       }
     }
@@ -231,7 +245,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     if (alvo.repreensao && fonte && fonte.vivo && fonte.id !== alvo.id && dano > 0) {
       alvo.repreensao = false;
       const r = rolar(rng, "2d10");
-      const cd = 8 + PROFICIENCIA + m(alvo, "CAR");
+      const cd = 8 + profDe(alvo.f.nivel) + m(alvo, "CAR");
       const s = salvaguarda(fonte, "DES", cd);
       const final = s.passou ? Math.floor(r.total / 2) : r.total;
       ev.push({ k: "rotulo", id: alvo.id, t: tq + 8, dur: 34, texto: "REPREENSÃO INFERNAL", cor: COR_DANO.fogo });
@@ -329,10 +343,11 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   const modoAtaque = (l: Lutador, alvo: Lutador, op: OpAtaque, extraVant = false) => {
     let v = extraVant ? 1 : 0;
     let dv = 0;
-    if (l.furia && op.arma && !op.distancia) v++; // Ataque Descuidado
+    if (l.furia && l.f.nivel >= 2 && op.arma && !op.distancia) v++; // Ataque Descuidado (nível 2)
     if (alvo.descuidadoAte >= turnoGlobal) v++;
     if (alvo.atordoadoAte >= turnoGlobal) v++;
     if (alvo.guiado) v++;
+    if (l.vexAlvo === alvo.id && op.arma) v++;
     if (l.zombado) dv++;
     if (op.distancia && vivos().some((o) => o.id !== l.id && dist(o, l) <= ALCANCE_CORPO)) dv++;
     return v && !dv ? "vantagem" : dv && !v ? "desvantagem" : "normal";
@@ -351,18 +366,19 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     }
     let total = nat + op.bonus;
     let caAlvo = alvo.f.ca + (alvo.escudoAte >= turnoGlobal ? 5 : 0);
-    let acertou = nat === 20 || (nat !== 1 && total >= caAlvo);
+    const minCrit = l.f.classe === "guerreiro" && l.f.nivel >= 3 && op.arma ? 19 : 20; // Crítico Aprimorado
+    let acertou = nat >= minCrit || (nat !== 1 && total >= caAlvo);
     // Inspiração Heroica (humano): rerrola um ataque que errou
     if (!acertou && l.inspiracao && nat !== 1) {
       l.inspiracao = false;
       rol = d20(rng, "normal");
       nat = rol.valor;
       total = nat + op.bonus;
-      acertou = nat === 20 || (nat !== 1 && total >= caAlvo);
+      acertou = nat >= minCrit || (nat !== 1 && total >= caAlvo);
       log.push(`   (Inspiração Heroica: rerrola → ${nat})`);
     }
     // Escudo (reação de mago/feiticeiro): +5 CA se isso transformar acerto em erro
-    if (acertou && nat !== 20 && (alvo.f.classe === "mago" || alvo.f.classe === "feiticeiro") && alvo.espacos[0] > 0 && total < caAlvo + 5 && alvo.escudoAte < turnoGlobal) {
+    if (acertou && nat < minCrit && (alvo.f.classe === "mago" || alvo.f.classe === "feiticeiro") && alvo.espacos[0] > 0 && total < caAlvo + 5 && alvo.escudoAte < turnoGlobal) {
       alvo.espacos[0]--;
       alvo.escudoAte = turnoGlobal + vivos().length; // até o próximo turno dele (aprox.)
       caAlvo += 5;
@@ -372,7 +388,8 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       som(ta + 6, "escudo.wav", 0.7);
       log.push(`   ${alvo.f.nome} conjura Escudo (+5 CA)!`);
     }
-    const critico = nat === 20;
+    const critico = nat >= minCrit;
+    if (critico) ev.push({ k: "cutin", id: l.id, t: ta - 1, texto: rotulo ?? l.f.arma.nome.toUpperCase(), sub: `${nat} NATURAL · CRÍTICO!`, cor: "#ffd84a", prio: 3 });
     const cor = critico ? "#ffd84a" : nat === 1 ? "#d94a3a" : acertou ? "#7fe08a" : "#9aa3b5";
     ev.push({ k: "dado", id: l.id, t: ta, valor: nat, total, cor });
     if (rotulo) ev.push({ k: "rotulo", id: l.id, t: ta - 2, dur: 30, texto: rotulo, cor: op.cor ?? COR_DANO[op.tipo] });
@@ -427,13 +444,15 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     // Ataque Furtivo (ladino): 3d6 se tiver vantagem, 1×/turno
     if (l.f.classe === "ladino" && !sneakDisponivel.usado && modo === "vantagem") {
       sneakDisponivel.usado = true;
-      const e = rolar(rng, "3d6", critico);
+      const e = rolar(rng, `${Math.ceil(l.f.nivel / 2)}d6`, critico);
       total2 += e.total;
       partes.push(`+${e.expr}[${e.dados.join(",")}] furtivo`);
       ev.push({ k: "rotulo", id: l.id, t: ta + 4, dur: 30, texto: "ATAQUE FURTIVO", cor: "#c8ccd4" });
     }
     log.push(`   ${l.f.nome} → ${alvo.f.nome}: ${desc} → ${critico ? "CRÍTICO! " : "acerta, "}${partes.join(" ")} = ${total2} ${op.tipo}`);
     causarDano(l, alvo, total2, op.tipo, tq, critico, true);
+    if (op.arma) l.vexAlvo = l.f.classe === "ladino" && ["rapieira", "espadaCurta", "arcoCurto"].includes(l.f.armaId) ? alvo.id : undefined;
+    if (!alvo.vivo && !critico) ev.push({ k: "cutin", id: l.id, t: ta - 1, texto: rotulo ?? (op.arma ? l.f.arma.nome.toUpperCase() : "GOLPE FINAL"), sub: `${total2} DE DANO · GOLPE FINAL`, cor: op.cor ?? COR_DANO[op.tipo], prio: 2 });
     return { acertou: true, tq, critico };
   };
 
@@ -441,12 +460,24 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   const alvosArea = (cx: number, cy: number, raio: number, excluir: number) =>
     vivos().filter((o) => o.id !== excluir && Math.hypot(o.x - cx, o.y - cy) <= raio + 2.5);
 
+  // dados de dano da magia: truques escalam com o nível do personagem; magias, com o círculo usado
+  const exprMagia = (l: Lutador, magia: Magia, circulo: number) => {
+    if (!magia.dano) return "0d1";
+    if (magia.nivel === 0 && magia.id !== "rajadaMistica") {
+      const [q, resto] = magia.dano.split("d");
+      return `${Number(q) * dadosTruque(l.f.nivel)}d${resto}`;
+    }
+    const extra = magia.porCirculo && circulo > magia.nivel ? circulo - magia.nivel : 0;
+    return extra ? somarDados(magia.dano, magia.porCirculo!, extra) : magia.dano;
+  };
+
   const magiaSalva = (l: Lutador, magia: Magia, circulo: number, alvos: Lutador[], cx: number, cy: number, ta: number, rotulo = true) => {
     const cd = l.f.cd!;
-    const extra = magia.porCirculo && circulo > magia.nivel ? circulo - magia.nivel : 0;
-    const expr = extra ? somarDados(magia.dano!, magia.porCirculo!, extra) : magia.dano!;
+    const expr = exprMagia(l, magia, circulo);
     const r = rolar(rng, expr);
     if (rotulo) ev.push({ k: "rotulo", id: l.id, t: ta - 2, dur: 34, texto: magia.nome.toUpperCase(), cor: COR_DANO[magia.tipo!] });
+    const vivosAntes = alvos.filter((a) => a.vivo).length;
+    if (vivosAntes >= 2 || magia.id === "sopro") ev.push({ k: "cutin", id: l.id, t: ta - 1, texto: magia.nome.toUpperCase(), sub: `${r.expr} = ${r.total}`, cor: COR_DANO[magia.tipo!], prio: 2 });
     ev.push({ k: "anim", id: l.id, t: ta, tipo: "magia", dx: Math.sign(cx - l.x) || 1 });
     let tq = ta + 8;
     if (magia.efeito === "explosao") {
@@ -500,6 +531,8 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
         }
       }
     });
+    if (vivosAntes < 2 && magia.id !== "sopro" && alvos.some((a) => !a.vivo))
+      ev.push({ k: "cutin", id: l.id, t: ta - 1, texto: magia.nome.toUpperCase(), sub: `${r.expr} = ${r.total} · GOLPE FINAL`, cor: COR_DANO[magia.tipo!], prio: 2 });
     return tq + alvos.length * 2;
   };
 
@@ -565,10 +598,10 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
   const opArma = (l: Lutador): OpAtaque => {
     const a = l.f.arma;
     const atr: Atributo = a.atributo === "acuidade" ? (m(l, "DES") >= m(l, "FOR") ? "DES" : "FOR") : a.atributo;
-    const arquearia = l.f.classe === "patrulheiro" && a.alcance > 5 ? 2 : 0;
+    const arquearia = l.f.classe === "patrulheiro" && l.f.nivel >= 2 && a.alcance > 5 ? 2 : 0;
     return {
-      bonus: m(l, atr) + PROFICIENCIA + arquearia,
-      dano: a.dano,
+      bonus: m(l, atr) + profDe(l.f.nivel) + arquearia,
+      dano: l.f.classe === "monge" ? (l.f.nivel >= 5 ? "1d8" : "1d6") : a.dano, // Artes Marciais
       modDano: m(l, atr),
       tipo: a.tipo,
       distancia: a.alcance > 5,
@@ -610,7 +643,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
 
   // ---------- turno do conjurador ----------
   const turnoConjurador = (l: Lutador, t0: number): number => {
-    const lista = CLASSES[l.f.classe].conjuracao!.magias.map((id) => MAGIAS[id]);
+    const lista = magiasDe(l.f.classe, l.f.nivel).map((id) => MAGIAS[id]);
     const atrConj = CLASSES[l.f.classe].conjuracao!.atributo;
     let t1 = t0;
     let bonusUsado = false;
@@ -681,13 +714,16 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       const custo = s.nivel === 0 ? 0 : s.nivel * 2.2 + 1;
       const circ = s.nivel === 0 ? 0 : Math.max(s.nivel, l.espacos.findIndex((q, i) => q > 0 && i + 1 >= s.nivel) + 1);
       const extra = s.porCirculo && circ > s.nivel ? circ - s.nivel : 0;
-      const expr = extra ? somarDados(s.dano!, s.porCirculo!, extra) : s.dano!;
+      const expr = s.dano ? (s.nivel === 0 ? exprMagia(l, s, 0) : extra ? somarDados(s.dano, s.porCirculo!, extra) : s.dano) : "0d1";
       if (s.concentracao && l.conc) continue;
 
       if (s.modo === "ataque" && s.alcance >= 30) {
-        const feixes = (s.feixes ?? 1) + (s.feixesPorCirculo ?? 0) * (circ > s.nivel ? circ - s.nivel : 0);
-        const bonusDano = s.id === "rajadaMistica" ? m(l, "CAR") : 0;
-        const valor = (media(expr) + bonusDano) * feixes * 0.62 - custo + (s.id === "raioGuia" ? 2 : 0);
+        // Rajada Mística: 1 feixe por "dado de truque" (2 no nível 5); +CAR com Rajada Agonizante (nível 2)
+        const feixesBase = s.id === "rajadaMistica" ? dadosTruque(l.f.nivel) : s.feixes ?? 1;
+        const feixes = feixesBase + (s.feixesPorCirculo ?? 0) * (circ > s.nivel ? circ - s.nivel : 0);
+        const bonusDano = s.id === "rajadaMistica" && l.f.nivel >= 2 ? m(l, "CAR") : 0;
+        const chance = Math.min(0.95, Math.max(0.05, (21 - (alvo.f.ca - (l.f.ataqueMagia ?? 0))) / 20));
+        const valor = (media(expr) + bonusDano) * feixes * chance - custo + (s.id === "raioGuia" ? 2 : 0);
         ops.push({
           valor,
           fazer: () => {
@@ -695,9 +731,9 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
             let tt = posicionarDistancia(l, alvo, s.alcance, t1, l.f.deslocamento);
             ev.push({ k: "rotulo", id: l.id, t: tt, dur: 34, texto: s.nome.toUpperCase(), cor: COR_DANO[s.tipo!] });
             if (s.concentracao) l.conc = { magia: s, circulo: c, desde: tt };
-            const n = (s.feixes ?? 1) + (s.feixesPorCirculo ?? 0) * (c > s.nivel ? c - s.nivel : 0);
+            const n = feixesBase + (s.feixesPorCirculo ?? 0) * (c > s.nivel ? c - s.nivel : 0);
             const ex = s.porCirculo && c > s.nivel ? c - s.nivel : 0;
-            const dExpr = ex ? somarDados(s.dano!, s.porCirculo!, ex) : s.dano!;
+            const dExpr = s.nivel === 0 && s.id !== "rajadaMistica" ? exprMagia(l, s, 0) : ex ? somarDados(s.dano!, s.porCirculo!, ex) : s.dano!;
             let fim = tt;
             for (let i = 0; i < n; i++) {
               const a = i === 0 || !alvo.vivo ? (alvo.vivo ? alvo : melhorAlvo(l, s.alcance)) : alvo;
@@ -887,6 +923,18 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
         },
       });
     }
+    // Centelha Divina (clérigo nível 2): 1d8 + SAB radiante, CON para metade, 1× por batalha
+    if (l.centelha) {
+      ops.push({
+        valor: 4.5 + m(l, "SAB") + 3,
+        fazer: () => {
+          l.centelha = false;
+          const centelha: Magia = { id: "centelha", nome: "Centelha Divina", nivel: 1, modo: "salvaguarda", dano: `1d8+${Math.max(0, m(l, "SAB"))}`, tipo: "radiante", salva: "CON", metade: true, alcance: 30, efeito: "coluna" };
+          const tt = posicionarDistancia(l, alvo, 30, t1, l.f.deslocamento);
+          return magiaSalva(l, centelha, 1, alvo.vivo ? [alvo] : [], alvo.x, alvo.y, tt + 2);
+        },
+      });
+    }
     // ataque com arma (clérigo com maça, bardo com rapieira) se o alvo estiver colado
     if (proximo && dist(l, proximo) <= ALCANCE_CORPO) {
       const op = opArma(l);
@@ -920,9 +968,9 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       fazer: () => {
         l.sopro--;
         const tipo = l.f.dragao!.tipo;
-        const sopro: Magia = { id: "sopro", nome: `Sopro de Dragão`, nivel: 0, modo: "salvaguarda", dano: "2d10", tipo, salva: "DES", metade: true, alcance: 15, raio: 15, efeito: "cone" };
+        const sopro: Magia = { id: "sopro", nome: `Sopro de Dragão`, nivel: 0, modo: "salvaguarda", dano: l.f.nivel >= 5 ? "2d10" : "1d10", tipo, salva: "DES", metade: true, alcance: 15, raio: 15, efeito: "cone" };
         const cdAntes = l.f.cd;
-        l.f.cd = 8 + PROFICIENCIA + m(l, "CON");
+        l.f.cd = 8 + profDe(l.f.nivel) + m(l, "CON");
         const fim = magiaSalva(l, sopro, 0, noCone.filter((o) => o.vivo), l.x + Math.cos(ang) * 15, l.y + Math.sin(ang) * 15, t1 + 2);
         l.f.cd = cdAntes;
         return fim;
@@ -946,6 +994,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       l.usosFuria--;
       bonusUsado = true;
       ev.push({ k: "rotulo", id: l.id, t: t1, dur: 34, texto: "FÚRIA!", cor: "#e8552e" });
+      ev.push({ k: "cutin", id: l.id, t: t1 - 1, texto: "FÚRIA!", sub: "+2 DE DANO · RESISTÊNCIA", cor: "#e8552e", prio: 1 });
       ev.push({ k: "aura", id: l.id, t0: t1 + 2, t1: 999999, raio: 4, cor: "#e8552e", tipo: "furia" });
       som(t1, "furia.wav", 0.8);
       log.push(`   ${l.f.nome} entra em Fúria!`);
@@ -956,7 +1005,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       bonusUsado = true;
       const r = rolar(rng, "1d10");
       ev.push({ k: "rotulo", id: l.id, t: t1, dur: 30, texto: "RETOMAR O FÔLEGO", cor: COR_DANO.cura });
-      curar(l, l, r.total + 5, t1 + 6, `Retomar o Fôlego 1d10[${r.dados[0]}]+5`);
+      curar(l, l, r.total + l.f.nivel, t1 + 6, `Retomar o Fôlego 1d10[${r.dados[0]}]+${l.f.nivel}`);
       t1 += 12;
     }
     if (l.f.classe === "paladino" && l.curaMaos > 0 && l.pv < l.pvMax * 0.4) {
@@ -1004,10 +1053,10 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       parado = false;
       // se não alcança andando, Disparada (ação) ou Ação Ardilosa / Surto de Adrenalina (bônus)
       const precisa = dist(l, alvo) - ALCANCE_CORPO;
-      if (precisa > desloc && !bonusUsado && (l.f.classe === "ladino" || l.adrenalina > 0)) {
+      if (precisa > desloc && !bonusUsado && ((l.f.classe === "ladino" && l.f.nivel >= 2) || l.adrenalina > 0)) {
         if (l.adrenalina > 0) {
           l.adrenalina--;
-          l.temp = Math.max(l.temp, PROFICIENCIA);
+          l.temp = Math.max(l.temp, profDe(l.f.nivel));
           ev.push({ k: "rotulo", id: l.id, t: t1, dur: 28, texto: "SURTO DE ADRENALINA", cor: "#8aa871" });
         } else ev.push({ k: "rotulo", id: l.id, t: t1, dur: 28, texto: "AÇÃO ARDILOSA", cor: "#9aa3b5" });
         desloc *= 2;
@@ -1024,7 +1073,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     }
     // Mira Firme (ladino): vantagem se não se moveu
     let vantagem = false;
-    if (l.f.classe === "ladino" && parado && !bonusUsado) {
+    if (l.f.classe === "ladino" && l.f.nivel >= 3 && parado && !bonusUsado) {
       vantagem = true;
       bonusUsado = true;
       ev.push({ k: "rotulo", id: l.id, t: t1, dur: 26, texto: "MIRA FIRME", cor: "#9aa3b5" });
@@ -1034,7 +1083,8 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     // Arma de Sopro substitui um ataque (draconato)
     const opsSopro: { valor: number; fazer: () => number }[] = [];
     pushSopro(l, opsSopro, t1);
-    let ataquesRestantes = CLASSES[l.f.classe].ataquesPorAcao;
+    // Ataque Extra só no nível 5
+    let ataquesRestantes = CLASSES[l.f.classe].ataquesPorAcao > 1 && l.f.nivel >= 5 ? 2 : 1;
     if (opsSopro.length && opsSopro[0].valor > 16) {
       t1 = opsSopro[0].fazer() + 4;
       ataquesRestantes--;
@@ -1048,20 +1098,21 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
         }
         const r = atacar(l, alvo, opArma(l), t1, undefined, vantagem, sneak);
         // Destruição Divina (paladino): no acerto, gasta espaço (prioriza crítico)
-        if (r.acertou && l.f.classe === "paladino" && !bonusUsado && alvo.vivo && (r.critico || rng() < 0.55) && l.espacos.some((q) => q > 0)) {
+        if (r.acertou && l.f.classe === "paladino" && l.f.nivel >= 2 && !bonusUsado && alvo.vivo && (r.critico || rng() < 0.55) && l.espacos.some((q) => q > 0)) {
           const c = gastarEspaco(l, 1, Boolean(r.critico));
           const sm = rolar(rng, `${1 + c}d8`, r.critico);
           bonusUsado = true;
           ev.push({ k: "rotulo", id: l.id, t: t1 + 4, dur: 32, texto: "DESTRUIÇÃO DIVINA", cor: COR_DANO.radiante });
+          ev.push({ k: "cutin", id: l.id, t: t1 - 1, texto: "DESTRUIÇÃO DIVINA", sub: `${sm.expr} = ${sm.total} RADIANTE`, cor: COR_DANO.radiante, prio: 1 });
           ev.push({ k: "fx", t: r.tq, dur: 18, tipo: "coluna", x0: alvo.x, y0: alvo.y, x1: alvo.x, y1: alvo.y, cor: COR_DANO.radiante, raio: 4, para: alvo.id });
           som(r.tq, "sagrado.wav", 0.8);
           log.push(`   Destruição Divina (${c}º círculo): ${sm.expr}[${sm.dados.join(",")}] = ${sm.total} radiante`);
           causarDano(l, alvo, sm.total, "radiante", r.tq + 6);
         }
         // Golpe Atordoante (monge): 1 ponto de foco, CON contra CD
-        if (r.acertou && l.f.classe === "monge" && l.foco > 0 && alvo.vivo && alvo.atordoadoAte < turnoGlobal && rng() < 0.7) {
+        if (r.acertou && l.f.classe === "monge" && l.f.nivel >= 5 && l.foco > 0 && alvo.vivo && alvo.atordoadoAte < turnoGlobal && rng() < 0.7) {
           l.foco--;
-          const cd = 8 + PROFICIENCIA + m(l, "SAB");
+          const cd = 8 + profDe(l.f.nivel) + m(l, "SAB");
           const s = salvaguarda(alvo, "CON", cd);
           log.push(`   Golpe Atordoante: ${alvo.f.nome} CON ${s.dado}→${s.total} vs CD ${cd} → ${s.passou ? "resiste" : "ATORDOADO"}`);
           if (!s.passou) {
@@ -1080,6 +1131,7 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
     if (l.f.classe === "guerreiro" && l.surto > 0 && vivos().length > 1 && (rodada >= 2 || (alvo && alvo.pv < 15))) {
       l.surto--;
       ev.push({ k: "rotulo", id: l.id, t: t1, dur: 32, texto: "SURTO DE AÇÃO", cor: "#ffb347" });
+      ev.push({ k: "cutin", id: l.id, t: t1 - 1, texto: "SURTO DE AÇÃO", sub: "MAIS UMA AÇÃO!", cor: "#ffb347", prio: 1 });
       som(t1, "buff.wav", 0.7);
       log.push(`   ${l.f.nome} usa Surto de Ação!`);
       t1 += 6;
@@ -1091,6 +1143,9 @@ export const simular = (fichas: Ficha[], semente: number): Resultado => {
       ev.push({ k: "rotulo", id: l.id, t: t1, dur: 30, texto: "RAJADA DE GOLPES", cor: "#ffb347" });
       t1 += 4;
       fazerAtaques(2);
+    } else if (l.f.classe === "monge" && !bonusUsado && vivos().length > 1 && alvo && dist(l, alvo) <= ALCANCE_CORPO + 0.5) {
+      // Artes Marciais (nível 1): golpe desarmado extra como ação bônus
+      fazerAtaques(1);
     }
     if (l.f.classe === "barbaro" && l.furia) l.descuidadoAte = turnoGlobal + vivos().length;
     return t1;
@@ -1159,7 +1214,7 @@ export const tempo = (e: Ev) => ("t" in e ? e.t : e.t0);
 export const chegadas = (r: Pick<Resultado, "posIniciais">): Record<number, number> => {
   const ordem = [...r.posIniciais].sort((a, b) => Math.atan2(a.y, a.x) - Math.atan2(b.y, b.x));
   const out: Record<number, number> = {};
-  ordem.forEach((p, i) => (out[p.id] = 8 + i * 6));
+  ordem.forEach((p, i) => (out[p.id] = 6 + i * 5));
   return out;
 };
 

@@ -21,6 +21,8 @@ export const CENTRO_X = 19;
 
 export type Grade = (string | null)[][];
 export type Pose = "parado" | "passoA" | "passoB" | "golpe" | "magia" | "dano";
+export type Expressao = "neutra" | "concentrada" | "grito" | "dor" | "ofegante" | "derrota" | "vitoria";
+
 
 // ---------- materiais ----------
 // Letras sombreadas automaticamente:
@@ -31,6 +33,21 @@ const SOMBREADAS = "SHCPARMNLBGWFOV";
 
 type Parte = { x: number; y: number; px: string[] };
 const P = (x: number, y: number, ...px: string[]): Parte => ({ x, y, px });
+
+// rostos (olhos em x 20 e 24, linhas 13–14; boca em x 24, linha 16)
+const PELE7 = P(19, 12, "SSSSSSS", "SSSSSSS", "SSSSSSS");
+const EXPRESSOES: Record<Expressao, Parte[]> = {
+  neutra: [],
+  concentrada: [P(19, 12, "xx..xx")],
+  grito: [P(20, 12, "x...x", "e...e", "e...e"), P(23, 15, "oo", "oo")],
+  dor: [P(19, 13, "SS..SS", "xx..xx"), P(22, 16, "o.o"), P(27, 9, "Q", "Q", "QQ")],
+  ofegante: [P(19, 12, ".x...x"), P(23, 16, "o", "o"), P(27, 10, "Q", "QQ")],
+  derrota: [PELE7, P(19, 12, "x.x.x.x", ".x...x.", "x.x.x.x")],
+  vitoria: [P(19, 13, "SSSSSSS", "SSSSSSS"), P(19, 13, ".e...e.", "e.e.e.e"), P(22, 16, "o..o", ".oo.")],
+};
+// abaixo de 30% dos PV: arranhões, sangue e roupa rasgada
+const FERIDO = [P(21, 15, "X.", ".X"), P(15, 22, "x....", ".x...", "..x.X", "....."), P(19, 25, "X.x"), P(16, 29, "x")];
+const COROA = P(15, 0, "G..G..G", "GGGGGGG", "GZGGGZG");
 
 // ---------------- CABEÇA (vira para a direita) ----------------
 const CABECA = P(12, 7,
@@ -366,7 +383,7 @@ export const vestimenta = (f: Ficha): Vestimenta => {
 // ---------------- montagem ----------------
 type Px = { mat: string; parte: number } | null;
 
-export const montarSprite = (f: Ficha, pose: Pose = "parado"): Grade => {
+export const montarSprite = (f: Ficha, pose: Pose = "parado", expr: Expressao = "neutra", ferido = false, coroa = false): Grade => {
   const v = vestimenta(f);
   const pequeno = f.especie === "halfling" || f.especie === "gnomo" || f.especie === "anao";
   const sobe = pequeno ? 2 : 0; // espécies pequenas: pernas mais curtas (o corpo desce)
@@ -415,6 +432,7 @@ export const montarSprite = (f: Ficha, pose: Pose = "parado"): Grade => {
     add(CABECA_DRAGAO);
   } else {
     add(CABECA);
+    for (const e of EXPRESSOES[expr]) add(e);
     if (!cobreCabeca) for (const c of cabeloFrente) add(c);
     if (!cobreCabeca) add(f.especie === "gnomo" ? ORELHA_GNOMO : ORELHA);
     if (f.especie === "elfo" && !v.chapeu.includes("elmoFechado")) add(ORELHA_ELFO);
@@ -428,6 +446,8 @@ export const montarSprite = (f: Ficha, pose: Pose = "parado"): Grade => {
   // 5) braço da frente por cima
   if (v.ombreiras) add(OMBREIRA_FRENTE);
   add(troca(BRACO_FRENTE, "T", matManga));
+  if (ferido) for (const p of FERIDO) add(p);
+  if (coroa) add(COROA, 0);
 
   // ---------- rasteriza ----------
   const g: Px[][] = Array.from({ length: ALT }, () => Array<Px>(LARG).fill(null));
@@ -446,7 +466,7 @@ export const montarSprite = (f: Ficha, pose: Pose = "parado"): Grade => {
 };
 
 // ---------- sombreamento automático ----------
-const CORES_FIXAS: Record<string, string> = { e: "#1a1219", w: "#f4f0e6", x: "#1a1219", o: "#5a2a2a" };
+const CORES_FIXAS: Record<string, string> = { e: "#1a1219", w: "#f4f0e6", x: "#1a1219", o: "#5a2a2a", Q: "#8fd8ff", X: "#b0302a", Z: "#e0303a" };
 
 const sombrear = (g: Px[][], cores: Record<string, string>, f: Ficha): Grade => {
   const out: Grade = Array.from({ length: ALT }, () => Array<string | null>(LARG).fill(null));
@@ -545,3 +565,7 @@ export const descreverVestimenta = (f: Ficha) => {
   const tronco = { placas: "armadura de placas", malha: "cota de malha com tabardo", couro: "colete de couro", tunica: "túnica", manto: "manto longo", nu: "peito nu", gi: "gi de monge" }[v.tronco];
   return [...v.chapeu.map((c) => nomes[c]), tronco, v.ombreiras ? "ombreiras" : "", v.pele ? "pele nos ombros" : "", v.capa ? "capa" : "", f.escudo ? "escudo" : ""].filter(Boolean).join(", ");
 };
+
+// recorte do rosto para o painel (16×16) e para o cut-in/pergaminho (24×20, ampliado depois)
+export const retrato = (g: Grade, w = 16, h = 16, x0 = 12, y0 = 4): Grade =>
+  Array.from({ length: h }, (_, y) => Array.from({ length: w }, (_, x) => g[y0 + y]?.[x0 + x] ?? null));

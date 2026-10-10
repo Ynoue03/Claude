@@ -1,9 +1,11 @@
 # Arena D20 — batalhas pixel art com regras de RPG (TikTok / Reels / Shorts)
 
-Cada vídeo é um **"todos contra todos" entre 10 heróis** numa arena pixel art (estilo do vídeo modelo
-"Poké Pixel Arena"), com **regras da 5ª edição (SRD 5.2)**: atributos rolados em 4d6, PV rolados,
-ataques d20 contra CA, salvaguardas, críticos, magias com espaços e concentração. Nada é roteirizado:
-a batalha é simulada rolando dados de verdade, e a ficha publicada prova cada rolagem.
+Cada episódio (90 s) é um **"todos contra todos" entre 16 heróis de nível 1** num calabouço pixel art
+iluminado por tochas, com **regras da 5ª edição (SRD 5.2)**: atributos em 4d6, ataques d20 contra CA,
+salvaguardas, críticos, magias com espaços e concentração, poderes liberados por nível. O campeão
+**sobe de nível**, aparece num **pergaminho** com a ficha nova (ganhos em verde) e volta no próximo
+episódio para defender o título. Nada é roteirizado: a ficha publicada prova cada rolagem.
+Especificação completa do vídeo: `PROMPT-ARENA-D20.md`.
 
 > **Esta pasta tem identidade própria.** A paleta "aesthetic" e as regras de movimento do `CLAUDE.md`
 > da raiz valem para os vídeos de academia/alimentação, **não** para a Arena (aqui o visual é retrô 8/16-bit).
@@ -16,7 +18,7 @@ npm i                                   # 1ª vez
 npm run audio                           # 1ª vez: gera trilha chiptune + efeitos (próprios)
 
 # 1. coloque os personagens dos comentários em personagens/fila.json (ou use /nova-batalha no Claude)
-# 2. monta a batalha (pega até 10 da fila; o resto é sorteado), rola tudo e mixa o áudio
+# 2. monta o episódio (campeão anterior + até 15 da fila; o resto é sorteado), rola tudo e mixa o áudio
 npm run batalha
 # 3. renderiza e masteriza (−14 LUFS) → out/batalha-001-final.mp4
 npm run render -- batalha-001
@@ -27,7 +29,8 @@ Outros comandos:
 ```bash
 npm run dev                              # Studio do Remotion (mude a semente nos props e veja outra luta)
 npm run batalha -- --semente 1234        # repete uma batalha exatamente
-npm run batalha -- --sem-fila            # 10 personagens aleatórios
+npm run batalha -- --sem-fila            # sem a fila (aleatórios)
+npm run batalha -- --sem-campeao         # sem o campeão anterior (todos nível 1)
 npm run batalha -- --titulo "TORNEIO DOS MAGOS" --perfil @suaconta
 npm run sprites -- batalha-001           # folha de aprovação só com os 10 da batalha
 ```
@@ -38,7 +41,8 @@ npm run sprites -- batalha-001           # folha de aprovação só com os 10 da
 |---|---|
 | `batalhas/<nome>.json` | props do vídeo (semente + lutadores) — a batalha inteira sai daqui |
 | `batalhas/<nome>-ficha.md` | fichas, todas as rolagens, log do combate, **legenda e comentário fixado sugeridos** e o crédito do SRD |
-| `public/mix/<nome>.wav` | trilha + efeitos já sincronizados com os golpes |
+| `public/mix/<nome>.wav` | trilha + ambiente + efeitos já sincronizados com os golpes |
+| `campeoes/atual.json` | ficha do campeão (já com o nível novo), usada no próximo episódio |
 
 ## Personagens dos comentários
 
@@ -68,12 +72,14 @@ src/motor/        regras e simulação (sem nada de vídeo)
   srd.ts            classes, espécies, armas e magias do SRD 5.2 (nível 5)
   personagem.ts     ficha: rolagens de atributos, PV, CA, aparência
   descricao.ts      lê a descrição do comentário
+  niveis.ts         progressão nível 1→5: poderes, magias, espaços, proficiência
   batalha.ts        combate rodada a rodada → eventos com tempo em quadros
+  episodio.ts       encaixa a luta em 90 s, escolhe cut-ins, VS, sobe o nível do campeão e escreve a história
 src/pixel/        arte
   sprites.ts        sprites 40×40 em vista 3/4 montados por peças sorteadas (elmos, capuz, roupas, capa…) + armas
-  cenario.ts        ilha, arena octogonal, tochas, árvores, água
+  cenario.ts        calabouço, tablado em degraus, altar d20, tochas e iluminação
   fonte.ts          fonte bitmap 5×7 com acentos
-src/render/quadro.ts   desenha cada quadro (canvas 270×480 → 1080×1920, escala 4×)
+src/render/quadro.ts   desenha cada quadro (canvas 360×640 → 1080×1920, escala 3×): luta, painel 4×4, cut-in, VS, pergaminho
 audio/gerar_chip.py    trilha chiptune 150 BPM + 22 efeitos 8-bit
 scripts/              nova-batalha.ts (CLI), render.sh, preview-sprites.ts
 ```

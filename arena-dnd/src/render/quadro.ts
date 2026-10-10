@@ -1,18 +1,19 @@
 // Desenha um quadro da batalha a partir do resultado da simulação.
 // Determinístico: o quadro N sempre sai igual (requisito do Remotion).
-import type { Ev, Resultado } from "../motor/batalha";
+import type { Ev } from "../motor/batalha";
 import { chegadas, INTRO, RAIO_ARENA } from "../motor/batalha";
-import { CLASSES, ESPECIES } from "../motor/srd";
-import { criarRng } from "../motor/dados";
-import { animarCenario, corClasse, desenharFundo, paraTela, TELA_H, TELA_W, PX_POR_PE } from "../pixel/cenario";
-import { CENTRO_X, CHAO, Grade, MAO, montarArma, montarSprite, Pose } from "../pixel/sprites";
+import { ATRIBUTOS, CLASSES, ESPECIES, MAGIAS } from "../motor/srd";
+import { criarRng, mod, sinal } from "../motor/dados";
+import { cronograma, CTA, Episodio } from "../motor/episodio";
+import { magiasDe, poderesAte, profDe } from "../motor/niveis";
+import { animarCenario, corClasse, desenharFundo, iluminar, Luz, paraTela, SALA, TELA_H, TELA_W, PX_POR_PE } from "../pixel/cenario";
+import { CENTRO_X, CHAO, Expressao, Grade, MAO, montarArma, montarSprite, Pose, retrato } from "../pixel/sprites";
 import { larguraTexto, texto, textoCentro } from "../pixel/fonte";
 import { misturar, tom } from "../pixel/cor";
 
 type Ctx = CanvasRenderingContext2D;
 type EvK<K extends Ev["k"]> = Extract<Ev, { k: K }>;
 
-export const OUTRO = 180; // quadros depois do último golpe (igual a scripts/constantes.ts)
 
 const novaTela = (w: number, h: number) => {
   const c = document.createElement("canvas");
@@ -31,13 +32,14 @@ const gradeParaTela = (g: Grade) => {
 };
 
 type Recursos = {
-  poses: Record<Pose, HTMLCanvasElement>;
+  poses: Map<string, HTMLCanvasElement>; // pose + expressão + ferido
   arma: { c: HTMLCanvasElement; pega: [number, number]; chave: string };
   pequeno: boolean;
 };
 
 export class Cena {
-  r: Resultado;
+  r: Episodio;
+  retratos = new Map<string, HTMLCanvasElement>();
   fundo: HTMLCanvasElement;
   mundo = novaTela(TELA_W, TELA_H);
   comp = novaTela(TELA_W, TELA_H);
@@ -53,17 +55,16 @@ export class Cena {
   titulo: string;
   perfil: string;
 
-  constructor(r: Resultado, titulo = "ARENA D20", perfil = "") {
+  constructor(r: Episodio, titulo = "ARENA D20", perfil = "") {
     this.r = r;
     this.titulo = titulo;
     this.perfil = perfil;
-    this.duracao = r.fimBatalha + OUTRO;
+    this.duracao = r.duracao;
     const f = novaTela(TELA_W, TELA_H);
     desenharFundo(f.ctx);
     this.fundo = f.c;
     for (const ficha of r.fichas) {
-      const poses = {} as Record<Pose, HTMLCanvasElement>;
-      for (const p of ["parado", "passoA", "passoB", "golpe", "magia", "dano"] as Pose[]) poses[p] = gradeParaTela(montarSprite(ficha, p));
+      const poses = new Map<string, HTMLCanvasElement>();
       const a = montarArma(ficha);
       this.rec[ficha.id] = {
         poses,
@@ -180,46 +181,85 @@ export class Cena {
   }
 
   // ---------- quadro ----------
+  // quadro do "mundo": a ação congela durante cut-ins e no VS do duelo final
+  mundoF(f: number) {
+    for (const p of this.r.pausas) if (f >= p.t && f < p.t + p.dur) return p.t;
+    return f;
+  }
+
+  luzDoEfeito(e: EvK<"fx">, f: number): Luz {
+    const k = Math.min(1, (f - e.t) / e.dur);
+    const pe = e.de !== undefined ? this.estado(e.de, f) : { x: e.x0, y: e.y0 };
+    const pp = e.para !== undefined ? this.estado(e.para, f) : { x: e.x1, y: e.y1 };
+    const a = paraTela(pe.x, pe.y), b = paraTela(pp.x, pp.y);
+    const fade = 1 - k * 0.6;
+    switch (e.tipo) {
+      case "explosao":
+        return { x: b.x, y: b.y, r: (e.raio ?? 10) * PX_POR_PE + 40, i: 1.5 * fade, cor: e.cor };
+      case "coluna":
+      case "raioCeu":
+        return { x: b.x, y: b.y, r: 46, i: 1.2 * fade, cor: e.cor };
+      case "relampago":
+      case "raio":
+        return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, r: 50, i: 0.9 * fade, cor: e.cor };
+      case "onda":
+      case "cone":
+        return { x: a.x, y: a.y, r: 50, i: 0.9 * fade, cor: e.cor };
+      default:
+        return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k - 12, r: 22, i: 0.7, cor: e.cor };
+    }
+  }
+
   desenhar(final: Ctx, f: number) {
+    const fm = this.mundoF(f);
     const w = this.mundo.ctx;
     w.imageSmoothingEnabled = false;
     w.drawImage(this.fundo, 0, 0);
-    animarCenario(w, f);
+    animarCenario(w, fm);
 
-    // auras no chão (abaixo dos personagens)
-    for (const id of Object.keys(this.porId).map(Number)) {
-      for (const a of this.porId[id].auras) if (f >= a.t0 && f < a.t1) this.aura(w, id, a, f);
-    }
-    // marcas de quem caiu
+    for (const id of Object.keys(this.porId).map(Number)) for (const a of this.porId[id].auras) if (fm >= a.t0 && fm < a.t1) this.aura(w, id, a, fm);
     for (const fi of this.r.fichas) {
       const m = this.porId[fi.id].morte;
-      if (m !== undefined && f > m + 26) {
-        const s = this.estado(fi.id, f);
+      if (m !== undefined && fm > m + 26) {
+        const s = this.estado(fi.id, fm);
         const p = paraTela(s.x, s.y);
         caveira(w, Math.round(p.x), Math.round(p.y));
       }
     }
-    // personagens ordenados pela profundidade (y)
     const vivos = this.r.fichas
-      .map((fi) => ({ id: fi.id, s: this.estado(fi.id, f) }))
-      .filter(({ id, s }) => f >= this.chegada[id] && (s.morte === undefined || f < s.morte + 26))
+      .map((fi) => ({ id: fi.id, s: this.estado(fi.id, fm) }))
+      .filter(({ id, s }) => fm >= this.chegada[id] && (s.morte === undefined || fm < s.morte + 30))
       .sort((a, b) => a.s.y - b.s.y);
-    for (const { id, s } of vivos) this.personagem(w, id, s, f);
+    // coluna de luz dourada do campeão (atrás dele)
+    const fim = this.r.fimBatalha;
+    const venc = this.estado(this.r.vencedor, fm);
+    const pVenc = paraTela(venc.x, venc.y);
+    if (fm > fim + 6) colunaDourada(w, pVenc.x, pVenc.y, fm - fim);
+    for (const { id, s } of vivos) this.personagem(w, id, s, fm);
+    for (const e of this.fx) if (fm >= e.t && fm < e.t + e.dur) this.efeito(w, e, fm);
 
-    // efeitos
-    for (const e of this.fx) if (f >= e.t && f < e.t + e.dur) this.efeito(w, e, f);
+    // luz das tochas + personagens + magias
+    const luzes: Luz[] = vivos.map(({ s }) => {
+      const p = paraTela(s.x, s.y);
+      return { x: p.x, y: p.y - 12, r: 32, i: 0.5 };
+    });
+    for (const e of this.fx) if (fm >= e.t && fm < e.t + e.dur) luzes.push(this.luzDoEfeito(e, fm));
+    if (fm > fim + 6) luzes.push({ x: pVenc.x, y: pVenc.y - 20, r: 70, i: 1.2, cor: "#ffd84a" });
+    iluminar(w, fm, luzes);
 
-    // barras de vida, status e números por cima do mundo
-    for (const { id, s } of vivos) this.barra(w, id, s, f);
+    for (const { id, s } of vivos) this.barra(w, id, s, fm);
+    this.rotulos(w, vivos, fm, 0, 0);
+    for (const { id, s } of vivos) this.dadosENumeros(w, id, s, fm, 0, 0);
+    this.indicadorTurno(w, fm, 0, 0);
 
-    // ---------- câmera (tremor e zoom final) ----------
+    // ---------- câmera: tremor, zoom 1,2× no duelo, zoom no campeão ----------
     const c = this.comp.ctx;
     c.imageSmoothingEnabled = false;
-    c.fillStyle = "#2f6fc0";
+    c.fillStyle = "#0b0a10";
     c.fillRect(0, 0, TELA_W, TELA_H);
     let ox = 0, oy = 0;
     for (const t of this.tremores) {
-      const k = f - t.t;
+      const k = fm - t.t;
       if (k >= 0 && k < 10) {
         const rr = criarRng(t.t * 31 + k);
         const forca = t.forca * (1 - k / 10);
@@ -227,36 +267,54 @@ export class Cena {
         oy += Math.round((rr() - 0.5) * 2 * forca);
       }
     }
-    const zoomIni = this.r.fimBatalha + 14;
-    const venc = this.estado(this.r.vencedor, f);
-    const pv = paraTela(venc.x, venc.y - 6);
-    let z = 1;
-    if (f > zoomIni) {
-      const k = Math.min(1, (f - zoomIni) / 26);
-      z = 1 + easeInOut(k);
+    let z = 1, cx = TELA_W / 2, cy = TELA_H / 2;
+    const duelo = this.r.pausas.find((p) => p.tipo === "duelo");
+    if (duelo && duelo.ev.k === "duelo" && fm >= duelo.t && fm < fim + 14) {
+      const [a, b] = duelo.ev.ids.map((id) => paraTela(this.estado(id, fm).x, this.estado(id, fm).y));
+      const k = Math.min(1, (f - duelo.t - duelo.dur) / 20);
+      if (k > 0) {
+        z = 1 + 0.2 * easeInOut(k);
+        cx = (a.x + b.x) / 2;
+        cy = (a.y + b.y) / 2 - 10;
+      }
     }
-    if (z > 1) {
-      // centraliza no vencedor sem mostrar fora do mapa
-      const cx = Math.min(Math.max(pv.x, TELA_W / (2 * z)), TELA_W - TELA_W / (2 * z));
-      const cy = Math.min(Math.max(pv.y, TELA_H / (2 * z)), TELA_H - TELA_H / (2 * z));
-      const k = z - 1; // 0 → 1 junto com o zoom
-      const tx = TELA_W / 2 + (cx - TELA_W / 2) * k, ty = TELA_H / 2 + (cy - TELA_H / 2) * k;
-      c.drawImage(this.mundo.c, Math.round(TELA_W / 2 - tx * z), Math.round(TELA_H / 2 - ty * z), Math.round(TELA_W * z), Math.round(TELA_H * z));
+    if (fm >= fim + 14) {
+      const k = Math.min(1, (fm - fim - 14) / 26);
+      z = 1.2 + 0.8 * easeInOut(k);
+      cx = pVenc.x;
+      cy = pVenc.y - 14;
+    }
+    if (z > 1.001) {
+      const W = TELA_W * z, H = TELA_H * z;
+      const dx = Math.min(0, Math.max(TELA_W - W, TELA_W / 2 - cx * z));
+      const dy = Math.min(0, Math.max(TELA_H - H, TELA_H / 2 - cy * z));
+      c.drawImage(this.mundo.c, Math.round(dx + ox), Math.round(dy + oy), Math.round(W), Math.round(H));
     } else c.drawImage(this.mundo.c, ox, oy);
 
-    // ---------- textos sobre o mundo (acompanham a câmera só sem zoom) ----------
-    if (z === 1) {
-      this.rotulos(c, vivos, f, ox, oy);
-      for (const { id, s } of vivos) this.dadosENumeros(c, id, s, f, ox, oy);
-      this.indicadorTurno(c, f, ox, oy);
-    }
-    this.painel(c, f);
-    this.faixas(c, f);
+    // ---------- interface ----------
+    this.painel(c, fm);
+    this.faixas(c, fm);
     this.intro(c, f);
-    this.final(c, f);
+    this.cutin(c, f);
+    this.vs(c, f);
+    this.vitoria(c, f);
+    this.pergaminho(c, f);
+    this.chamada(c, f);
 
     final.imageSmoothingEnabled = false;
     final.drawImage(this.comp.c, 0, 0, final.canvas.width, final.canvas.height);
+  }
+
+  sprite(id: number, pose: Pose, expr: Expressao, ferido: boolean) {
+    const chave = `${pose}:${expr}:${ferido}`;
+    const rec = this.rec[id];
+    let c = rec.poses.get(chave);
+    if (!c) {
+      const fi = this.r.fichas[id];
+      c = gradeParaTela(montarSprite(fi, pose, expr, ferido, (fi.vitorias ?? 0) > 0));
+      rec.poses.set(chave, c);
+    }
+    return c;
   }
 
   // ---------- personagem ----------
@@ -312,6 +370,20 @@ export class Cena {
       alpha = k < 14 ? 1 : 1 - (k - 14) / 12;
       dy = Math.min(k, 8) * 0.5;
     }
+    // rosto conforme o estado
+    const fim = this.r.fimBatalha;
+    const vencedor = id === this.r.vencedor && f > fim;
+    const baixo = s.pv / s.pvMax < 0.3 && s.pv > 0;
+    let expr: Expressao = f < INTRO ? "neutra" : baixo ? "ofegante" : "concentrada";
+    if (a && (a.tipo === "ataque" || a.tipo === "magia") && f - a.t < 10) expr = "grito";
+    if (a && a.tipo === "dano" && f - a.t < 8) expr = "dor";
+    if (s.morte !== undefined && f >= s.morte) expr = "derrota";
+    if (vencedor) {
+      expr = "vitoria";
+      pose = "parado";
+      armaAng = -0.35 + Math.sin(f * 0.25) * 0.15;
+      dy = -Math.abs(Math.round(Math.sin(f * 0.25) * 3));
+    }
     X += dx;
     Y += dy + queda - Math.round(s.salto);
     const flip = s.dir < 0;
@@ -322,7 +394,7 @@ export class Cena {
     if (flip) ctx.scale(-1, 1);
     const ox = -CENTRO_X, oy = -CHAO;
     const desc = rec.pequeno ? 2 : 0;
-    ctx.drawImage(rec.poses[pose], ox, oy);
+    ctx.drawImage(this.sprite(id, pose, expr, baixo || (s.morte !== undefined && f >= s.morte)), ox, oy);
     // arma na mão direita
     if (rec.arma.chave !== "punhos" && (s.morte === undefined || f < s.morte + 4)) {
       ctx.save();
@@ -337,6 +409,17 @@ export class Cena {
       ctx.restore();
     }
     ctx.restore();
+    // "poof" de fumaça quando some
+    if (s.morte !== undefined && f >= s.morte + 12 && f < s.morte + 30) {
+      const k = (f - s.morte - 12) / 18;
+      const rr = criarRng(id * 91);
+      for (let i = 0; i < 10; i++) {
+        const an = rr() * Math.PI * 2, r = 4 + k * 12 * (0.6 + rr() * 0.6);
+        ctx.fillStyle = `rgba(200,195,210,${(0.7 * (1 - k)).toFixed(2)})`;
+        const sz = Math.max(1, Math.round(4 * (1 - k)));
+        ctx.fillRect(Math.round(X + Math.cos(an) * r), Math.round(Y - 10 + Math.sin(an) * r * 0.7 - k * 6), sz, sz);
+      }
+    }
   }
 
   barra(ctx: Ctx, id: number, s: ReturnType<Cena["estado"]>, f: number) {
@@ -639,7 +722,7 @@ export class Cena {
           if (!bate) break;
           y = bate.y - h - 1;
         }
-        if (y < 130) y = Math.round(p.y + 16 + i * 15) + oy; // sem espaço em cima: vai para baixo
+        if (y < SALA.topo + 2) y = Math.round(p.y + 16 + i * 15) + oy; // sem espaço em cima: vai para baixo
         ocupados.push({ x, y, w, h });
         const fim = r.t + r.dur - f;
         ctx.save();
@@ -701,45 +784,80 @@ export class Cena {
     texto(ctx, "▼", Math.round(p.x) - 2 + ox, y, "#ffffff", 1, "#140f1a");
   }
 
-  // ---------- painel de cima (como o vídeo modelo) ----------
+  // ---------- retratos ----------
+  retratoHud(id: number, expr: Expressao, cinza = false) {
+    const chave = `${id}:${expr}:${cinza}`;
+    let c = this.retratos.get(chave);
+    if (!c) {
+      const fi = this.r.fichas[id];
+      let g = retrato(montarSprite(fi, "parado", expr, expr === "ofegante", (fi.vitorias ?? 0) > 0));
+      if (cinza) g = g.map((l) => l.map((cor) => (cor ? cinzento(cor) : cor)));
+      c = gradeParaTela(g);
+      this.retratos.set(chave, c);
+    }
+    return c;
+  }
+  retratoGrande(id: number, expr: Expressao) {
+    const chave = `G${id}:${expr}`;
+    let c = this.retratos.get(chave);
+    if (!c) {
+      const fi = this.r.fichas[id];
+      c = gradeParaTela(retrato(montarSprite(fi, "parado", expr, false, false), 24, 20, 8, 3));
+      this.retratos.set(chave, c);
+    }
+    return c;
+  }
+
+  // ---------- painel de cima: grade 4×4 ----------
   painel(ctx: Ctx, f: number) {
-    const X = 5, Y = 56, W = 260, H = 70;
-    ctx.fillStyle = "#0c0a14";
+    const X = 4, Y = 74, W = 352, H = 96;
+    ctx.fillStyle = "#07060b";
     ctx.fillRect(X - 1, Y - 1, W + 2, H + 2);
-    ctx.fillStyle = "#1b1830";
+    ctx.fillStyle = "#17141f";
     ctx.fillRect(X, Y, W, H);
-    ctx.fillStyle = "#2a2648";
+    ctx.fillStyle = "#2a2538";
     ctx.fillRect(X + 1, Y + 1, W - 2, 1);
     const vivos = this.r.fichas.filter((fi) => { const m = this.porId[fi.id].morte; return m === undefined || f < m; }).length;
     texto(ctx, this.titulo, X + 4, Y + 3, "#ffd84a", 1, null);
     const rod = [...this.turnos].reverse().find((t) => t.t <= f)?.rodada;
     const dir = `${rod ? `RODADA ${rod} · ` : ""}VIVOS ${vivos}`;
     texto(ctx, dir, X + W - 4 - larguraTexto(dir), Y + 3, "#f4f0e6", 1, null);
-    ctx.fillStyle = "#3a3560";
-    ctx.fillRect(X + 3, Y + 12, W - 6, 1);
     this.r.fichas.forEach((fi, i) => {
-      const col = i % 2, lin = Math.floor(i / 2);
-      const x = X + 4 + col * 130, y = Y + 15 + lin * 11;
-      const s = this.estado(fi.id, f);
+      const col = i % 4, lin = Math.floor(i / 4);
+      const x = X + 3 + col * 87, y = Y + 13 + lin * 20;
+      const s = this.estadoBase(fi.id, f);
       const morto = s.morte !== undefined && f >= s.morte;
-      ctx.fillStyle = morto ? "#4a4660" : corClasse[fi.classe];
-      ctx.fillRect(x, y + 1, 3, 5);
-      const nome = fi.nome.toUpperCase().slice(0, 10);
-      texto(ctx, nome, x + 6, y, morto ? "#5d5874" : "#f4f0e6", 1, null);
+      const k = Math.max(0, s.pvVis / s.pvMax);
+      const expr: Expressao = morto ? "derrota" : k < 0.3 ? "ofegante" : s.anim?.tipo === "dano" && f - s.anim.t < 8 ? "dor" : "neutra";
+      ctx.fillStyle = morto ? "#2a2730" : corClasse[fi.classe];
+      ctx.fillRect(x - 1, y - 1, 18, 18);
+      ctx.fillStyle = "#0e0c14";
+      ctx.fillRect(x, y, 16, 16);
+      ctx.drawImage(this.retratoHud(fi.id, expr, morto), x, y);
+      if (morto) {
+        ctx.fillStyle = "#c0392b";
+        for (let q = 0; q < 14; q++) {
+          ctx.fillRect(x + 1 + q, y + 1 + q, 1, 1);
+          ctx.fillRect(x + 14 - q, y + 1 + q, 1, 1);
+        }
+      }
+      const nome = fi.nome.toUpperCase().slice(0, 7);
+      texto(ctx, nome, x + 19, y + 1, morto ? "#5d5874" : "#f4f0e6", 1, null);
+      const nv = `NV${fi.nivel}`;
+      texto(ctx, nv, x + 83 - larguraTexto(nv), y + 1, fi.nivel > 1 ? "#ffd84a" : morto ? "#4a4660" : "#9a94b0", 1, null);
       if (morto) {
         ctx.fillStyle = "#b04a4a";
-        ctx.fillRect(x + 5, y + 3, larguraTexto(nome) + 2, 1);
+        ctx.fillRect(x + 18, y + 4, larguraTexto(nome) + 2, 1);
       }
-      const bx = x + 70, bw = 52;
-      ctx.fillStyle = "#0c0a14";
-      ctx.fillRect(bx - 1, y, bw + 2, 7);
+      const bx = x + 19, by = y + 11, bw = 64;
+      ctx.fillStyle = "#07060b";
+      ctx.fillRect(bx - 1, by - 1, bw + 2, 6);
       ctx.fillStyle = "#3b2e3a";
-      ctx.fillRect(bx, y + 1, bw, 5);
-      const k = Math.max(0, s.pvVis / s.pvMax);
+      ctx.fillRect(bx, by, bw, 4);
       ctx.fillStyle = k > 0.5 ? "#5fd17a" : k > 0.25 ? "#f2c94c" : "#e5533d";
-      ctx.fillRect(bx, y + 1, Math.round(bw * k), 5);
+      ctx.fillRect(bx, by, Math.round(bw * k), 4);
       ctx.fillStyle = "rgba(255,255,255,0.3)";
-      ctx.fillRect(bx, y + 1, Math.round(bw * k), 1);
+      ctx.fillRect(bx, by, Math.round(bw * k), 1);
     });
   }
 
@@ -749,104 +867,388 @@ export class Cena {
       const k = f - b.t;
       if (k < 0 || k >= b.dur) continue;
       const t = b.texto;
-      const w = larguraTexto(t) + 12;
+      const w = larguraTexto(t) + 30;
       const entra = Math.min(1, k / 6);
       const sai = k > b.dur - 6 ? (b.dur - k) / 6 : 1;
-      const x = Math.round(TELA_W - 6 - w * easeOut(entra) * sai - (1 - sai) * 0);
-      const y = 131 + n * 16;
+      const x = Math.round(TELA_W - 4 - w * easeOut(entra) * sai);
+      const y = 176 + n * 22;
       ctx.fillStyle = "#140f1a";
-      ctx.fillRect(x - 1, y - 1, w + 8, 15);
+      ctx.fillRect(x - 1, y - 1, w + 8, 21);
       ctx.fillStyle = tom(b.cor, -1);
-      ctx.fillRect(x, y, w + 6, 13);
+      ctx.fillRect(x, y, w + 6, 19);
       ctx.fillStyle = b.cor;
-      ctx.fillRect(x, y, w + 6, 10);
-      texto(ctx, t, x + 6, y + 3, "#ffffff", 1, "#140f1a");
+      ctx.fillRect(x, y, w + 6, 15);
+      // mini retrato de quem caiu
+      const quem = this.r.fichas.find((fi) => t.startsWith(fi.nome.toUpperCase()));
+      if (quem) ctx.drawImage(this.retratoHud(quem.id, "derrota", false), x + 2, y + 1);
+      texto(ctx, t, x + 22, y + 6, "#ffffff", 1, "#140f1a");
       n++;
     }
   }
 
   // ---------- abertura ----------
   intro(ctx: Ctx, f: number) {
-    // nomes embaixo de cada um durante a apresentação
     if (f < INTRO) {
       for (const fi of this.r.fichas) {
         if (f < this.chegada[fi.id] + 9) continue;
-        const s = this.estado(fi.id, f);
+        const s = this.estadoBase(fi.id, f);
         const p = paraTela(s.x, s.y);
-        const nome = fi.nome.toUpperCase().slice(0, 10);
-        textoCentro(ctx, nome, Math.round(p.x), Math.round(p.y) + 8, "#ffffff", 1);
-        textoCentro(ctx, CLASSES[fi.classe].nome.toUpperCase(), Math.round(p.x), Math.round(p.y) + 17, corClasse[fi.classe], 1);
+        textoCentro(ctx, fi.nome.toUpperCase().slice(0, 9), Math.round(p.x), Math.round(p.y) + 6, fi.nivel > 1 ? "#ffd84a" : "#ffffff", 1);
+        textoCentro(ctx, CLASSES[fi.classe].nome.toUpperCase(), Math.round(p.x), Math.round(p.y) + 15, corClasse[fi.classe], 1);
       }
     }
-    // caixa "ESCOLHA SEU CAMPEÃO"
     if (f < INTRO - 32) {
       const sai = f > INTRO - 40 ? (INTRO - 32 - f) / 8 : 1;
-      const W = 236, H = 56;
-      const x = (TELA_W - W) / 2, y = 244 + Math.round((1 - sai) * 10);
+      const W = 256, H = 58;
+      const x = (TELA_W - W) / 2, y = 326 + Math.round((1 - sai) * 10);
       ctx.save();
       ctx.globalAlpha = Math.min(1, f / 6) * sai;
       caixaPergaminho(ctx, x, y, W, H);
-      textoCentro(ctx, this.titulo, TELA_W / 2, y + 9, "#9a6e50", 1, null);
-      textoCentro(ctx, "ESCOLHA SEU", TELA_W / 2, y + 19, "#2a2230", 1, null);
-      textoCentro(ctx, "CAMPEÃO!", TELA_W / 2, y + 34, "#2a2230", 2, null);
+      textoCentro(ctx, `${this.titulo} · 16 HERÓIS · NÍVEL 1`, TELA_W / 2, y + 9, "#9a6e50", 1, null);
+      textoCentro(ctx, "ESCOLHA SEU", TELA_W / 2, y + 21, "#2a2230", 1, null);
+      textoCentro(ctx, "CAMPEÃO!", TELA_W / 2, y + 36, "#2a2230", 2, null);
       ctx.restore();
     }
-    // contagem 3, 2, 1, LUTEM!
     const c0 = INTRO - 45;
     if (f >= c0 && f < INTRO + 22) {
       const k = f - c0;
       const t = k < 15 ? "3" : k < 30 ? "2" : k < 45 ? "1" : "LUTEM!";
       const local = k < 45 ? k % 15 : k - 45;
-      const esc = t === "LUTEM!" ? 4 : local < 3 ? 8 : 6;
+      const esc = t === "LUTEM!" ? 5 : local < 3 ? 9 : 7;
       ctx.save();
       ctx.globalAlpha = t === "LUTEM!" && local > 14 ? (22 - local) / 8 : 1;
-      textoCentro(ctx, t, TELA_W / 2, 262 - (esc * 7) / 2, t === "LUTEM!" ? "#ffd84a" : "#ffffff", esc, "#140f1a", true);
+      textoCentro(ctx, t, TELA_W / 2, 350 - (esc * 7) / 2, t === "LUTEM!" ? "#ffd84a" : "#ffffff", esc, "#140f1a", true);
       ctx.restore();
     }
   }
 
-  // ---------- fechamento: vencedor + chamada para comentar ----------
-  final(ctx: Ctx, f: number) {
-    const t0 = this.r.fimBatalha + 30;
-    if (f < t0) return;
-    const k = f - t0;
+  // ---------- cut-in de golpe especial ----------
+  cutin(ctx: Ctx, f: number) {
+    const p = this.r.pausas.find((q) => q.tipo === "cutin" && f >= q.t && f < q.t + q.dur);
+    if (!p || p.ev.k !== "cutin") return;
+    const e = p.ev;
+    const k = f - p.t;
+    const entra = Math.min(1, k / 4), sai = k > p.dur - 4 ? (p.dur - k) / 4 : 1;
+    const desl = Math.round((1 - entra) * -TELA_W + (1 - sai) * TELA_W);
+    const yc = 330, alt = 92, incl = 34;
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,0.45)";
+    ctx.fillRect(0, SALA.topo, TELA_W, SALA.base - SALA.topo);
+    ctx.translate(desl, 0);
+    // faixa diagonal
+    const faixa = (pad: number, cor: string) => {
+      ctx.fillStyle = cor;
+      ctx.beginPath();
+      ctx.moveTo(-20, yc - alt / 2 + incl - pad);
+      ctx.lineTo(TELA_W + 20, yc - alt / 2 - incl - pad);
+      ctx.lineTo(TELA_W + 20, yc + alt / 2 - incl + pad);
+      ctx.lineTo(-20, yc + alt / 2 + incl + pad);
+      ctx.fill();
+    };
+    faixa(4, "#140f1a");
+    faixa(2, e.cor);
+    faixa(0, "#1d1828");
+    // linhas de velocidade
+    const rr = criarRng(p.t * 7 + k);
+    for (let i = 0; i < 26; i++) {
+      const y = yc - alt / 2 + rr() * alt;
+      const x = ((rr() * TELA_W + k * 40) % (TELA_W + 60)) - 30;
+      ctx.fillStyle = i % 3 ? "rgba(255,255,255,0.25)" : tom(e.cor, 1);
+      ctx.fillRect(Math.round(x), Math.round(y - (x / TELA_W) * incl * 2 + incl), 18 + Math.round(rr() * 30), 1);
+    }
+    // rosto em close (grito)
+    const rx = 20, ry = yc - 40;
+    ctx.fillStyle = "#140f1a";
+    ctx.fillRect(rx - 3, ry - 3, 78, 66);
+    ctx.fillStyle = e.cor;
+    ctx.fillRect(rx - 2, ry - 2, 76, 64);
+    ctx.fillStyle = "#2a2238";
+    ctx.fillRect(rx, ry, 72, 60);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(this.retratoGrande(e.id, "grito"), rx, ry, 72, 60);
+    const fi = this.r.fichas[e.id];
+    texto(ctx, fi.nome.toUpperCase(), 104, yc - 30, "#c9c3d6", 1, "#140f1a");
+    const esc = larguraTexto(e.texto, 2) < 240 ? 2 : 1;
+    texto(ctx, e.texto, 104, yc - 18, "#ffffff", esc, "#140f1a", true);
+    texto(ctx, e.sub, 104, yc + 2, "#ffd84a", 1, "#140f1a");
+    ctx.restore();
+  }
+
+  // ---------- duelo final: VS ----------
+  vs(ctx: Ctx, f: number) {
+    const p = this.r.pausas.find((q) => q.tipo === "duelo" && f >= q.t && f < q.t + q.dur);
+    if (!p || p.ev.k !== "duelo") return;
+    const k = f - p.t;
+    const entra = easeOut(Math.min(1, k / 8)), sai = k > p.dur - 6 ? (p.dur - k) / 6 : 1;
+    ctx.save();
+    ctx.globalAlpha = sai;
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.fillRect(0, SALA.topo, TELA_W, SALA.base - SALA.topo);
+    textoCentro(ctx, "DUELO FINAL", TELA_W / 2, 214, "#ffd84a", 2, "#140f1a", true);
+    p.ev.ids.forEach((id, i) => {
+      const fi = this.r.fichas[id];
+      const s = this.estadoBase(id, p.t);
+      const lado = i === 0 ? -1 : 1;
+      const x = Math.round(TELA_W / 2 + lado * 80 - 36 + (1 - entra) * lado * 200), y = 262;
+      ctx.fillStyle = "#140f1a";
+      ctx.fillRect(x - 3, y - 3, 78, 66);
+      ctx.fillStyle = corClasse[fi.classe];
+      ctx.fillRect(x - 2, y - 2, 76, 64);
+      ctx.fillStyle = "#2a2238";
+      ctx.fillRect(x, y, 72, 60);
+      ctx.drawImage(this.retratoGrande(id, "concentrada"), x, y, 72, 60);
+      textoCentro(ctx, fi.nome.toUpperCase(), x + 36, y + 70, "#ffffff", 1, "#140f1a");
+      textoCentro(ctx, `${ESPECIES[fi.especie].nome} ${CLASSES[fi.classe].nome}`.toUpperCase(), x + 36, y + 80, corClasse[fi.classe], 1, "#140f1a");
+      textoCentro(ctx, `PV ${s.pv}/${s.pvMax} · CA ${fi.ca} · NV${fi.nivel}`, x + 36, y + 90, "#c9c3d6", 1, "#140f1a");
+    });
+    const esc = k < 10 ? 7 - Math.floor(k / 4) : 5;
+    textoCentro(ctx, "VS", TELA_W / 2, 280, k % 6 < 3 ? "#ffd84a" : "#e8452e", esc, "#140f1a", true);
+    ctx.restore();
+  }
+
+  // ---------- vitória + subida de nível ----------
+  vitoria(ctx: Ctx, f: number) {
+    const fim = this.r.fimBatalha;
+    if (f < fim + 30 || f >= this.r.inicioPergaminho + 20) return;
+    const k = f - fim - 30;
     const fi = this.r.fichas[this.r.vencedor];
-    const W = 250, H = 70;
-    const x = (TELA_W - W) / 2, y = 134;
+    const a = Math.min(1, k / 6) * (f > this.r.inicioPergaminho ? 1 - (f - this.r.inicioPergaminho) / 20 : 1);
+    ctx.save();
+    ctx.globalAlpha = a;
+    const W = 280, H = 48, x = (TELA_W - W) / 2, y = 184;
+    caixaPergaminho(ctx, x, y, W, H);
+    textoCentro(ctx, "VITÓRIA DE", TELA_W / 2, y + 8, "#9a6e50", 1, null);
+    const nome = `${fi.nome.toUpperCase()}!`;
+    textoCentro(ctx, nome, TELA_W / 2, y + 20, "#2a2230", larguraTexto(nome, 3) < W - 20 ? 3 : 2, null);
+    if (k > 24 && Math.floor(k / 8) % 4 !== 3) textoCentro(ctx, `SUBIU PARA O NÍVEL ${this.r.subida.depois.nivel}!`, TELA_W / 2, 440, "#ffd84a", 2, "#140f1a", true);
+    ctx.restore();
+    // confetes
+    const rr = criarRng(77);
+    for (let i = 0; i < 60; i++) {
+      const x0 = rr() * TELA_W, vel = 1.2 + rr() * 1.6, fase = rr() * 200;
+      const y = ((k * vel + fase) % 380) + SALA.topo;
+      ctx.fillStyle = ["#ffd84a", "#e8452e", "#5fd17a", "#5a8ff0", "#f4f0e6"][i % 5];
+      ctx.fillRect(Math.round(x0 + Math.sin((k + i * 7) * 0.1) * 6), Math.round(y), i % 2 ? 2 : 1, i % 3 ? 2 : 3);
+    }
+  }
+
+  // ---------- pergaminho do campeão ----------
+  pergaminho(ctx: Ctx, f: number) {
+    const cr = cronograma(this.r);
+    if (f < cr.t0) return;
+    const u = f - cr.t0;
+    const sub = this.r.subida;
+    const A = sub.antes, D = sub.depois;
+    const X = 24, W = 312, Y0 = 96, Y1 = 428;
+    const abre = easeOut(Math.min(1, u / 26));
+    const yb = Math.round(Y0 + 10 + (Y1 - Y0 - 10) * abre);
+    ctx.save();
+    ctx.fillStyle = `rgba(6,4,12,${Math.min(0.65, u / 20).toFixed(2)})`;
+    ctx.fillRect(0, SALA.topo - 34, TELA_W, TELA_H);
+    // papel
+    ctx.fillStyle = "#140f1a";
+    ctx.fillRect(X - 1, Y0 - 1, W + 2, yb - Y0 + 2);
+    for (let y = Y0; y < yb; y++) {
+      const borda = (x: number) => Math.round(2 + Math.sin(y * 0.7) * 1.5 + Math.sin(y * 0.23 + x) * 1);
+      const e = borda(1), d = borda(2);
+      ctx.fillStyle = "#e9d9b0";
+      ctx.fillRect(X + e, y, W - e - d, 1);
+      ctx.fillStyle = "#6a4a2a"; // bordas queimadas
+      ctx.fillRect(X + e - 1, y, 2, 1);
+      ctx.fillRect(X + W - d - 1, y, 2, 1);
+      if (y % 7 === 0) {
+        ctx.fillStyle = "#dccaa0";
+        ctx.fillRect(X + 6 + ((y * 37) % (W - 20)), y, 6, 1);
+      }
+    }
+    // rolos de madeira em cima e embaixo + fitas
+    const rolo = (y: number) => {
+      ctx.fillStyle = "#140f1a";
+      ctx.fillRect(X - 8, y - 5, W + 16, 10);
+      ctx.fillStyle = "#8a5a32";
+      ctx.fillRect(X - 7, y - 4, W + 14, 8);
+      ctx.fillStyle = "#b07a46";
+      ctx.fillRect(X - 7, y - 4, W + 14, 2);
+      ctx.fillStyle = "#5a3a22";
+      ctx.fillRect(X - 7, y + 2, W + 14, 2);
+      ctx.fillStyle = "#c9a24a";
+      ctx.fillRect(X - 10, y - 3, 4, 6);
+      ctx.fillRect(X + W + 6, y - 3, 4, 6);
+    };
+    rolo(Y0);
+    rolo(yb);
+    ctx.fillStyle = "#a8242c";
+    ctx.fillRect(X + 30, Y0 + 4, 6, 18);
+    ctx.fillRect(X + W - 36, Y0 + 4, 6, 18);
+    ctx.restore();
+    if (u < 24) return;
+
+    const tinta = "#2a2230", suave = "#6e5a4a", verde = "#2f9a46", ouro = "#b8862a";
+    const aparece = (t: number) => f >= t;
+    let y = Y0 + 14;
+    // topo: retrato, nome, espécie/classe, nível
+    if (aparece(cr.topo)) {
+      ctx.fillStyle = "#6a4a2a";
+      ctx.fillRect(X + 12, y - 2, 52, 44);
+      ctx.fillStyle = "#2a2238";
+      ctx.fillRect(X + 14, y, 48, 40);
+      ctx.drawImage(this.retratoGrande(this.r.vencedor, "vitoria"), X + 14, y, 48, 40);
+      texto(ctx, A.nome.toUpperCase(), X + 72, y + 1, tinta, larguraTexto(A.nome.toUpperCase(), 2) < 220 ? 2 : 1, null);
+      texto(ctx, `${ESPECIES[A.especie].nome}${A.dragao ? ` (${A.dragao.nome})` : ""} ${CLASSES[A.classe].nome}`.toUpperCase(), X + 72, y + 19, suave, 1, null);
+      const pisca = Math.floor(f / 10) % 2 === 0;
+      texto(ctx, `NÍVEL ${A.nivel} →`, X + 72, y + 31, tinta, 1, null);
+      texto(ctx, `${D.nivel}`, X + 72 + larguraTexto(`NÍVEL ${A.nivel} → `), y + 29, pisca ? "#e8a22a" : ouro, 2, "#3a2a10");
+    }
+    y += 50;
+    // atributos
+    if (aparece(cr.atributos)) {
+      texto(ctx, "ATRIBUTOS", X + 12, y, ouro, 1, null);
+      ctx.fillStyle = "#b8a07a";
+      ctx.fillRect(X + 12, y + 9, W - 24, 1);
+      ATRIBUTOS.forEach((at, i) => {
+        if (!aparece(cr.atributos + i * cr.passoAtrib)) return;
+        const col = i % 3, lin = Math.floor(i / 3);
+        const x = X + 12 + col * 98, yy = y + 14 + lin * 11;
+        const v = D.atributos[at];
+        const t = `${at} ${v} (${sinal(mod(v))})`;
+        texto(ctx, t, x, yy, tinta, 1, null);
+        const g = sub.atributos[at];
+        if (g) texto(ctx, `+${g}`, x + larguraTexto(t) + 4, yy, verde, 1, null);
+      });
+    }
+    y += 40;
+    // combate
+    if (aparece(cr.combate)) {
+      texto(ctx, "COMBATE", X + 12, y, ouro, 1, null);
+      ctx.fillStyle = "#b8a07a";
+      ctx.fillRect(X + 12, y + 9, W - 24, 1);
+      const conMod = mod(D.atributos.CON);
+      const lado = CLASSES[A.classe].dadoVida;
+      if (aparece(cr.pv)) {
+        const rolando = f < cr.pv + 14;
+        const dado = rolando ? 1 + Math.floor(criarRng(f)() * lado) : sub.dadoPv;
+        const t = `PV ${A.pv} → ${rolando ? "?" : D.pv}`;
+        texto(ctx, t, X + 12, y + 14, tinta, 1, null);
+        texto(ctx, `+${rolando ? "?" : D.pv - A.pv} (d${lado} = ${dado} ${sinal(conMod)} CON${A.especie === "anao" ? " +1" : A.especie === "humano" ? " +2" : ""})`, X + 18 + larguraTexto(t), y + 14, rolando ? suave : verde, 1, null);
+      }
+      if (aparece(cr.magia)) {
+        const prof = D.ataqueMagia !== undefined ? `MAGIA +${D.ataqueMagia} · CD ${D.cd}` : `PROFICIÊNCIA +${profDe(D.nivel)}`;
+        const t = `CA ${D.ca}${D.ca > A.ca ? "" : ""} · ${prof}`;
+        texto(ctx, t, X + 12, y + 25, tinta, 1, null);
+        if (D.ca > A.ca) texto(ctx, `CA +${D.ca - A.ca}`, X + 18 + larguraTexto(t), y + 25, verde, 1, null);
+        const esp = D.espacos.map((q, i) => (q ? `${i + 1}º×${q}` : "")).filter(Boolean).join(" ");
+        if (esp) {
+          const ant = A.espacos.reduce((s, q) => s + q, 0), dep = D.espacos.reduce((s, q) => s + q, 0);
+          const t2 = `ESPAÇOS DE MAGIA ${esp}`;
+          texto(ctx, t2, X + 12, y + 36, tinta, 1, null);
+          if (dep !== ant || D.espacos.some((q, i) => q > A.espacos[i])) texto(ctx, "NOVO", X + 18 + larguraTexto(t2), y + 36, verde, 1, null);
+        }
+      }
+    }
+    y += 50;
+    // poderes
+    if (aparece(cr.poderes)) {
+      texto(ctx, "PODERES", X + 12, y, ouro, 1, null);
+      ctx.fillStyle = "#b8a07a";
+      ctx.fillRect(X + 12, y + 9, W - 24, 1);
+      const antigos = poderesAte(A.classe, A.especie, A.nivel).map((p) => p.nome);
+      const magiasAnt = magiasDe(A.classe, A.nivel).map((m) => MAGIAS[m].nome);
+      const linhaAnt = quebrar([...antigos, ...magiasAnt].join(" · ").toUpperCase(), 50).slice(0, 3);
+      linhaAnt.forEach((l, i) => texto(ctx, l, X + 12, y + 14 + i * 10, suave, 1, null));
+      let yy = y + 14 + linhaAnt.length * 10 + 2;
+      const novos = [...sub.poderes.map((p) => `${p.nome} — ${p.desc}`), ...sub.magias.map((m) => `${MAGIAS[m].nome} — magia nova`)];
+      novos.forEach((n, i) => {
+        if (!aparece(cr.novos + i * cr.passoNovo)) return;
+        const brilho = f - (cr.novos + i * cr.passoNovo) < 8;
+        texto(ctx, "NOVO!", X + 12, yy, brilho ? "#5fd17a" : verde, 1, brilho ? "#e8ffe8" : null);
+        quebrar(n.toUpperCase(), 41).slice(0, 2).forEach((l, j) => texto(ctx, l, X + 48, yy + j * 10, verde, 1, null));
+        yy += novos.length > 2 ? 10 : 20;
+      });
+      if (!novos.length && aparece(cr.novos)) texto(ctx, "MAIS RESISTENTE: SÓ PV NESTE NÍVEL", X + 12, yy, verde, 1, null);
+    }
+    y += 82;
+    // história (letra por letra)
+    if (aparece(cr.historia)) {
+      texto(ctx, "HISTÓRIA", X + 12, y, ouro, 1, null);
+      ctx.fillStyle = "#b8a07a";
+      ctx.fillRect(X + 12, y + 9, W - 24, 1);
+      const n = Math.floor((f - cr.historia) * cr.charsPorQuadro);
+      const linhas = quebrar(this.r.historia.toUpperCase(), 48);
+      let resto = n;
+      linhas.slice(0, 6).forEach((l, i) => {
+        if (resto <= 0) return;
+        texto(ctx, l.slice(0, resto), X + 12, y + 14 + i * 10, tinta, 1, null);
+        resto -= l.length;
+      });
+    }
+    // rodapé + selo
+    if (aparece(cr.rodape)) {
+      textoCentro(ctx, "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!", TELA_W / 2, Y1 - 26, "#a8242c", 1, null);
+      if (A.autor) textoCentro(ctx, `CRIADO POR ${A.autor.toUpperCase()}`, TELA_W / 2, Y1 - 15, suave, 1, null);
+      d20Icone(ctx, X + W - 22, Y1 - 12, "#a8242c", 0, false);
+    }
+  }
+
+  // ---------- chamada final ----------
+  chamada(ctx: Ctx, f: number) {
+    if (f < CTA) return;
+    const k = f - CTA;
+    const W = 300, H = 56, x = (TELA_W - W) / 2, y = 446;
     ctx.save();
     ctx.globalAlpha = Math.min(1, k / 6);
-    caixaPergaminho(ctx, x, y, W, H);
-    textoCentro(ctx, "VITÓRIA DE", TELA_W / 2, y + 9, "#9a6e50", 1, null);
-    const nome = `${fi.nome.toUpperCase()}!`;
-    const esc = larguraTexto(nome, 3) < W - 20 ? 3 : 2;
-    textoCentro(ctx, nome, TELA_W / 2, y + 22, "#2a2230", esc, null);
-    const ab = this.r.abates[fi.id] ?? 0;
-    const dano = this.r.danoCausado[fi.id] ?? 0;
-    textoCentro(ctx, `${ESPECIES[fi.especie].nome} ${CLASSES[fi.classe].nome}`.toUpperCase(), TELA_W / 2, y + 22 + esc * 7 + 5, "#6e5a4a", 1, null);
-    textoCentro(ctx, `${ab} ABATE${ab === 1 ? "" : "S"} · ${dano} DE DANO`, TELA_W / 2, y + 22 + esc * 7 + 15, "#6e5a4a", 1, null);
+    ctx.fillStyle = "#140f1a";
+    ctx.fillRect(x - 1, y - 1, W + 2, H + 2);
+    ctx.fillStyle = "#3b2a5a";
+    ctx.fillRect(x, y, W, H);
+    ctx.fillStyle = "#4e3a75";
+    ctx.fillRect(x, y, W, 2);
+    textoCentro(ctx, "COMENTE NOME + DESCRIÇÃO", TELA_W / 2, y + 8, "#ffffff", 1, null);
+    textoCentro(ctx, "DO SEU PERSONAGEM", TELA_W / 2, y + 19, "#ffffff", 1, null);
+    textoCentro(ctx, "OS DADOS DECIDEM O RESTO!", TELA_W / 2, y + 33, "#ffd84a", 1, null);
+    if (this.perfil) textoCentro(ctx, this.perfil.toUpperCase(), TELA_W / 2, y + 45, "#c9c3d6", 1, null);
     ctx.restore();
-    if (fi.autor && k > 20) textoCentro(ctx, `CRIADO POR ${fi.autor.toUpperCase()}`, TELA_W / 2, y + H + 8, "#ffd84a", 1);
-    if (k > 50) {
-      const W2 = 250, H2 = 46, y2 = 330;
-      ctx.save();
-      ctx.globalAlpha = Math.min(1, (k - 50) / 6);
-      ctx.fillStyle = "#140f1a";
-      ctx.fillRect(x - 1, y2 - 1, W2 + 2, H2 + 2);
-      ctx.fillStyle = "#3b2a5a";
-      ctx.fillRect(x, y2, W2, H2);
-      ctx.fillStyle = "#4e3a75";
-      ctx.fillRect(x, y2, W2, 2);
-      textoCentro(ctx, "COMENTE NOME + DESCRIÇÃO", TELA_W / 2, y2 + 8, "#ffffff", 1, null);
-      textoCentro(ctx, "DO SEU PERSONAGEM", TELA_W / 2, y2 + 18, "#ffffff", 1, null);
-      textoCentro(ctx, "OS DADOS DECIDEM O RESTO!", TELA_W / 2, y2 + 31, "#ffd84a", 1, null);
-      ctx.restore();
-      if (this.perfil) textoCentro(ctx, this.perfil.toUpperCase(), TELA_W / 2, y2 + H2 + 8, "#f4f0e6", 1);
-    }
   }
 }
 
 // ---------- peças de interface ----------
+const quebrar = (t: string, max: number) => {
+  const linhas: string[] = [];
+  let atual = "";
+  for (const p of t.split(" ")) {
+    if ((atual + " " + p).trim().length > max) {
+      linhas.push(atual.trim());
+      atual = p;
+    } else atual += " " + p;
+  }
+  if (atual.trim()) linhas.push(atual.trim());
+  return linhas;
+};
+const cinzento = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  const g = Math.round(((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11) * 0.7;
+  const v = Math.round(g).toString(16).padStart(2, "0");
+  return `#${v}${v}${v}`;
+};
+const colunaDourada = (ctx: Ctx, x: number, y: number, k: number) => {
+  const a = Math.min(1, k / 10);
+  ctx.save();
+  ctx.globalAlpha = 0.35 * a;
+  ctx.fillStyle = "#ffd84a";
+  ctx.fillRect(Math.round(x - 12), 0, 24, Math.round(y));
+  ctx.globalAlpha = 0.6 * a;
+  ctx.fillStyle = "#fff4c0";
+  ctx.fillRect(Math.round(x - 4), 0, 8, Math.round(y));
+  ctx.globalAlpha = a;
+  for (let i = 0; i < 10; i++) {
+    const fase = (k * 1.5 + i * 17) % 60;
+    ctx.fillStyle = i % 2 ? "#ffd84a" : "#fff4c0";
+    ctx.fillRect(Math.round(x - 14 + ((i * 11) % 28)), Math.round(y - fase), 1, 2);
+  }
+  ctx.restore();
+};
+
 const caixaPergaminho = (ctx: Ctx, x: number, y: number, w: number, h: number) => {
+
   ctx.fillStyle = "#140f1a";
   ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
   ctx.fillStyle = "#7a5a3a";

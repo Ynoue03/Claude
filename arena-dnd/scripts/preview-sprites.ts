@@ -21,7 +21,7 @@ const POSES: { pose: Pose; ang: number }[] = [
   { pose: "golpe", ang: 1.9 },
 ];
 const CEL_W = 44, CEL_H = 62;
-const COLS = 5;
+const COLS = 4;
 const W = COLS * POSES.length * CEL_W * ESC;
 const H = Math.ceil(fichas.length / COLS) * CEL_H * ESC;
 const img = new Uint8Array(W * H * 4);

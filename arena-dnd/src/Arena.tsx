@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo, useRef } from "react";
 import { AbsoluteFill, CalculateMetadataFunction, staticFile, useCurrentFrame } from "remotion";
 import { Audio } from "@remotion/media";
 import { batalhar, PropsBatalha } from "./motor";
-import { Cena, OUTRO } from "./render/quadro";
+import { Cena } from "./render/quadro";
 
 export type PropsArena = PropsBatalha & {
   audio?: string; // trilha + efeitos já mixados (gerado por `npm run batalha`), em public/
@@ -28,5 +28,5 @@ export const Arena: React.FC<PropsArena> = (props) => {
 
 export const calcularDuracao: CalculateMetadataFunction<PropsArena> = ({ props }) => {
   const r = batalhar(props);
-  return { durationInFrames: r.fimBatalha + OUTRO };
+  return { durationInFrames: r.duracao };
 };

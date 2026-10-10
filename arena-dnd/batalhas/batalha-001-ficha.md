@@ -1,14 +1,14 @@
 # ARENA D20 #1 — batalha-001
 
-Semente: `1693993419` · 8 rodadas · vencedor: **Zara** (Elfo Druida)
+Semente: `1693993419` · 11 rodadas · campeão: **Wren** (Orc Monge) → **nível 2**
 
-Todos lutam no **nível 5** (regras SRD 5.2). Atributos: 4d6 descartando o menor, rolados 6 vezes; o maior vai no atributo principal da classe; +2/+1 do antecedente. PV: máximo do dado no 1º nível + dado rolado nos níveis 2–5 + CON.
+16 lutadores; todos no **nível 1** (regras SRD 5.2), exceto o campeão que volta para defender o título. Atributos: 4d6 descartando o menor, 6 vezes; o maior vai no atributo principal da classe; +2/+1 do antecedente. PV no nível 1: máximo do dado de vida + CON.
 
 ## Legenda sugerida
 
 ```
-10 heróis, 1 sobrevivente. Quem você escolheu? 🎲
-Vencedor: Zara (Elfo Druida)
+16 heróis de nível 1, 1 campeão. Quem você escolheu? 🎲
+Campeão: Wren (Orc Monge) — subiu para o nível 2!
 Comente NOME + DESCRIÇÃO do seu personagem e os dados decidem o resto!
 #dnd #dungeonsanddragons #rpg #pixelart #rpgdemesa #d20 #retrogaming #batalha
 ```
@@ -22,239 +22,355 @@ Descrição: elfa ladina de capuz verde e cabelo ruivo
 (classe, espécie e cores saem da descrição; atributos, vida e ataques são rolados nos dados)
 ```
 
+## Pergaminho do campeão
+
+**Wren** — Orc Monge, nível 1 → **2**
+
+- PV: 9 → **18** (d8 = 8 +1 CON)
+- Atributos: sem aumento neste nível (só nos níveis 4, 8, 12, 16 e 19)
+- Poderes novos: Foco do Monge (Rajada de Golpes: 2 socos extras); Movimento sem Armadura (+10 pés de deslocamento)
+- Espaços de magia: 0/0/0 → 0/0/0
+
+> Wren, orc monge das tribos das estepes, entrou na Arena como mais um aventureiro de nível 1. Derrubou 6 rivais com 3 acertos críticos, causou 69 de dano e venceu com 3 PV após 11 rodadas. Agora, no nível 2, aprendeu Foco do Monge: Rajada de Golpes: 2 socos extras.
+
 ## Lutadores
 
-| # | Nome | Espécie / Classe | FOR | DES | CON | INT | SAB | CAR | PV | CA | Arma | CD |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Bruna <br>@exemplo1 | Elfo Ladino | 8 (-1) | 18 (+4) | 16 (+3) | 11 (+0) | 12 (+1) | 10 (+0) | 42 | 15 | Espada Curta 1d6 | — |
-| 2 | Grumak <br>@exemplo2 | Orc Bárbaro | 17 (+3) | 12 (+1) | 14 (+2) | 8 (-1) | 12 (+1) | 11 (+0) | 35 | 13 | Machado Grande 1d12 | — |
-| 3 | Seraphina <br>@exemplo3 | Humano Clérigo | 13 (+1) | 12 (+1) | 14 (+2) | 7 (-2) | 17 (+3) | 8 (-1) | 48 | 17 (escudo) | Maça 1d6 | 14 |
-| 4 | Ignis <br>@exemplo4 | Draconato (Vermelho) Feiticeiro | 9 (-1) | 11 (+0) | 14 (+2) | 10 (+0) | 10 (+0) | 16 (+3) | 33 | 13 | Adaga 1d4 | 14 |
-| 5 | Ingrid | Elfo Bardo | 5 (-3) | 16 (+3) | 13 (+1) | 10 (+0) | 11 (+0) | 17 (+3) | 31 | 14 | Rapieira 1d8 | 14 |
-| 6 | Zara | Elfo Druida | 8 (-1) | 12 (+1) | 14 (+2) | 11 (+0) | 17 (+3) | 10 (+0) | 41 | 14 (escudo) | Cimitarra 1d6 | 14 |
-| 7 | Celeste | Elfo Druida | 11 (+0) | 15 (+2) | 17 (+3) | 13 (+1) | 18 (+4) | 11 (+0) | 38 | 15 (escudo) | Cimitarra 1d6 | 15 |
-| 8 | Faelan | Tiefling Bárbaro | 18 (+4) | 12 (+1) | 15 (+2) | 7 (-2) | 11 (+0) | 8 (-1) | 56 | 13 | Montante 2d6 | — |
-| 9 | Tobias | Humano Guerreiro | 15 (+2) | 13 (+1) | 14 (+2) | 10 (+0) | 13 (+1) | 12 (+1) | 46 | 18 (escudo) | Espada Longa 1d8 | — |
-| 10 | Mirela | Orc Feiticeiro | 7 (-2) | 12 (+1) | 15 (+2) | 11 (+0) | 12 (+1) | 18 (+4) | 34 | 14 | Adaga 1d4 | 15 |
+| # | Nome | Espécie / Classe | Nível | FOR | DES | CON | INT | SAB | CAR | PV | CA | Arma | CD |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Bruna <br>@exemplo1 | Elfo Ladino | 1 | 8 (-1) | 18 (+4) | 16 (+3) | 11 (+0) | 12 (+1) | 10 (+0) | 11 | 15 | Arco Curto 1d6 | — |
+| 2 | Grumak <br>@exemplo2 | Orc Bárbaro | 1 | 17 (+3) | 12 (+1) | 14 (+2) | 8 (-1) | 12 (+1) | 11 (+0) | 14 | 13 | Machado Grande 1d12 | — |
+| 3 | Seraphina <br>@exemplo3 | Humano Clérigo | 1 | 13 (+1) | 12 (+1) | 14 (+2) | 7 (-2) | 17 (+3) | 8 (-1) | 12 | 17 (escudo) | Maça 1d6 | 13 |
+| 4 | Ignis <br>@exemplo4 | Draconato (Vermelho) Feiticeiro | 1 | 9 (-1) | 11 (+0) | 14 (+2) | 10 (+0) | 10 (+0) | 16 (+3) | 8 | 10 | Adaga 1d4 | 13 |
+| 5 | Quill | Golias Guerreiro | 1 | 17 (+3) | 12 (+1) | 13 (+1) | 8 (-1) | 11 (+0) | 10 (+0) | 11 | 19 (escudo) | Espada Longa 1d8 | — |
+| 6 | Doran | Anão Mago | 1 | 7 (-2) | 15 (+2) | 16 (+3) | 17 (+3) | 15 (+2) | 10 (+0) | 10 | 15 | Bordão 1d6 | 13 |
+| 7 | Wren | Orc Monge | 1 | 12 (+1) | 18 (+4) | 13 (+1) | 12 (+1) | 17 (+3) | 8 (-1) | 9 | 17 | Golpe Desarmado 1d8 | — |
+| 8 | Azura | Draconato (Bronze) Patrulheiro | 1 | 12 (+1) | 19 (+4) | 14 (+2) | 12 (+1) | 15 (+2) | 11 (+0) | 12 | 16 | Arco Longo 1d8 | 12 |
+| 9 | Ingrid | Gnomo Druida | 1 | 8 (-1) | 12 (+1) | 14 (+2) | 12 (+1) | 15 (+2) | 10 (+0) | 10 | 14 (escudo) | Cimitarra 1d6 | 12 |
+| 10 | Zara | Tiefling Bardo | 1 | 8 (-1) | 15 (+2) | 14 (+2) | 12 (+1) | 12 (+1) | 17 (+3) | 10 | 13 | Rapieira 1d8 | 13 |
+| 11 | Celeste | Anão Paladino | 1 | 18 (+4) | 11 (+0) | 15 (+2) | 7 (-2) | 13 (+1) | 16 (+3) | 13 | 20 (escudo) | Espada Longa 1d8 | 13 |
+| 12 | Faelan | Tiefling Bruxo | 1 | 8 (-1) | 12 (+1) | 13 (+1) | 10 (+0) | 11 (+0) | 18 (+4) | 9 | 12 | Adaga 1d4 | 14 |
+| 13 | Tobias | Draconato (Bronze) Bruxo | 1 | 9 (-1) | 15 (+2) | 18 (+4) | 11 (+0) | 13 (+1) | 20 (+5) | 12 | 13 | Adaga 1d4 | 15 |
+| 14 | Mirela | Gnomo Guerreiro | 1 | 17 (+3) | 14 (+2) | 16 (+3) | 11 (+0) | 13 (+1) | 12 (+1) | 13 | 19 (escudo) | Espada Longa 1d8 | — |
+| 15 | Bramm | Humano Clérigo | 1 | 14 (+2) | 12 (+1) | 17 (+3) | 9 (-1) | 19 (+4) | 11 (+0) | 13 | 17 (escudo) | Maça 1d6 | 14 |
+| 16 | Fenwick | Tiefling Patrulheiro | 1 | 13 (+1) | 18 (+4) | 14 (+2) | 10 (+0) | 16 (+3) | 9 (-1) | 12 | 16 | Arco Longo 1d8 | 13 |
 
 ### Rolagens
 
-**Bruna** — Elfo Ladino · _"elfa ladina de capuz verde e cabelo ruivo"_
+**Bruna** — Elfo Ladino, nível 1 · _"elfa ladina de capuz verde e cabelo ruivo"_
 - 4d6 (descarta o menor): [2,6,5,4]→15  [2,3,3,4]→10  [3,1,4,4]→11  [5,1,1,2]→8  [5,3,2,4]→12  [5,5,2,6]→16
 - Antecedente: DES +2, CON +1
-- PV: 8 (1º nível) + d8: 8, 1, 4, 6 + CON +3×5 = **42**
-- Recursos: Ataque Furtivo (3d6) · Ação Ardilosa · Mira Firme (vantagem se não se mover) · Esquiva Sobrenatural (metade do dano 1×/rodada) · Linhagem da Floresta (35 pés) · Ancestral Feérico
+- PV: 8 (máx. no 1º nível) +3 CON × 1 = **11**
+- Poderes: Linhagem da Floresta · Ataque Furtivo
 
-**Grumak** — Orc Bárbaro · _"meio-orc bárbaro com machado e cabelo moicano preto"_
+**Grumak** — Orc Bárbaro, nível 1 · _"meio-orc bárbaro com machado e cabelo moicano preto"_
 - 4d6 (descarta o menor): [2,2,1,4]→8  [6,5,4,1]→15  [3,3,5,3]→11  [3,6,2,3]→12  [2,2,6,5]→13  [5,4,2,3]→12
 - Antecedente: FOR +2, CON +1
-- PV: 12 (1º nível) + d12: 6, 1, 3, 3 + CON +2×5 = **35**
-- Recursos: Fúria (+2 dano, resistência a cortante/perfurante/concussão) · Ataque Descuidado (vantagem) · Ataque Extra · Movimento Rápido (40 pés) · Resistência Implacável (fica com 1 PV, 1×) · Surto de Adrenalina
+- PV: 12 (máx. no 1º nível) +2 CON × 1 = **14**
+- Poderes: Resistência Implacável · Surto de Adrenalina · Fúria · Defesa sem Armadura
 
-**Seraphina** — Humano Clérigo · _"clériga humana de manto branco com detalhes dourados"_
+**Seraphina** — Humano Clérigo, nível 1 · _"clériga humana de manto branco com detalhes dourados"_
 - 4d6 (descarta o menor): [3,4,5,6]→15  [2,1,1,5]→8  [2,2,1,3]→7  [5,1,1,6]→12  [4,4,4,5]→13  [5,4,4,2]→13
 - Antecedente: SAB +2, CON +1
-- PV: 8 (1º nível) + d8: 5, 6, 1, 8 + CON +2×5 + 10 (Vigoroso) = **48**
-- Recursos: Espaços de magia 4/3/2 · Guardiões Espirituais · Arma Espiritual · Inspiração Heroica (rerrola 1 ataque) · Talento: Vigoroso (+2 PV/nível)
-- Magias: Chama Sagrada, Raio Guia, Arma Espiritual, Guardiões Espirituais, Palavra Curativa, Curar Ferimentos (CD 14, ataque +6)
+- PV: 8 (máx. no 1º nível) +2 CON × 1 + 2 (Vigoroso) = **12**
+- Poderes: Inspiração Heroica · Vigoroso · Ordem Divina
+- Magias: Chama Sagrada, Raio Guia, Palavra Curativa, Curar Ferimentos (CD 13, ataque +5, espaços 2/0/0)
 
-**Ignis** — Draconato Feiticeiro · _"draconato feiticeiro vermelho de manto preto"_
+**Ignis** — Draconato Feiticeiro, nível 1 · _"draconato feiticeiro vermelho de manto preto"_
 - 4d6 (descarta o menor): [3,3,5,2]→11  [1,2,4,3]→9  [2,5,3,6]→14  [2,2,3,5]→10  [2,4,5,4]→13  [5,1,4,1]→10
 - Antecedente: CAR +2, CON +1
-- PV: 6 (1º nível) + d6: 3, 5, 6, 3 + CON +2×5 = **33**
-- Recursos: Espaços de magia 4/3/2 · Escudo (+5 CA como reação) · Arma de Sopro (2d10, 3×) · Resistência Dracônica
-- Magias: Raio de Gelo, Raio de Fogo, Orbe Cromático, Raio Ardente, Despedaçar, Bola de Fogo (CD 14, ataque +6)
+- PV: 6 (máx. no 1º nível) +2 CON × 1 = **8**
+- Poderes: Arma de Sopro · Feitiçaria Inata
+- Magias: Raio de Gelo, Raio de Fogo, Orbe Cromático (CD 13, ataque +5, espaços 2/0/0)
 
-**Ingrid** — Elfo Bardo
-- 4d6 (descarta o menor): [4,2,5,1]→11  [3,4,6,1]→13  [6,4,5,3]→15  [1,2,1,2]→5  [5,3,6,4]→15  [4,3,2,3]→10
+**Quill** — Golias Guerreiro, nível 1
+- 4d6 (descarta o menor): [4,1,2,4]→10  [2,3,6,3]→12  [1,3,3,2]→8  [4,6,1,5]→15  [5,3,3,2]→11  [6,3,3,1]→12 _(conjunto rolado de novo 1× pela regra da mesa)_
+- Antecedente: FOR +2, CON +1
+- PV: 10 (máx. no 1º nível) +1 CON × 1 = **11**
+- Poderes: Resistência da Pedra · Estilo de Luta · Retomar o Fôlego
+
+**Doran** — Anão Mago, nível 1
+- 4d6 (descarta o menor): [5,2,2,3]→10  [5,2,6,4]→15  [1,6,6,3]→15  [3,1,2,2]→7  [3,4,5,6]→15  [4,1,6,5]→15
+- Antecedente: INT +2, CON +1
+- PV: 6 (máx. no 1º nível) +3 CON × 1 + 1 (Robustez Anã) = **10**
+- Poderes: Robustez Anã · Grimório
+- Magias: Raio de Fogo, Mísseis Mágicos, Onda Trovejante (CD 13, ataque +5, espaços 2/0/0)
+
+**Wren** — Orc Monge, nível 1
+- 4d6 (descarta o menor): [3,5,3,5]→13  [5,3,6,5]→16  [5,3,3,4]→12  [6,5,5,5]→16  [4,4,4,2]→12  [1,3,3,2]→8 _(conjunto rolado de novo 1× pela regra da mesa)_
+- Antecedente: DES +2, SAB +1
+- PV: 8 (máx. no 1º nível) +1 CON × 1 = **9**
+- Poderes: Resistência Implacável · Surto de Adrenalina · Artes Marciais · Defesa sem Armadura
+
+**Azura** — Draconato Patrulheiro, nível 1
+- 4d6 (descarta o menor): [5,5,2,1]→12  [3,6,1,5]→14  [6,5,3,3]→14  [6,3,1,2]→11  [2,6,6,5]→17  [4,5,1,3]→12
+- Antecedente: DES +2, SAB +1
+- PV: 10 (máx. no 1º nível) +2 CON × 1 = **12**
+- Poderes: Arma de Sopro · Inimigo Favorito
+- Magias: Marca do Caçador, Curar Ferimentos (CD 12, ataque +4, espaços 2/0/0)
+
+**Ingrid** — Gnomo Druida, nível 1
+- 4d6 (descarta o menor): [1,5,5,2]→12  [2,1,5,1]→8  [2,2,4,4]→10  [4,3,4,5]→13  [6,5,2,1]→13  [1,1,5,6]→12
+- Antecedente: SAB +2, CON +1
+- PV: 8 (máx. no 1º nível) +2 CON × 1 = **10**
+- Poderes: Astúcia Gnômica · Ordem Primal
+- Magias: Produzir Chama, Chicote de Espinhos, Onda Trovejante, Palavra Curativa (CD 12, ataque +4, espaços 2/0/0)
+
+**Zara** — Tiefling Bardo, nível 1
+- 4d6 (descarta o menor): [1,4,6,4]→14  [1,5,2,5]→12  [3,3,5,6]→14  [3,5,2,4]→12  [2,1,2,4]→8  [4,2,5,6]→15
 - Antecedente: CAR +2, DES +1
-- PV: 8 (1º nível) + d8: 4, 8, 5, 1 + CON +1×5 = **31**
-- Recursos: Espaços de magia 4/3/2 · Inspiração de Bardo · Zombaria Viciosa · Linhagem da Floresta (35 pés) · Ancestral Feérico
-- Magias: Zombaria Viciosa, Sussurros Dissonantes, Despedaçar, Onda Trovejante, Palavra Curativa (CD 14, ataque +6)
+- PV: 8 (máx. no 1º nível) +2 CON × 1 = **10**
+- Poderes: Legado Infernal · Inspiração de Bardo
+- Magias: Zombaria Viciosa, Sussurros Dissonantes, Onda Trovejante, Palavra Curativa (CD 13, ataque +5, espaços 2/0/0)
 
-**Zara** — Elfo Druida
-- 4d6 (descarta o menor): [4,3,4,5]→13  [3,3,4,3]→10  [1,2,4,6]→12  [3,6,2,2]→11  [3,1,6,6]→15  [3,1,2,3]→8
-- Antecedente: SAB +2, CON +1
-- PV: 8 (1º nível) + d8: 7, 6, 8, 2 + CON +2×5 = **41**
-- Recursos: Espaços de magia 4/3/2 · Convocar Relâmpagos · Raio Lunar · Linhagem da Floresta (35 pés) · Ancestral Feérico
-- Magias: Produzir Chama, Chicote de Espinhos, Onda Trovejante, Raio Lunar, Convocar Relâmpagos, Palavra Curativa (CD 14, ataque +6)
+**Celeste** — Anão Paladino, nível 1
+- 4d6 (descarta o menor): [6,1,5,5]→16  [3,2,2,1]→7  [6,3,4,5]→15  [2,6,2,5]→13  [4,6,2,5]→15  [1,4,4,3]→11
+- Antecedente: FOR +2, CAR +1
+- PV: 10 (máx. no 1º nível) +2 CON × 1 + 1 (Robustez Anã) = **13**
+- Poderes: Robustez Anã · Cura pelas Mãos
+- Magias: Curar Ferimentos (CD 13, ataque +5, espaços 2/0/0)
 
-**Celeste** — Elfo Druida
-- 4d6 (descarta o menor): [5,1,5,3]→13  [1,4,6,5]→15  [6,4,1,1]→11  [3,6,4,6]→16  [6,6,2,4]→16  [3,6,2,1]→11
-- Antecedente: SAB +2, CON +1
-- PV: 8 (1º nível) + d8: 8, 3, 3, 1 + CON +3×5 = **38**
-- Recursos: Espaços de magia 4/3/2 · Convocar Relâmpagos · Raio Lunar · Linhagem da Floresta (35 pés) · Ancestral Feérico
-- Magias: Produzir Chama, Chicote de Espinhos, Onda Trovejante, Raio Lunar, Convocar Relâmpagos, Palavra Curativa (CD 15, ataque +7)
-
-**Faelan** — Tiefling Bárbaro
-- 4d6 (descarta o menor): [6,3,3,5]→14  [2,1,3,2]→7  [5,1,3,3]→11  [1,2,1,5]→8  [3,3,6,2]→12  [4,5,6,5]→16
-- Antecedente: FOR +2, CON +1
-- PV: 12 (1º nível) + d12: 12, 5, 7, 10 + CON +2×5 = **56**
-- Recursos: Fúria (+2 dano, resistência a cortante/perfurante/concussão) · Ataque Descuidado (vantagem) · Ataque Extra · Movimento Rápido (40 pés) · Legado Infernal (resiste a fogo) · Repreensão Infernal (2d10 fogo, 1×)
-
-**Tobias** — Humano Guerreiro
-- 4d6 (descarta o menor): [2,5,3,4]→12  [1,5,2,3]→10  [6,4,3,3]→13  [3,4,4,5]→13  [6,4,3,1]→13  [2,5,4,4]→13
-- Antecedente: FOR +2, CON +1
-- PV: 10 (1º nível) + d10: 1, 7, 6, 2 + CON +2×5 + 10 (Vigoroso) = **46**
-- Recursos: Ataque Extra · Surto de Ação (1×) · Retomar o Fôlego (1d10+5, 2×) · Estilo: Arma Grande (1 e 2 nos dados viram 3) · Inspiração Heroica (rerrola 1 ataque) · Talento: Vigoroso (+2 PV/nível)
-
-**Mirela** — Orc Feiticeiro
-- 4d6 (descarta o menor): [3,5,1,4]→12  [2,3,2,1]→7  [3,3,1,6]→12  [5,1,4,5]→14  [5,5,6,5]→16  [3,2,6,2]→11
+**Faelan** — Tiefling Bruxo, nível 1
+- 4d6 (descarta o menor): [3,3,5,1]→11  [6,2,4,2]→12  [2,2,1,6]→10  [2,1,2,4]→8  [1,5,5,2]→12  [6,3,6,4]→16
 - Antecedente: CAR +2, CON +1
-- PV: 6 (1º nível) + d6: 4, 5, 6, 3 + CON +2×5 = **34**
-- Recursos: Espaços de magia 4/3/2 · Escudo (+5 CA como reação) · Resistência Implacável (fica com 1 PV, 1×) · Surto de Adrenalina
-- Magias: Raio de Gelo, Raio de Fogo, Orbe Cromático, Raio Ardente, Despedaçar, Bola de Fogo (CD 15, ataque +7)
+- PV: 8 (máx. no 1º nível) +1 CON × 1 = **9**
+- Poderes: Legado Infernal · Magia de Pacto
+- Magias: Rajada Mística, Bruxaria (CD 14, ataque +6, espaços 1/0/0)
+
+**Tobias** — Draconato Bruxo, nível 1
+- 4d6 (descarta o menor): [4,6,1,1]→11  [4,4,5,2]→13  [6,6,5,3]→17  [3,5,5,5]→15  [3,3,1,3]→9  [6,6,1,6]→18
+- Antecedente: CAR +2, CON +1
+- PV: 8 (máx. no 1º nível) +4 CON × 1 = **12**
+- Poderes: Arma de Sopro · Magia de Pacto
+- Magias: Rajada Mística, Bruxaria (CD 15, ataque +7, espaços 1/0/0)
+
+**Mirela** — Gnomo Guerreiro, nível 1
+- 4d6 (descarta o menor): [3,3,3,5]→11  [4,5,6,4]→15  [3,5,2,5]→13  [5,4,5,3]→14  [5,5,2,1]→12  [5,5,5,5]→15
+- Antecedente: FOR +2, CON +1
+- PV: 10 (máx. no 1º nível) +3 CON × 1 = **13**
+- Poderes: Astúcia Gnômica · Estilo de Luta · Retomar o Fôlego
+
+**Bramm** — Humano Clérigo, nível 1
+- 4d6 (descarta o menor): [4,1,2,6]→12  [4,6,5,6]→17  [1,5,3,6]→14  [5,4,1,2]→11  [6,2,6,4]→16  [2,4,3,2]→9
+- Antecedente: SAB +2, CON +1
+- PV: 8 (máx. no 1º nível) +3 CON × 1 + 2 (Vigoroso) = **13**
+- Poderes: Inspiração Heroica · Vigoroso · Ordem Divina
+- Magias: Chama Sagrada, Raio Guia, Palavra Curativa, Curar Ferimentos (CD 14, ataque +6, espaços 2/0/0)
+
+**Fenwick** — Tiefling Patrulheiro, nível 1
+- 4d6 (descarta o menor): [4,5,1,5]→14  [3,2,4,1]→9  [5,3,2,5]→13  [3,3,2,4]→10  [5,5,5,3]→15  [2,4,6,6]→16
+- Antecedente: DES +2, SAB +1
+- PV: 10 (máx. no 1º nível) +2 CON × 1 = **12**
+- Poderes: Legado Infernal · Inimigo Favorito
+- Magias: Marca do Caçador, Curar Ferimentos (CD 13, ataque +5, espaços 2/0/0)
 
 ## Combate rolagem por rolagem
 
 ```
-Iniciativa (d20+DES): Mirela 19+1=20, Celeste 15+2=17, Faelan 15+1=16, Grumak 12+1=13, Tobias 10+1=11, Bruna 2+4=6, Seraphina 5+1=6, Ingrid 2+3=5, Zara 4+1=5, Ignis 5+0=5
+Iniciativa (d20+DES): Azura 19+4=23, Bruna 15+4=19, Faelan 18+1=19, Ignis 19+0=19, Tobias 16+2=18, Grumak 15+1=16, Wren 11+4=15, Ingrid 13+1=14, Doran 11+2=13, Celeste 12+0=12, Seraphina 10+1=11, Fenwick 6+4=10, Quill 9+1=10, Bramm 7+1=8, Zara 4+2=6, Mirela 3+2=5
 
 — Rodada 1 —
- Mirela (Feiticeiro, 34/34 PV):
-   Mirela conjura Bola de Fogo (3º círculo): 8d6 [1,3,2,5,5,4,3,4] = 27 fogo, DES CD 15
-     Grumak: DES 6→7 falha → 27
-     Ignis: DES 13→13 falha → 27
- Celeste (Druida, 38/38 PV):
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [3,1,5] = 9 elétrico, DES CD 15
-     Grumak: DES 6→7 falha → 9
-   Grumak cairia, mas a Resistência Implacável o deixa com 1 PV!
- Faelan (Bárbaro, 56/56 PV):
-   Faelan entra em Fúria!
-   Faelan → Ingrid: d20 (vantagem: 19/3) 19+7=26 vs CA 14 → acerta, 2d6[5,2]+4 +2 fúria = 13 cortante
-   Faelan → Ingrid: d20 (vantagem: 2/13) 13+7=20 vs CA 14 → acerta, 2d6[3,3]+4 +2 fúria = 12 cortante
- Grumak (Bárbaro, 1/35 PV):
+ Azura (Patrulheiro, 12/12 PV):
+   Azura marca Fenwick (Marca do Caçador)
+   Azura → Fenwick: d20 (desvantagem: 19/3) 3+6=9 vs CA 16 → erra
+ Bruna (Ladino, 11/11 PV):
+   Bruna → Ingrid: d20 4+6=10 vs CA 14 → erra
+ Faelan (Bruxo, 9/9 PV):
+   Faelan lança Bruxaria em Doran (+1d6 necrótico por acerto)
+   Doran conjura Escudo (+5 CA)!
+   Faelan → Doran: d20 12+6=18 vs CA 20 → erra
+ Ignis (Feiticeiro, 8/8 PV):
+   Ignis → Tobias: d20 7+5=12 vs CA 13 → erra
+ Tobias (Bruxo, 12/12 PV):
+   Tobias lança Bruxaria em Ingrid (+1d6 necrótico por acerto)
+   Tobias → Ingrid: d20 11+7=18 vs CA 14 → acerta, 1d10[7] +1d6[3] marca = 10 energia
+   ☠ Ingrid cai! (abatido por Tobias)
+ Grumak (Bárbaro, 14/14 PV):
    Grumak entra em Fúria!
-   Grumak → Ignis: d20 (vantagem: 12/4) 12+6=18 vs CA 13 → acerta, 1d12[9]+3 +2 fúria = 14 cortante
-   Grumak → Ignis: d20 (vantagem: 13/17) 17+6=23 vs CA 13 → acerta, 1d12[12]+3 +2 fúria = 17 cortante
-   ☠ Ignis cai! (abatido por Grumak)
- Tobias (Guerreiro, 46/46 PV):
-   Tobias → Grumak: d20 (vantagem: 17/20) 20+5=25 vs CA 13 → CRÍTICO! 2d8[2,4]+2 = 8 cortante
-   ☠ Grumak cai! (abatido por Tobias)
- Bruna (Ladino, 42/42 PV):
-   Bruna → Faelan: d20 (vantagem: 3/7) 7+7=14 vs CA 13 → acerta, 1d6[6]+4 +3d6[6,2,4] furtivo = 22 perfurante
-   Faelan reage com Repreensão Infernal: 2d10 [4,8] = 12; Bruna DES 10 vs CD 10 → 6
- Seraphina (Clérigo, 48/48 PV):
-   Seraphina conjura Guardiões Espirituais (3º círculo, concentração)
-   Seraphina conjura Guardiões Espirituais (3º círculo): 3d8 [2,2,1] = 5 radiante, SAB CD 14
-     Bruna: SAB 8→9 falha → 5
- Ingrid (Bardo, 6/31 PV):
-   Ingrid usa Palavra Curativa 2d4[1,3]+3 e recupera 7 PV (13/31)
-   Ingrid conjura Onda Trovejante (1º círculo): 2d8 [7,7] = 14 trovejante, CON CD 14
-     Bruna: CON 7→10 falha → 14
-     Faelan: CON 4→9 falha → 14
- Zara (Druida, 41/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [5,1,4] = 10 elétrico, DES CD 14
-     Mirela: DES 1→2 falha → 10
+   Grumak → Celeste: d20 18+5=23 vs CA 20 → acerta, 1d12[3]+3 +2 fúria = 8 cortante
+ Wren (Monge, 9/9 PV):
+   Wren → Quill: d20 12+6=18 vs CA 19 → erra
+   Wren → Quill: d20 7+6=13 vs CA 19 → erra
+ Doran (Mago, 10/10 PV):
+   Doran → Celeste: d20 3+5=8 vs CA 20 → erra
+ Celeste (Paladino, 5/13 PV):
+   Celeste usa Cura pelas Mãos e recupera 5 PV (10/13)
+   Celeste → Grumak: d20 (vantagem: 14/7) 14+6=20 vs CA 13 → acerta, 1d8[1]+4 = 5 cortante
+ Seraphina (Clérigo, 12/12 PV):
+   (Inspiração Heroica: rerrola → 13)
+   Seraphina → Fenwick: d20 13+5=18 vs CA 16 → acerta, 4d6[3,4,5,2] = 14 radiante
+   ☠ Fenwick cai! (abatido por Seraphina)
+ Quill (Guerreiro, 11/11 PV):
+   Quill → Wren: d20 2+5=7 vs CA 17 → erra
+ Bramm (Clérigo, 13/13 PV):
+   Bramm → Azura: d20 14+6=20 vs CA 16 → acerta, 4d6[4,2,4,1] = 11 radiante
+ Zara (Bardo, 10/10 PV):
+   Zara conjura Onda Trovejante (1º círculo): 2d8 [5,6] = 11 trovejante, CON CD 13
+     Faelan: CON 15→16 passa → 5
+   Faelan perde a concentração em Bruxaria (CON 3 vs CD 10)
+ Mirela (Guerreiro, 13/13 PV):
+   Mirela → Bruna: d20 4+5=9 vs CA 15 → erra
 
 — Rodada 2 —
- Mirela (Feiticeiro, 24/34 PV):
-   Mirela conjura Bola de Fogo (3º círculo): 8d6 [3,4,5,2,4,6,3,3] = 30 fogo, DES CD 15
-     Bruna: DES 3→10 falha → 30
-   ☠ Bruna cai! (abatido por Mirela)
-     Seraphina: DES 3→4 falha → 30
-     Ingrid: DES 11→17 passa → 15
-   ☠ Ingrid cai! (abatido por Mirela)
-     Faelan: DES 14→15 passa → 15
- Celeste (Druida, 38/38 PV):
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [4,9,5] = 18 elétrico, DES CD 15
-     Mirela: DES 5→6 falha → 18
- Faelan (Bárbaro, 24/56 PV):
-   Faelan → Seraphina: d20 (vantagem: 13/14) 14+7=21 vs CA 17 → acerta, 2d6[4,4]+4 +2 fúria = 14 cortante
-   Seraphina perde a concentração em Guardiões Espirituais (CON 7 vs CD 10)
-   Faelan → Seraphina: d20 (vantagem: 7/20) 20+7=27 vs CA 17 → CRÍTICO! 4d6[3,2,2,2]+4 +2 fúria = 15 cortante
-   ☠ Seraphina cai! (abatido por Faelan)
- Tobias (Guerreiro, 46/46 PV):
-   Tobias corre (Disparada) em direção a Celeste
- Zara (Druida, 41/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [5,10,2] = 17 elétrico, DES CD 14
-     Mirela: DES 16→17 passa → 8
-   Mirela cairia, mas a Resistência Implacável o deixa com 1 PV!
+ Azura (Patrulheiro, 1/12 PV):
+   Azura → Seraphina: d20 19+6=25 vs CA 17 → acerta, 1d8[1]+4 +1d6[5] marca = 10 perfurante
+ Bruna (Ladino, 11/11 PV):
+   Bruna → Mirela: d20 15+6=21 vs CA 19 → acerta, 1d6[6]+4 = 10 perfurante
+ Faelan (Bruxo, 4/9 PV):
+   Faelan → Zara: d20 10+6=16 vs CA 13 → acerta, 1d10[1] = 1 energia
+ Ignis (Feiticeiro, 8/8 PV):
+   Ignis → Mirela: d20 13+5=18 vs CA 19 → erra
+ Tobias (Bruxo, 12/12 PV):
+   Tobias → Ignis: d20 16+7=23 vs CA 10 → acerta, 1d10[4] = 4 energia
+ Grumak (Bárbaro, 12/14 PV):
+   Grumak → Azura: d20 (vantagem: 7/9) 9+5=14 vs CA 16 → erra
+ Wren (Monge, 9/9 PV):
+   Wren → Quill: d20 13+6=19 vs CA 19 → acerta, 1d6[6]+4 = 10 concussão
+   Quill usa Resistência da Pedra: −3
+   Wren → Quill: d20 9+6=15 vs CA 19 → erra
+ Doran (Mago, 10/10 PV):
+   Doran → Celeste: d20 9+5=14 vs CA 20 → erra
+ Celeste (Paladino, 10/13 PV):
+   Celeste → Doran: d20 6+6=12 vs CA 15 → erra
+ Seraphina (Clérigo, 2/12 PV):
+   Seraphina usa Palavra Curativa 2d4[4,2]+3 e recupera 9 PV (11/12)
+   Seraphina conjura Chama Sagrada: 1d8 [8] = 8 radiante, DES CD 13
+     Azura: DES 19→25 passa → 0
+ Quill (Guerreiro, 4/11 PV):
+   Quill usa Retomar o Fôlego 1d10[1]+1 e recupera 2 PV (6/11)
+   Quill → Wren: d20 5+5=10 vs CA 17 → erra
+ Bramm (Clérigo, 13/13 PV):
+   Bramm → Grumak: d20 (vantagem: 11/3) 11+6=17 vs CA 13 → acerta, 4d6[5,3,4,6] = 18 radiante
+   Grumak cairia, mas a Resistência Implacável o deixa com 1 PV!
+ Zara (Bardo, 9/10 PV):
+   Zara conjura Sussurros Dissonantes (1º círculo): 3d6 [3,4,6] = 13 psíquico, SAB CD 13
+     Faelan: SAB 6→8 falha → 13
+   ☠ Faelan cai! (abatido por Zara)
+ Mirela (Guerreiro, 3/13 PV):
+   Mirela usa Retomar o Fôlego 1d10[6]+1 e recupera 7 PV (10/13)
+   Mirela → Bruna: d20 7+5=12 vs CA 15 → erra
 
 — Rodada 3 —
- Mirela (Feiticeiro, 1/34 PV):
-   Mirela conjura Despedaçar (2º círculo): 3d8 [1,6,8] = 15 trovejante, CON CD 15
-     Celeste: CON 19→22 passa → 7
-   Celeste perde a concentração em Convocar Relâmpagos (CON 6 vs CD 10)
-     Tobias: CON 1→6 falha → 15
- Celeste (Druida, 31/38 PV):
-   Celeste conjura Convocar Relâmpagos (3º círculo): 3d10 [7,3,5] = 15 elétrico, DES CD 15
-     Mirela: DES 3→4 falha → 15
-   ☠ Mirela cai! (abatido por Celeste)
- Faelan (Bárbaro, 24/56 PV):
-   Faelan corre (Disparada) em direção a Tobias
- Tobias (Guerreiro, 31/46 PV):
-   Tobias → Faelan: d20 1+5=6 vs CA 13 → falha crítica
-   Tobias → Faelan: d20 1+5=6 vs CA 13 → falha crítica
-   Tobias usa Surto de Ação!
-   Tobias → Faelan: d20 19+5=24 vs CA 13 → acerta, 1d8[5]+2 = 7 cortante
-   Tobias → Faelan: d20 15+5=20 vs CA 13 → acerta, 1d8[7]+2 = 9 cortante
- Zara (Druida, 41/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [2,1,10] = 13 elétrico, DES CD 14
-     Celeste: DES 18→20 passa → 6
-   Celeste perde a concentração em Convocar Relâmpagos (CON 8 vs CD 10)
+ Azura (Patrulheiro, 1/12 PV):
+   Azura → Grumak: d20 (vantagem: 11/15) 15+6=21 vs CA 13 → acerta, 1d8[3]+4 = 7 perfurante
+   ☠ Grumak cai! (abatido por Azura)
+ Bruna (Ladino, 11/11 PV):
+   Bruna → Mirela: d20 (vantagem: 20/6) 20+6=26 vs CA 19 → CRÍTICO! 2d6[5,3]+4 +2d6[5,1] furtivo = 18 perfurante
+   ☠ Mirela cai! (abatido por Bruna)
+ Ignis (Feiticeiro, 4/8 PV):
+   Ignis → Tobias: d20 7+5=12 vs CA 13 → erra
+ Tobias (Bruxo, 12/12 PV):
+   Tobias → Bruna: d20 4+7=11 vs CA 15 → erra
+ Wren (Monge, 9/9 PV):
+   Wren → Quill: d20 20+6=26 vs CA 19 → CRÍTICO! 2d6[5,2]+4 = 11 concussão
+   Quill usa Resistência da Pedra: −11
+   Wren → Quill: d20 14+6=20 vs CA 19 → acerta, 1d6[6]+4 = 10 concussão
+   ☠ Quill cai! (abatido por Wren)
+ Doran (Mago, 10/10 PV):
+   Doran → Celeste: d20 6+5=11 vs CA 20 → erra
+ Celeste (Paladino, 10/13 PV):
+   Celeste → Doran: d20 15+6=21 vs CA 15 → acerta, 1d8[1]+4 = 5 cortante
+ Seraphina (Clérigo, 11/12 PV):
+   Seraphina conjura Chama Sagrada: 1d8 [4] = 4 radiante, DES CD 13
+     Azura: DES 10→16 passa → 0
+ Bramm (Clérigo, 13/13 PV):
+   Bramm conjura Chama Sagrada: 1d8 [2] = 2 radiante, DES CD 14
+     Doran: DES 19→21 passa → 0
+ Zara (Bardo, 9/10 PV):
+   Zara → Bramm: d20 15+4=19 vs CA 17 → acerta, 1d8[2]+2 = 4 perfurante
 
 — Rodada 4 —
- Celeste (Druida, 25/38 PV):
-   Celeste conjura Raio Lunar (2º círculo): 2d10 [7,5] = 12 radiante, CON CD 15
-     Zara: CON 11→13 falha → 12
- Faelan (Bárbaro, 17/56 PV):
-   Faelan → Tobias: d20 (vantagem: 18/11) 18+7=25 vs CA 18 → acerta, 2d6[2,3]+4 +2 fúria = 11 cortante
-   Faelan → Tobias: d20 (vantagem: 10/10) 10+7=17 vs CA 18 → erra
- Tobias (Guerreiro, 20/46 PV):
-   Tobias usa Retomar o Fôlego 1d10[2]+5 e recupera 7 PV (27/46)
-   (Inspiração Heroica: rerrola → 3)
-   Tobias → Faelan: d20 (vantagem: 3) 3+5=8 vs CA 13 → erra
-   Tobias → Faelan: d20 (vantagem: 13/12) 13+5=18 vs CA 13 → acerta, 1d8[6]+2 = 8 cortante
- Zara (Druida, 29/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [9,6,7] = 22 elétrico, DES CD 14
-     Faelan: DES 14→15 passa → 11
-     Tobias: DES 14→15 passa → 11
+ Azura (Patrulheiro, 1/12 PV):
+   Azura → Seraphina: d20 17+6=23 vs CA 17 → acerta, 1d8[4]+4 +1d6[1] marca = 9 perfurante
+ Bruna (Ladino, 11/11 PV):
+   Bruna → Tobias: d20 1+6=7 vs CA 13 → falha crítica
+ Ignis (Feiticeiro, 4/8 PV):
+   Ignis → Bramm: d20 4+5=9 vs CA 17 → erra
+ Tobias (Bruxo, 12/12 PV):
+   Tobias → Bruna: d20 12+7=19 vs CA 15 → acerta, 1d10[9] = 9 energia
+ Wren (Monge, 9/9 PV):
+   Wren → Seraphina: d20 12+6=18 vs CA 17 → acerta, 1d6[5]+4 = 9 concussão
+   ☠ Seraphina cai! (abatido por Wren)
+ Doran (Mago, 5/10 PV):
+   Doran → Celeste: d20 19+5=24 vs CA 20 → acerta, 1d10[3] = 3 fogo
+ Celeste (Paladino, 7/13 PV):
+   Celeste → Doran: d20 16+6=22 vs CA 15 → acerta, 1d8[8]+4 = 12 cortante
+   ☠ Doran cai! (abatido por Celeste)
+ Bramm (Clérigo, 9/13 PV):
+   Bramm → Zara: d20 14+4=18 vs CA 13 → acerta, 1d6[3]+2 = 5 concussão
+ Zara (Bardo, 4/10 PV):
+   Zara → Bramm: d20 12+4=16 vs CA 17 → erra
 
 — Rodada 5 —
- Celeste (Druida, 25/38 PV):
-   Celeste conjura Raio Lunar (2º círculo): 2d10 [1,6] = 7 radiante, CON CD 15
-     Faelan: CON 7→12 falha → 7
-   ☠ Faelan cai! (abatido por Celeste)
-   Celeste → Tobias: d20 14+7=21 vs CA 18 → acerta, 2d8[1,5] = 6 fogo
- Tobias (Guerreiro, 10/46 PV):
-   Tobias usa Retomar o Fôlego 1d10[7]+5 e recupera 12 PV (22/46)
-   Tobias → Celeste: d20 13+5=18 vs CA 15 → acerta, 1d8[6]+2 = 8 cortante
-   Tobias → Celeste: d20 2+5=7 vs CA 15 → erra
- Zara (Druida, 29/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [8,1,5] = 14 elétrico, DES CD 14
-     Celeste: DES 16→18 passa → 7
-   Celeste perde a concentração em Raio Lunar (CON 9 vs CD 10)
-     Tobias: DES 5→6 falha → 14
+ Azura (Patrulheiro, 1/12 PV):
+   Azura → Ignis: d20 17+6=23 vs CA 10 → acerta, 1d8[3]+4 +1d6[3] marca = 10 perfurante
+   ☠ Ignis cai! (abatido por Azura)
+ Bruna (Ladino, 2/11 PV):
+   Bruna → Tobias: d20 8+6=14 vs CA 13 → acerta, 1d6[4]+4 = 8 perfurante
+ Tobias (Bruxo, 4/12 PV):
+   Tobias → Bruna: d20 7+7=14 vs CA 15 → erra
+ Wren (Monge, 9/9 PV):
+   Wren → Tobias: d20 10+6=16 vs CA 13 → acerta, 1d6[6]+4 = 10 concussão
+   ☠ Tobias cai! (abatido por Wren)
+ Celeste (Paladino, 7/13 PV):
+   Celeste → Zara: d20 16+6=22 vs CA 13 → acerta, 1d8[5]+4 = 9 cortante
+   ☠ Zara cai! (abatido por Celeste)
+ Bramm (Clérigo, 9/13 PV):
+   Bramm conjura Chama Sagrada: 1d8 [6] = 6 radiante, DES CD 14
+     Celeste: DES 3→3 falha → 6
 
 — Rodada 6 —
- Celeste (Druida, 10/38 PV):
-   Celeste usa Palavra Curativa 2d4[2,4]+4 e recupera 10 PV (20/38)
-   Celeste conjura Raio Lunar (2º círculo): 2d10 [9,4] = 13 radiante, CON CD 15
-     Tobias: CON 5→10 falha → 13
-   ☠ Tobias cai! (abatido por Celeste)
- Zara (Druida, 29/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [4,9,3] = 16 elétrico, DES CD 14
-     Celeste: DES 19→21 passa → 8
+ Azura (Patrulheiro, 1/12 PV):
+   Azura → Celeste: d20 4+6=10 vs CA 20 → erra
+ Bruna (Ladino, 2/11 PV):
+   Bruna → Bramm: d20 10+6=16 vs CA 17 → erra
+ Wren (Monge, 9/9 PV):
+   Wren → Bramm: d20 6+6=12 vs CA 17 → erra
+   Wren → Bramm: d20 20+6=26 vs CA 17 → CRÍTICO! 2d6[6,4]+4 = 14 concussão
+   ☠ Bramm cai! (abatido por Wren)
+ Celeste (Paladino, 1/13 PV):
+   Celeste corre (Disparada) em direção a Azura
 
 — Rodada 7 —
- Celeste (Druida, 12/38 PV):
-   Celeste usa Palavra Curativa 2d4[4,1]+4 e recupera 9 PV (21/38)
-   Celeste → Zara: d20 15+7=22 vs CA 14 → acerta, 2d8[7,3] = 10 fogo
- Zara (Druida, 19/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [10,1,8] = 19 elétrico, DES CD 14
-     Celeste: DES 8→10 falha → 19
+ Azura (Patrulheiro, 1/12 PV):
+   Azura → Celeste: d20 6+6=12 vs CA 20 → erra
+ Bruna (Ladino, 2/11 PV):
+   Bruna → Wren: d20 10+6=16 vs CA 17 → erra
+ Wren (Monge, 9/9 PV):
+   Wren → Bruna: d20 13+6=19 vs CA 15 → acerta, 1d6[4]+4 = 8 concussão
+   ☠ Bruna cai! (abatido por Wren)
+ Celeste (Paladino, 1/13 PV):
+   Celeste → Azura: d20 6+6=12 vs CA 16 → erra
 
 — Rodada 8 —
- Celeste (Druida, 2/38 PV):
-   Celeste usa Palavra Curativa 2d4[4,4]+4 e recupera 12 PV (14/38)
-   Celeste → Zara: d20 4+7=11 vs CA 14 → erra
- Zara (Druida, 19/41 PV):
-   Zara conjura Convocar Relâmpagos (3º círculo): 3d10 [10,4,7] = 21 elétrico, DES CD 14
-     Celeste: DES 11→13 falha → 21
-   ☠ Celeste cai! (abatido por Zara)
+ Azura (Patrulheiro, 1/12 PV):
+   Azura → Celeste: d20 1+6=7 vs CA 20 → falha crítica
+ Wren (Monge, 9/9 PV):
+   Wren corre (Disparada) em direção a Azura
+ Celeste (Paladino, 1/13 PV):
+   Celeste → Azura: d20 20+6=26 vs CA 16 → CRÍTICO! 2d8[3,2]+4 = 9 cortante
+   ☠ Azura cai! (abatido por Celeste)
+   ⚔ DUELO FINAL: Wren × Celeste
 
-🏆 Vencedor: Zara (19/41 PV) após 8 rodadas.
+— Rodada 9 —
+ Wren (Monge, 9/9 PV):
+   Wren → Celeste: d20 10+6=16 vs CA 20 → erra
+   Wren → Celeste: d20 13+6=19 vs CA 20 → erra
+ Celeste (Paladino, 1/13 PV):
+   Celeste → Wren: d20 5+6=11 vs CA 17 → erra
+
+— Rodada 10 —
+ Wren (Monge, 9/9 PV):
+   Wren → Celeste: d20 13+6=19 vs CA 20 → erra
+   Wren → Celeste: d20 3+6=9 vs CA 20 → erra
+ Celeste (Paladino, 1/13 PV):
+   Celeste → Wren: d20 17+6=23 vs CA 17 → acerta, 1d8[4]+4 = 8 cortante
+
+— Rodada 11 —
+ Wren (Monge, 3/9 PV):
+   Wren → Celeste: d20 20+6=26 vs CA 20 → CRÍTICO! 2d6[3,4]+4 = 11 concussão
+   ☠ Celeste cai! (abatido por Wren)
+
+🏆 Vencedor: Wren (3/9 PV) após 11 rodadas.
 ```
 
 ---

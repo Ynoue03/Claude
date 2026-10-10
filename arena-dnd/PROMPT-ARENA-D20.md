@@ -152,7 +152,7 @@ meio-conjuradores (Paladino, Patrulheiro) 2 → 2 → 3 → 3 → 4+2; Bruxo 1 �
 | Patrulheiro | Marca do Caçador, magias de 1º | Estilo de Luta (Arquearia +2) | Presa do Caçador | Aumento de Atributo | Ataque Extra |
 | Ladino | Ataque Furtivo 1d6 | Ação Ardilosa | Ataque Furtivo 2d6, Mira Firme | Aumento de Atributo | Ataque Furtivo 3d6, Esquiva Sobrenatural |
 | Feiticeiro | Raio de Fogo, Raio de Gelo, Orbe Cromático, Feitiçaria Inata | Fonte de Magia, Metamagia | Raio Ardente (2º), Feitiçaria Dracônica | Aumento de Atributo | Bola de Fogo (3º) |
-| Bruxo | Rajada Mística + Rajada Agonizante, Bruxaria | +2 Invocações | Pacto; magias de 2º | Aumento de Atributo | Toque Vampírico (3º) |
+| Bruxo | Rajada Mística, Bruxaria | Rajada Agonizante (+CAR) | Pacto; magias de 2º | Aumento de Atributo | Toque Vampírico (3º) |
 | Mago | Raio de Fogo, Mísseis Mágicos, Onda Trovejante, Escudo, Armadura Arcana | Erudito | Raio Ardente (2º), Escola de Evocação | Aumento de Atributo | Bola de Fogo e Relâmpago (3º) |
 
 Traços de espécie no nível 1: Sortudo (halfling rerrola o 1), Resistência Implacável (orc fica com 1 PV uma vez),
@@ -172,7 +172,7 @@ Robustez Anã (+1 PV por nível), Inspiração Heroica (humano rerrola um ataque
 - **Magias de salvaguarda**: o alvo rola d20 + modificador contra CD = 8 + proficiência + mod. de conjuração;
   passou = metade do dano (quando a magia permite) e aparece "SALVOU".
 - **Dano**: sempre nos dados da arma ou magia + modificador (ex.: Montante 2d6+3, Machado Grande 1d12+3,
-  Arco Longo 1d8+3, Raio de Fogo 1d10, Mísseis Mágicos 3×(1d4+1), Rajada Mística 1d10+CAR).
+  Arco Longo 1d8+3, Raio de Fogo 1d10, Mísseis Mágicos 3×(1d4+1), Rajada Mística 1d10 (+CAR a partir do nível 2)).
 - **Concentração**: ao sofrer dano, CON contra CD 10 ou metade do dano; falhou = a magia acaba ("PERDEU CONCENTRAÇÃO").
 - **Caixa do golpe**: caixa pixel com o nome do golpe por ≈1 s (borda escura 2 px, fundo na cor do tipo de dano,
   texto branco em fonte pixel) + efeito visual com partículas e brilho: corte em arco da espada, flecha com rastro,

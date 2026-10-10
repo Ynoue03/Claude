@@ -1,5 +1,6 @@
-// Gera a ficha completa de um personagem nível 5 rolando dados (SRD 5.2).
-import { ATRIBUTOS, Atributo, ARMAS, Arma, CLASSES, ClasseId, DRAGOES, ESPECIES, EspecieId, NIVEL, PROFICIENCIA } from "./srd";
+// Gera a ficha de um personagem NÍVEL 1 rolando dados (SRD 5.2) e faz o campeão subir de nível.
+import { ATRIBUTOS, Atributo, ARMAS, Arma, CLASSES, ClasseId, DRAGOES, ESPECIES, EspecieId } from "./srd";
+import { espacosDe, magiasNovas, Poder, poderesNovos, profDe } from "./niveis";
 import { criarRng, d, escolher, hash, mod, Rng } from "./dados";
 import { EstiloCabelo, lerDescricao } from "./descricao";
 
@@ -9,6 +10,7 @@ export type Entrada = {
   autor?: string; // @ de quem comentou (vai para os créditos e para a ficha)
   classe?: ClasseId; // opcional: força a classe (senão vem da descrição ou é sorteada)
   especie?: EspecieId;
+  ficha?: Ficha; // campeão que volta: entra com a ficha salva (nível, atributos, PV)
 };
 
 export type Aparencia = {
@@ -26,6 +28,8 @@ export type RolagemAtributo = { dados: number[]; descartado: number; soma: numbe
 
 export type Ficha = {
   id: number;
+  nivel: number;
+  vitorias?: number; // campeão: quantas batalhas seguidas venceu
   nome: string;
   autor?: string;
   descricao?: string;
@@ -36,7 +40,7 @@ export type Ficha = {
   rerrolou: number; // quantas vezes o conjunto foi rolado de novo (regra da mesa)
   atributos: Record<Atributo, number>;
   bonusAntecedente: Partial<Record<Atributo, number>>;
-  pvRolagens: number[]; // d(dado de vida) dos níveis 2–5
+  pvRolagens: number[]; // dado de vida rolado a cada nível acima do 1º
   pv: number;
   ca: number;
   arma: Arma;
@@ -119,12 +123,8 @@ export const criarFicha = (entrada: Entrada, id: number, sementeBatalha: number)
 
   const m = (a: Atributo) => mod(atributos[a]);
 
-  // 4) pontos de vida: máximo do dado no 1º nível, rola o dado nos níveis 2–5, + CON por nível
-  const pvRolagens = Array.from({ length: NIVEL - 1 }, () => d(rng, classe.dadoVida));
-  let pv = classe.dadoVida + pvRolagens.reduce((a, b) => a + b, 0) + m("CON") * NIVEL;
-  if (especieId === "anao") pv += NIVEL; // Robustez Anã
-  if (especieId === "humano") pv += 2 * NIVEL; // talento Vigoroso (origem versátil)
-  pv = Math.max(pv, NIVEL * 2);
+  // 4) pontos de vida no nível 1: máximo do dado de vida + CON (+ traços de espécie)
+  const pvRolagens: number[] = [];
 
   // 5) arma e escudo
   // arma citada na descrição ("com machado", "arqueiro") tem preferência, se a classe usa
@@ -139,13 +139,6 @@ export const criarFicha = (entrada: Entrada, id: number, sementeBatalha: number)
   const [armaId, comEscudo] = escolhaArma.split("+");
   const arma = ARMAS[armaId];
   const escudo = Boolean(classe.escudo || comEscudo);
-
-  // 6) classe de armadura
-  const a = classe.armadura;
-  let ca = a.base + Math.min(m("DES"), a.maxDes ?? 99);
-  if (a.somaCon) ca += m("CON");
-  if (a.somaSab) ca += m("SAB");
-  if (escudo) ca += 2;
 
   const conj = classe.conjuracao;
   // draconato: "vermelho", "azul", "dourado"… na descrição escolhe a ancestralidade
@@ -168,8 +161,9 @@ export const criarFicha = (entrada: Entrada, id: number, sementeBatalha: number)
     pistas.cabelo ?? (especieId === "draconato" ? "careca" : escolher(rng, classeId === "monge" ? ["careca", "coque", "curto"] : estilos.slice(0, 6)));
   const barba = pistas.barba ?? (especieId === "anao" ? true : especieId === "draconato" || especieId === "elfo" ? false : rng() < 0.25);
 
-  return {
+  const ficha: Ficha = {
     id,
+    nivel: 1,
     nome: entrada.nome,
     autor: entrada.autor,
     descricao: entrada.descricao,
@@ -181,17 +175,86 @@ export const criarFicha = (entrada: Entrada, id: number, sementeBatalha: number)
     atributos,
     bonusAntecedente,
     pvRolagens,
-    pv,
-    ca,
+    pv: 0,
+    ca: 0,
     arma,
     armaId,
     escudo,
-    deslocamento: classeId === "barbaro" || classeId === "monge" ? especie.deslocamento + 10 : especie.deslocamento,
-    cd: conj ? 8 + PROFICIENCIA + m(conj.atributo) : undefined,
-    ataqueMagia: conj ? PROFICIENCIA + m(conj.atributo) : undefined,
-    espacos: conj ? [...conj.espacos] : [0, 0, 0],
+    deslocamento: especie.deslocamento,
+    espacos: [0, 0, 0],
     aparencia: { pele, cabelo, olhos: pistas.cores.olhos ?? escolher(rng, OLHOS), roupa, detalhe, estiloCabelo, barba, metal: pistas.cores.metal },
   };
+  void conj;
+  void m;
+  return derivar(ficha);
+};
+
+// Valores que dependem de atributos + nível: PV, CA, CD, espaços, deslocamento.
+export const derivar = (f: Ficha): Ficha => {
+  const c = CLASSES[f.classe];
+  const m = (a: Atributo) => mod(f.atributos[a]);
+  const n = f.nivel;
+  const prof = profDe(n);
+  let pv = c.dadoVida + f.pvRolagens.reduce((a, b) => a + b, 0) + m("CON") * n;
+  if (f.especie === "anao") pv += n; // Robustez Anã
+  if (f.especie === "humano") pv += 2 * n; // talento Vigoroso
+  pv = Math.max(pv, n);
+  const a = c.armadura;
+  let base = a.base;
+  if (f.classe === "feiticeiro" && n < 3) base = 10; // Feitiçaria Dracônica (CA 13 + DES) só no nível 3
+  let ca = base + Math.min(m("DES"), a.maxDes ?? 99);
+  if (a.somaCon) ca += m("CON");
+  if (a.somaSab) ca += m("SAB");
+  if (f.escudo) ca += 2;
+  if (f.classe === "guerreiro" && f.escudo) ca += 1; // Estilo de Luta: Defesa
+  if (f.classe === "paladino" && n >= 2) ca += 1; // Estilo de Luta (nível 2): Defesa
+  const conj = c.conjuracao;
+  const esp = ESPECIES[f.especie].deslocamento;
+  const desloc = esp + ((f.classe === "monge" && n >= 2) || (f.classe === "barbaro" && n >= 5) ? 10 : 0);
+  return {
+    ...f,
+    pv,
+    ca,
+    deslocamento: desloc,
+    cd: conj ? 8 + prof + m(conj.atributo) : undefined,
+    ataqueMagia: conj ? prof + m(conj.atributo) : undefined,
+    espacos: espacosDe(f.classe, n),
+  };
+};
+
+export type Subida = {
+  antes: Ficha;
+  depois: Ficha;
+  dadoPv: number; // valor rolado no dado de vida
+  atributos: Partial<Record<Atributo, number>>; // aumentos (Aumento de Atributo nos níveis 4, 8, 12, 16, 19)
+  poderes: Poder[]; // poderes novos
+  magias: string[]; // magias novas (ids)
+};
+
+// Campeão sobe 1 nível: rola o dado de vida, ganha poderes e (nos níveis certos) atributos.
+export const subirNivel = (f: Ficha, semente: number): Subida => {
+  const rng = criarRng(hash(`nivel:${semente}:${f.nome}:${f.nivel + 1}`));
+  const c = CLASSES[f.classe];
+  const novo = f.nivel + 1;
+  const dadoPv = d(rng, c.dadoVida);
+  const atributos = { ...f.atributos };
+  const ganhos: Partial<Record<Atributo, number>> = {};
+  if ([4, 8, 12, 16, 19].includes(novo)) {
+    // +2 no atributo principal (o que passar de 20 vai para o segundo)
+    const [p1, p2] = c.prioridade;
+    let resto = 2;
+    for (const a of [p1, p2, "CON" as Atributo]) {
+      const add = Math.min(resto, 20 - atributos[a]);
+      if (add > 0) {
+        atributos[a] += add;
+        ganhos[a] = (ganhos[a] ?? 0) + add;
+        resto -= add;
+      }
+      if (!resto) break;
+    }
+  }
+  const depois = derivar({ ...f, nivel: novo, atributos, pvRolagens: [...f.pvRolagens, dadoPv], vitorias: (f.vitorias ?? 0) + 1 });
+  return { antes: f, depois, dadoPv, atributos: ganhos, poderes: poderesNovos(f.classe, f.especie, novo), magias: magiasNovas(f.classe, novo) };
 };
 
 // Nomes para personagens aleatórios (enquanto não há comentários suficientes)

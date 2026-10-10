@@ -95,13 +95,13 @@ export type Magia = {
 };
 
 export const MAGIAS: Record<string, Magia> = {
-  // truques (2 dados no nível 5)
-  raioDeFogo: { id: "raioDeFogo", nome: "Raio de Fogo", nivel: 0, modo: "ataque", dano: "2d10", tipo: "fogo", alcance: 120, efeito: "projetil" },
-  raioDeGelo: { id: "raioDeGelo", nome: "Raio de Gelo", nivel: 0, modo: "ataque", dano: "2d8", tipo: "frio", alcance: 60, efeito: "raio", nota: "−10 pés de deslocamento" },
-  chamaSagrada: { id: "chamaSagrada", nome: "Chama Sagrada", nivel: 0, modo: "salvaguarda", dano: "2d8", tipo: "radiante", salva: "DES", alcance: 60, efeito: "coluna" },
-  produzirChama: { id: "produzirChama", nome: "Produzir Chama", nivel: 0, modo: "ataque", dano: "2d8", tipo: "fogo", alcance: 60, efeito: "projetil" },
-  chicoteEspinhos: { id: "chicoteEspinhos", nome: "Chicote de Espinhos", nivel: 0, modo: "ataque", dano: "2d6", tipo: "perfurante", alcance: 30, efeito: "raio", nota: "puxa 10 pés" },
-  zombaria: { id: "zombaria", nome: "Zombaria Viciosa", nivel: 0, modo: "salvaguarda", dano: "2d6", tipo: "psíquico", salva: "SAB", alcance: 60, efeito: "palavras", nota: "desvantagem no próximo ataque" },
+  // truques: 1 dado nos níveis 1–4 (o simulador multiplica: 2 dados no 5º etc.)
+  raioDeFogo: { id: "raioDeFogo", nome: "Raio de Fogo", nivel: 0, modo: "ataque", dano: "1d10", tipo: "fogo", alcance: 120, efeito: "projetil" },
+  raioDeGelo: { id: "raioDeGelo", nome: "Raio de Gelo", nivel: 0, modo: "ataque", dano: "1d8", tipo: "frio", alcance: 60, efeito: "raio", nota: "−10 pés de deslocamento" },
+  chamaSagrada: { id: "chamaSagrada", nome: "Chama Sagrada", nivel: 0, modo: "salvaguarda", dano: "1d8", tipo: "radiante", salva: "DES", alcance: 60, efeito: "coluna" },
+  produzirChama: { id: "produzirChama", nome: "Produzir Chama", nivel: 0, modo: "ataque", dano: "1d8", tipo: "fogo", alcance: 60, efeito: "projetil" },
+  chicoteEspinhos: { id: "chicoteEspinhos", nome: "Chicote de Espinhos", nivel: 0, modo: "ataque", dano: "1d6", tipo: "perfurante", alcance: 30, efeito: "raio", nota: "puxa 10 pés" },
+  zombaria: { id: "zombaria", nome: "Zombaria Viciosa", nivel: 0, modo: "salvaguarda", dano: "1d6", tipo: "psíquico", salva: "SAB", alcance: 60, efeito: "palavras", nota: "desvantagem no próximo ataque" },
   rajadaMistica: { id: "rajadaMistica", nome: "Rajada Mística", nivel: 0, modo: "ataque", dano: "1d10", tipo: "energia", alcance: 120, feixes: 2, efeito: "raio", nota: "+CAR (Rajada Agonizante)" },
   // 1º círculo
   misseisMagicos: { id: "misseisMagicos", nome: "Mísseis Mágicos", nivel: 1, modo: "automatico", dano: "1d4+1", tipo: "energia", alcance: 120, feixes: 3, feixesPorCirculo: 1, efeito: "misseis" },
