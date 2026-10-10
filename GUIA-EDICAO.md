@@ -70,8 +70,9 @@ Ponto de partida quando não há modelo (ou para completar o que o modelo não m
 | Educação | didático, leve | 2 | 0,3–0,6 | lo-fi / acústico · 80–100 | fade, slide, push | lápis, página virando, pop | trilha que disputa com a voz |
 | Viagem | aventureiro, aberto | 4 | 0,8–1,5 | indie / tropical house · 100–125 | whip pan, match cut, zoom blur, light leak | vento, avião, swoosh, riser | transições "de PowerPoint" |
 | Pets | divertido, fofo | 3 | 0,5–1,0 | ukulele / pop leve · 100–120 | pop/escala, swap, push | boing, pop, latido/miado (foley) | sons agressivos |
+| **Games / RPG (pixel art)** ✅ | retrô, tenso, divertido | 4 | contínuo (a câmera é a arena) | chiptune 8/16 bits, tom menor · 144 | cut-in diagonal, flash branco, tremor, zoom 1,2× no duelo | dado rolando, blips, golpe por elemento, arpejos | glitch digital, sons de meme |
 
-✅ = preset implementado neste repositório (templates `TreinoDoDia`, `ReceitaFit`, `pre-treino`).
+✅ = preset implementado neste repositório (templates `TreinoDoDia`, `ReceitaFit`, `pre-treino`, `ArenaD20`).
 Novo nicho? Adicione uma linha aqui depois de aprovado o primeiro vídeo.
 
 ---

@@ -1,0 +1,99 @@
+{
+  "numero": 1,
+  "seed": 20261010,
+  "perfil": "@YourBattle",
+  "lutadores": [
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    },
+    {
+      "nome": "",
+      "descricao": "",
+      "autor": ""
+    }
+  ],
+  "campeaoAnterior": null,
+  "textos": {
+    "intro": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "caiu": "CAIU!",
+    "vitoria": "VITÓRIA DE",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta1": "COMENTE NOME + DESCRIÇÃO",
+    "cta2": "DO SEU PERSONAGEM",
+    "cta3": "OS DADOS DECIDEM O RESTO!"
+  }
+}

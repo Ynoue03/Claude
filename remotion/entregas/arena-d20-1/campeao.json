@@ -1,0 +1,148 @@
+{
+  "id": 8,
+  "nome": "Thea",
+  "autor": "",
+  "descricao": "",
+  "especie": "orc",
+  "ancestral": null,
+  "sopro": null,
+  "classe": "paladino",
+  "nivel": 2,
+  "campeaoAnterior": false,
+  "tentativas": [
+    {
+      "dados": [
+        [
+          5,
+          6,
+          5,
+          2
+        ],
+        [
+          1,
+          4,
+          2,
+          6
+        ],
+        [
+          1,
+          4,
+          2,
+          4
+        ],
+        [
+          2,
+          3,
+          4,
+          1
+        ],
+        [
+          5,
+          6,
+          1,
+          5
+        ],
+        [
+          1,
+          3,
+          5,
+          3
+        ]
+      ],
+      "totais": [
+        16,
+        12,
+        10,
+        9,
+        16,
+        11
+      ]
+    }
+  ],
+  "atrib": {
+    "FOR": 18,
+    "CAR": 17,
+    "CON": 12,
+    "SAB": 11,
+    "DES": 10,
+    "INT": 9
+  },
+  "antecedente": [
+    "FOR",
+    "CAR"
+  ],
+  "pvMax": 20,
+  "pvTexto": "d10 máx 10 + CON 1 = 11",
+  "ca": 18,
+  "caTexto": "cota de malha 16 + escudo 2",
+  "desloc": 30,
+  "arma": {
+    "id": "martelo",
+    "nome": "Martelo de Guerra",
+    "n": 1,
+    "d": 8,
+    "tipo": "concussao",
+    "atr": "FOR",
+    "distancia": false,
+    "alcance": 5,
+    "duasMaos": false,
+    "leve": false
+  },
+  "armadura": "cota de malha",
+  "estilo": "",
+  "armaduraArcana": false,
+  "recursos": {
+    "espacos": [
+      2,
+      0,
+      0
+    ],
+    "furia": 0,
+    "folego": 0,
+    "curaMaos": 10,
+    "marcaGratis": 0,
+    "inata": 0,
+    "sopro": 0,
+    "implacavel": 1,
+    "surto": 2,
+    "heroica": 0,
+    "pedra": 0,
+    "surtoAcao": 0,
+    "centelha": 0,
+    "foco": 0
+  },
+  "poderesExtras": [
+    "ESTILO DE LUTA",
+    "DESTRUIÇÃO DIVINA"
+  ],
+  "aparencia": {
+    "pele": "#7a9a6a",
+    "cabelo": "#1e1a1c",
+    "estilo": "moicano",
+    "barba": true,
+    "olhos": "#7a8a9a",
+    "roupa1": "#1f5e66",
+    "roupa1Nome": "azul-petróleo",
+    "roupa2": "#6a4a32",
+    "dourado": true,
+    "cabeca": "nada",
+    "torso": "malha",
+    "tabardo": true,
+    "capa": true,
+    "capaCurta": false,
+    "ombreiras": false,
+    "pelePeles": false,
+    "escudo": "brasao",
+    "arma": "martelo",
+    "aljava": false,
+    "orbe": null,
+    "faixa": "#3a6ac4",
+    "pintura": false,
+    "marca": "nada",
+    "pluma": "#e0c040"
+  },
+  "historicoPV": [
+    "d10 máx 10 + CON 1 = 11",
+    "Nível 2: d10 = 8 + 1 CON = +9 PV"
+  ]
+}

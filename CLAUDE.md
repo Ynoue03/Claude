@@ -64,6 +64,23 @@ No HyperFrames, os mesmos efeitos estão em `hyperframes/index.html` (moldura, l
 
 **Estrutura padrão de um vídeo:** Gancho/título (≈3 s) → Conteúdo (lista, passos, números) → Dica ou dado (≈3 s) → CTA "salve / comente" + @perfil (≈2,5 s). Total ideal: 10–20 s.
 
+## ARENA D20 (série à parte, identidade própria)
+Battle royale em pixel art com regras do SRD 5.2 (`remotion/src/arena/`, composição `ArenaD20`, 90 s).
+**Não segue a identidade "aesthetic"** acima: tem paleta, fonte pixel e trilha chiptune próprias.
+Valem as mesmas regras de área segura, master −14 LUFS e tom do texto. Briefing: `briefings/2026-10-10-arena-d20.md`.
+- Episódio = um JSON em `remotion/src/arena/episodios/` (número, seed, lutadores dos comentários, campeão anterior, textos, @perfil).
+- Nada é roteirizado: a luta sai dos dados com a seed. Para outro resultado, troque a seed (nunca force o vencedor).
+- Simulação `sim/` · linha do tempo `linha.ts` (ajusta só o ritmo) · arte procedural `arte/` · quadro `render/`.
+```bash
+cd remotion
+npm run arena                                   # fichas, log, campeão, sprites (entregas/) + eventos de som
+python3 ../audio/arena.py public/arena/episodio-1.sons.json   # trilha chiptune + efeitos sincronizados
+npx remotion render ArenaD20 out/arena-d20-1.mp4 --image-format=png --crf=16 \
+  --browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
+../scripts/masterizar.sh out/arena-d20-1.mp4
+npx tsx scripts/quadros.ts 400 1700 2400       # confere quadros soltos em PNG
+```
+
 ## Áudio (detalhes em `ESTUDO-AUDIO.md`)
 - Trilhas e efeitos são **próprios**, gerados por `audio/gerar.py` (sem direito autoral de terceiros).
 - Treino → `treino-house` (112 BPM) · Receita → `receita-lofi` (84 BPM) · Dica/pré-treino → `pre-treino-pop` (100 BPM).
