@@ -197,8 +197,10 @@ type Est = {
 };
 
 
-export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number } = {}): Simulacao => {
+export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: number; focoCampeao?: number } = {}): Simulacao => {
   const versao = opcoes.versao ?? 1;
+  // força da preferência por atacar o campeão: 1 = leve (padrão da versão 2); 0 = nenhuma
+  const foco = opcoes.focoCampeao ?? (versao >= 2 ? 1 : 0);
   const E: Est[] = lutadores.map((l) => {
     const n = l.nivel;
     const prof = proficiencia(n);
@@ -713,7 +715,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       let s = distancia ? o.pv * 0.6 + d * 0.02 : d / 40 + o.pv * 0.35;
       if (o.pv <= 4) s -= 3;
       if (a.conc && a.conc.alvo === o.id) s -= 4;
-      if (versao >= 2 && o.l.campeao) s -= distancia ? 2 : 1.2; // leve foco no campeão
+      if (o.l.campeao) s -= foco * (distancia ? 2 : 1.2); // foco no campeão
       s += rng.next() * 1.5;
       if (s < ms) {
         ms = s;

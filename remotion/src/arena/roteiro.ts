@@ -81,7 +81,7 @@ const natural = (b: Batida, posAtor: P, posAlvo: P | undefined) => {
 
 export const criarRoteiro = (ep: Episodio): Roteiro => {
   const { lutadores, rng } = gerarLutadores(ep);
-  const sim = simular(lutadores, rng, { versao: ep.versao });
+  const sim = simular(lutadores, rng, { versao: ep.versao, focoCampeao: ep.focoCampeao });
   const N = lutadores.length;
   const avisos: string[] = [];
 

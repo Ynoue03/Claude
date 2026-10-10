@@ -44,6 +44,7 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `campeaoAnterior` | `null` ou o conteúdo de `arena-d20/epNN/campeao.json` do episódio anterior: entra como 1 dos 16, com nível, atributos, PV, poderes e coroa |
 | `textos` | banners: `escolha`, `lutem`, `subiu`, `defende`, `cta` (no CTA, o trecho depois de ` · ` sai em dourado) |
 | `versao` | `2` (padrão para episódios novos): nome **e sobrenome** que nunca se repetem na série, leve foco dos lutadores no campeão e **+1 nível na hora para quem derrubar o campeão** (vencendo, soma +2). Sem o campo = regras dos episódios 1–3 (reproduzem a mesma luta de antes) |
+| `focoCampeao` | força da preferência dos lutadores por atacar o campeão (versão 2+): `1` = leve (padrão), `5` = forte. Medido com a Yara no nível 4 em 40 lutas: foco 1 → campeã vence 92%; foco 5 → ~50% |
 | `audio` | WAV em `remotion/public/` (`arena/epNN.wav`); vazio = sem áudio |
 
 Exemplo de comentário: `{ "nome": "Brisa", "descricao": "elfa druida de cabelo ruivo com cajado e capa verde", "autor": "@fulana" }`.
