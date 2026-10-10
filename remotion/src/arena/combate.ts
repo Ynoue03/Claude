@@ -5,7 +5,7 @@ import { ARMAS, fmt, subirNivel } from "./personagem.ts";
 import type { Arma, Lutador, SubidaNivel } from "./personagem.ts";
 import { CLASSES, COR_DANO, espacos, mod, proficiencia } from "./regras.ts";
 import { ITEM_IDS, podeUsar, tipoDe } from "./itens.ts";
-import { CHEFES } from "./chefes.ts";
+import { CHEFES, fichaChefe } from "./chefes.ts";
 import type { AtaqueChefe } from "./chefes.ts";
 import type { ItemId } from "./itens.ts";
 import type { Atributo, TipoDano } from "./regras.ts";
@@ -25,6 +25,7 @@ export const GEO: Record<string, Geo> = {
   caverna: { w: 720, h: 1280, lim: { x0: 92, x1: 628, y0: 400, y1: 1040 }, centro: { x: 360, y: 720 }, raio: { x: 236, y: 280 } },
 };
 export const Y_MIN_CHEFE = 640;
+export const PESO_CHEFE_FORTE = 0.8; // heróis fortes: o chefe conta como 0,8 × PV médio deles na escolha de alvo
 export const geoDe = (arena?: string): Geo => GEO[arena ?? "calabouco"] ?? GEO.calabouco;
 // limites da simulação em andamento (ajustados no início de cada simulação)
 export let LIMITES = { ...GEO.calabouco.lim };
@@ -329,6 +330,10 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const modArma = (e: Est, a: Arma) => (a.atributo === "DES" ? Math.max(m(e, "DES"), m(e, "FOR")) : m(e, "FOR"));
   const podeCorpo = (e: Est) => e.vivo;
   // chefes têm corpo maior: alcance, contato e espaço em volta crescem com o raio deles
+  // heróis fortes (nível inicial > 1): o chefe pesa na escolha como um herói de PV médio, senão os 16 só batem nele
+  const nivelChefe = lutadores.find((l) => l.boss)?.bossNivel ?? 1;
+  const herois = lutadores.filter((l) => !l.boss);
+  const pesoChefeForte = nivelChefe > 1 ? (PESO_CHEFE_FORTE * herois.reduce((t, l) => t + l.pvMax, 0)) / herois.length : 0;
   const tam = (e: Est) => (e.l.boss ? CHEFES[e.l.boss].raio : 0);
   const adjacente = (a: Est, b: Est) => dist(a.pos, b.pos) <= ALCANCE + tam(a) + tam(b);
   const ameacas = (e: Est) => inimigos(e).filter((o) => adjacente(e, o));
@@ -924,7 +929,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       let s = distancia ? o.pv * 0.6 + d * 0.02 : d / 40 + o.pv * 0.35;
       if (o.pv <= 4) s -= 3;
       // chefe: o PV enorme dele não conta contra; só a distância e o foco (todo mundo quer derrubá-lo)
-      if (o.l.boss) s = (distancia ? d * 0.02 + 4 : d / 40 + 2.5) - focoChefe + rng.next() * 1.5;
+      if (o.l.boss) s = (distancia ? d * 0.02 + 4 : d / 40 + 2.5) - focoChefe + rng.next() * 1.5 + pesoChefeForte * (distancia ? 0.6 : 0.35);
       if (a.conc && a.conc.alvo === o.id) s -= 4;
       if (o.l.campeao) s -= foco * (distancia ? 2 : 1.2); // foco no campeão
       s += rng.next() * 1.5;
@@ -1447,7 +1452,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
 
   // ─── turno do chefe: move, usa o especial quando carregado e ataca várias vezes ───
   const jogarTurnoChefe = (a: Est, rodada: number) => {
-    const c = CHEFES[a.l.boss!];
+    const c = fichaChefe(a.l.boss!, a.l.bossNivel ?? 1);
     const batidas: Batida[] = [];
     turnoAtual = { rodada, ator: a.id, batidas, log: [] };
     log(`[R${rodada}] Turno do chefe ${a.l.nome} (${a.pv}/${a.pvMax} PV)`);

@@ -3,7 +3,7 @@
 //   • ../arena-d20/epNN/FICHA.md    → fichas, rolagens, iniciativa, log do combate e ficha nova do campeão
 //   • ../arena-d20/epNN/campeao.json → cole em "campeaoAnterior" do próximo episódio
 // Uso: node scripts/arena.ts src/arena/episodios/ep01.json
-import { CHEFES } from "../src/arena/chefes.ts";
+import { CHEFES, fichaChefe } from "../src/arena/chefes.ts";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -86,13 +86,13 @@ P();
 for (const l of L) {
   const at = l.atributos;
   if (l.boss) {
-    const c = CHEFES[l.boss];
+    const c = fichaChefe(l.boss, l.bossNivel ?? 1);
     P(`### ${l.nome} — CHEFE (${c.fonte})`);
     P(
       `- FOR ${at.FOR} (${fmt(mod(at.FOR))}) · DES ${at.DES} (${fmt(mod(at.DES))}) · CON ${at.CON} (${fmt(mod(at.CON))}) · INT ${at.INT} (${fmt(mod(at.INT))}) · SAB ${at.SAB} (${fmt(mod(at.SAB))}) · CAR ${at.CAR} (${fmt(mod(at.CAR))})`,
     );
     P(
-      `- PV ${c.pv} · CA ${c.ca} · Deslocamento ${c.deslocamento} pés${c.voa ? " (voa: sem ataque de oportunidade ao se mover)" : ""} · age **2 vezes por rodada** (no seu número de iniciativa e no meio da ordem) · não é empurrado`,
+      `- PV ${l.pvMax}${l.pvMax !== c.pv ? ` (${c.pv} da ficha × ${(l.pvMax / c.pv).toFixed(1).replace(".", ",")}, heróis mais fortes)` : ""} · CA ${c.ca} · Deslocamento ${c.deslocamento} pés${c.voa ? " (voa: sem ataque de oportunidade ao se mover)" : ""} · age **2 vezes por rodada** (no seu número de iniciativa e no meio da ordem) · não é empurrado`,
     );
     P(
       `- Ataques (todos em cada turno): ${c.ataques.map((a) => `${a.nome} +${a.acerto} ${a.n}d${a.d}+${a.bonus} ${TIPO[a.tipo] ?? a.tipo}`).join("; ")}`,

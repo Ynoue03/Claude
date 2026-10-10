@@ -6,7 +6,7 @@ import { simular } from "./combate.ts";
 import type { Batida, Efeito, P, Resultado, Simulacao } from "./combate.ts";
 import { CLASSES, ESPECIES, espacos, proficiencia } from "./regras.ts";
 import { ITEM_IDS, podeUsar, tipoDe } from "./itens.ts";
-import { CHEFES, chefeDoEpisodio } from "./chefes.ts";
+import { chefeDoEpisodio, fichaChefe } from "./chefes.ts";
 import type { ItemId } from "./itens.ts";
 import type { TipoDano, Poder } from "./regras.ts";
 
@@ -592,8 +592,8 @@ const pergaminhoChefe = (c: Lutador, fases: Fases): ItemPergaminho[] => {
     const md = Math.floor((c.atributos[a] - 10) / 2);
     itens.push({ v: passo(8), tipo: "atributo", texto: `${a} ${c.atributos[a]} (${md >= 0 ? "+" : ""}${md})` });
   }
-  const ch = CHEFES[c.boss!];
-  itens.push({ v: passo(14), tipo: "combate", texto: `PV ${ch.pv}` });
+  const ch = fichaChefe(c.boss!, c.bossNivel ?? 1);
+  itens.push({ v: passo(14), tipo: "combate", texto: `PV ${c.pvMax}` });
   itens.push({ v: passo(8), tipo: "combate", texto: `CA ${ch.ca}` });
   for (const q of ch.ataques.filter((x, i, arr) => arr.findIndex((y) => y.nome === x.nome) === i)) itens.push({ v: passo(8), tipo: "poder", texto: `${q.nome} ${q.n}d${q.d}+${q.bonus}` });
   itens.push({ v: passo(8), tipo: "poder", texto: ch.especial.nome });

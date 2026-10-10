@@ -143,6 +143,21 @@ export const CHEFES: Record<ChefeId, Chefe> = {
   },
 };
 
+// Ficha do chefe contra heróis mais fortes (ordens que começam no nível N): +1 de acerto por nível acima do 1,
+// dados de dano × (1 + 0,25 por nível) e CD do especial +1 a cada 2 níveis. Nível 1 = ficha original.
+export const fichaChefe = (id: ChefeId, nivel = 1): Chefe => {
+  const c = CHEFES[id];
+  if (nivel <= 1) return c;
+  const k = nivel - 1;
+  const dados = (n: number) => Math.round(n * (1 + FORCA_POR_NIVEL * k));
+  const e = c.especial;
+  return {
+    ...c,
+    ataques: c.ataques.map((a) => ({ ...a, acerto: a.acerto + k, n: dados(a.n) })),
+    especial: e.k === "sopro" ? { ...e, n: dados(e.n), cd: e.cd + Math.floor(k / 2) } : e.k === "pedra" ? { ...e, acerto: e.acerto + k, n: dados(e.n) } : e.k === "investida" ? { ...e, extraN: dados(e.extraN) } : e,
+  };
+};
+export const FORCA_POR_NIVEL = 0.25;
 // chefe do episódio: o campo "chefe" do JSON, ou um da ordem a cada 10 episódios
 export const chefeDoEpisodio = (ep: { numero: number; versao?: number; chefe?: ChefeId | "" }): ChefeId | null => {
   if (ep.chefe) return ep.chefe;

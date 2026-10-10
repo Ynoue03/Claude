@@ -41,6 +41,7 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | Campo | O que é |
 | --- | --- |
 | `numero` | número do episódio (`ARENA D20 #N`) |
+| `nivelInicial` / `itemInicial` | ordens que começam fortes: todos os sorteados sobem do nível 1 até `nivelInicial` (cada nível com dado de vida rolado) e, com `itemInicial: true`, recebem 1 item da sua classe (d30). O chefe se fortalece junto: PV × (1 + 0,125 por nível), +1 de acerto por nível, dados de dano × (1 + 0,25 por nível), CD do sopro +1 a cada 2 níveis, e os heróis o tratam como um herói de PV médio na escolha de alvo (senão os 16 só batem nele). Calibrado: Dragão contra 16 heróis de nível 5 com item vence ~45%. `chefePv` força o multiplicador de PV |
 | `serie` | ordem da série: sem o campo = **ordem A** (eps. 1–12…); `"B"`, `"C"`… recomeçam do episódio 1 sem campeão (`ARENA D20 B #1`). Arquivos com o código `B01` (`episodios/epB01.json` → `arena-d20/epB01/`, `out/arena-epB01-master.mp4`); os nomes continuam únicos entre as ordens (A usa a sequência do episódio 1, B do 61, C do 121…) |
 | `seed` | semente de todas as rolagens. Deixe `""` e o `scripts/arena.sh` escolhe sozinho (`remotion/scripts/escolher-seed.ts`): a primeira de `arena-d20-epNN`, `-2`, `-3`… com **pelo menos 35 turnos**, duelo final de 3 a 8 turnos e sem compressão — só ritmo, nunca o vencedor. Outra seed = outra luta (o vencedor **não** é escolhido: troque a seed para outro resultado) |
 | `perfil` | @ do CTA |

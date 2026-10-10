@@ -1,0 +1,22 @@
+{
+  "numero": 1,
+  "serie": "C",
+  "seed": "arena-d20-epC01",
+  "perfil": "@SuaArenaD20",
+  "lutadores": [],
+  "campeaoAnterior": null,
+  "textos": {
+    "escolha": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta": "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!"
+  },
+  "audio": "arena/epC01.wav",
+  "versao": 3,
+  "focoCampeao": "forte",
+  "centro": "livre",
+  "nivelInicial": 5,
+  "itemInicial": true,
+  "chefe": "DRAGAO"
+}

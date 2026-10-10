@@ -17,10 +17,12 @@ import {
   nomeCompleto,
   TRACOS_ESPECIE,
   espacos,
+  NIVEL_MAX,
   mod,
 } from "./regras.ts";
 import type { Ancestralidade, Atributo, ClasseId, EspecieId, Poder, TipoDano } from "./regras.ts";
 import type { ItemId } from "./itens.ts";
+import { ITEM_IDS, podeUsar } from "./itens.ts";
 import { CHEFES, chefeDoEpisodio } from "./chefes.ts";
 import type { ChefeId } from "./chefes.ts";
 
@@ -136,6 +138,7 @@ export type Lutador = {
   vitorias: number;
   itens?: ItemId[]; // itens mágicos que já carrega
   boss?: ChefeId; // é o chefe do episódio (não é herói)
+  bossNivel?: number; // nível dos heróis que ele enfrenta (fortalece a ficha; 1 = original)
 };
 
 // ───────────── leitura simples da descrição de um comentário ─────────────
@@ -459,6 +462,9 @@ export type FichaCampeao = {
 
 export type Episodio = {
   numero: number;
+  nivelInicial?: number; // todos os sorteados começam neste nível (sobem do 1 com rolagens de verdade); padrão 1
+  itemInicial?: boolean; // cada sorteado começa com 1 item (d30, só da sua classe)
+  chefePv?: number; // multiplica os PV do chefe (padrão: cresce com o nível inicial dos heróis)
   serie?: string; // ordem da série: "A" (padrão, eps. 1–12…) ou "B", "C"… — cada ordem recomeça do episódio 1
   seed: string;
   perfil: string;
@@ -568,6 +574,31 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
       vitorias: 0,
     });
   }
+  // ordens que começam mais fortes: os sorteados sobem até o nível inicial (cada nível com dado de vida rolado,
+  // como a subida do campeão) e recebem um item da sua classe
+  const nivel0 = Math.max(1, Math.min(NIVEL_MAX, ep.nivelInicial ?? 1));
+  if (nivel0 > 1)
+    for (const l of lutadores) {
+      while (l.nivel < nivel0) {
+        const s = subirNivel(l, rng);
+        l.nivel = s.para;
+        l.atributos = { ...s.atributosDepois };
+        l.pvMax = s.pvDepois;
+        l.pvRolagens = s.ficha.pvRolagens ?? l.pvRolagens;
+      }
+      [l.ca, l.caDesc] = calcularCA(l.classe, l.visual, l.atributos);
+    }
+  if (ep.itemInicial)
+    for (const l of lutadores) {
+      const distancia = CLASSES[l.classe].distancia || l.arma.distancia;
+      for (let k = 0; k < 40; k++) {
+        const it = ITEM_IDS[rng.roll(`${l.nome} · item inicial (d${ITEM_IDS.length})`, 1, ITEM_IDS.length).total - 1];
+        if (podeUsar(it, distancia)) {
+          l.itens = [it];
+          break;
+        }
+      }
+    }
   if (camp) {
     const anc = camp.ancestralidade ? ANCESTRALIDADES.find((a) => a.nome === camp.ancestralidade) : undefined;
     const [ca, caDesc] = calcularCA(camp.classe, camp.visual, camp.atributos);
@@ -615,7 +646,7 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
       rolagens: [],
       tentativas: 0,
       antecedente: "",
-      pvMax: c.pv,
+      pvMax: Math.round(c.pv * (ep.chefePv ?? 1 + CHEFE_PV_POR_NIVEL * (nivel0 - 1))),
       pvRolagens: [],
       ca: c.ca,
       caDesc: `armadura natural (${c.fonte})`,
@@ -628,12 +659,16 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
       vitorias: 0,
       itens: [],
       boss: chefeId,
+      bossNivel: nivel0,
     });
   }
   lutadores.forEach((l, i) => (l.id = i));
   return { lutadores, rng };
 };
 
+// PV extra do chefe por nível inicial acima do 1 (×1,5 no nível 5). Calibrado com o Dragão contra 16 heróis de nível 5
+// com 1 item cada (40 lutas): vence ~45%, junto com fichaChefe (mais acerto e dano) e PESO_CHEFE_FORTE.
+export const CHEFE_PV_POR_NIVEL = 0.125;
 // Ordens da série: cada uma recomeça do episódio 1, mas os nomes continuam únicos entre as ordens — a ordem A usa a
 // sequência a partir do episódio 1, a B a partir do 61, a C do 121… (60 episódios × 16 nomes por ordem).
 export const EPISODIOS_POR_ORDEM = 60;

@@ -238,6 +238,16 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 - Os nomes continuam **sem repetir entre as ordens** (a ordem A usa a sequência a partir do episódio 1, a B a partir do
   61, a C do 121…). Baú (múltiplos de 5) e chefes (múltiplos de 10) contam pelo número do episódio dentro da ordem.
 
+## 18c. Ordens que começam fortes (ordem C)
+
+- `nivelInicial: 5`: os 16 sorteados sobem do nível 1 até o 5 antes da luta, cada nível com o dado de vida rolado (como a
+  subida do campeão). `itemInicial: true`: cada um começa com 1 item sorteado (d30), só da sua classe.
+- O chefe se fortalece junto com o nível inicial dos heróis: PV × (1 + 0,125 por nível acima do 1), +1 de acerto por
+  nível, dados de dano × (1 + 0,25 por nível), CD do especial +1 a cada 2 níveis; e os heróis o tratam como um herói de PV
+  médio na escolha de alvo (sem isso, os 16 batiam só nele e ele nunca vencia). Calibrado: Dragão Vermelho contra 16
+  heróis de nível 5 com 1 item vence ~45%.
+- O chefe pode ser escolhido em qualquer episódio com o campo `chefe` (ex.: `"DRAGAO"` no C #1).
+
 ## 19. Versões das regras
 
 | Versão | O que liga | Episódios |
@@ -295,3 +305,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 20 | O ep 12 é da ordem A; criar o ep 1 da ordem B | campo `serie`; ARENA D20 B #1 no calabouço, campeão Grom Rubrafonte |
 | 21 | Render mais rápido; eps A 13, 14 e 15 | `scripts/arena.sh` com todos os núcleos e x264 veryfast (~3,7 min por episódio); A13 Pike Valeclaro derruba o Orrin (+2 níveis), A14 Pike defende (nv 4), A15 Pike cai para Nessa Solposto e Rhea Ouroverde vence e acha as Luvas da Precisão no baú |
 | 22 | Ordem B, eps 2 a 5 | B2 Talia Águaclara derruba o Grom (+2 níveis); B3 Oona Galhoverde derruba a Talia e Yara Ferrocinza vence; B4 Zara Pontavento derruba a Yara (+2); B5 Zara defende (nv 4) e acha as Manoplas Certeiras |
+| 23 | Ordem C ep 1: todos nível 5 com 1 item, chefe Dragão Vermelho | `nivelInicial`, `itemInicial`, chefe fortalecido pelo nível dos heróis; C #1: Liora Corvonegro derruba o Dragão e Mirela Ossovelho vence (nv 6, 6 itens) |
