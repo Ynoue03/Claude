@@ -274,6 +274,15 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
   - **Toque Vampírico** (Bruxo nv 5, 3º): 3d6 necrótico corpo a corpo, cura metade.
 - Efeitos visuais próprios: explosão de fogo, raio em linha, estrondo, raio do céu.
 
+## 18f. Invisibilidade de verdade (versão 5)
+
+- Quem está **invisível** (Capa das Sombras) não pode ser alvo enquanto houver outro inimigo à vista: ninguém escolhe,
+  persegue, dá ataque de oportunidade ou mira área nele.
+- Se fica invisível no meio de um turno inimigo, os golpes que sobram (Ataque Extra, Rajada, 2ª flecha) vão para outro
+  inimigo visível ao alcance; se não houver, o atacante "perde de vista" e o golpe é perdido. Surto de Ação não é gasto.
+- Áreas (Bola de Fogo, sopros, Guardiões…) ainda atingem o invisível se ele estiver dentro da área mirada em outros.
+- Se só sobrarem invisíveis, eles podem ser atacados (com desvantagem, como antes).
+
 ## 19. Versões das regras
 
 | Versão | O que liga | Episódios |
@@ -281,7 +290,8 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 1 | regras originais | 1–3 |
 | 2 | nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão | 4–8 |
 | 3 | tudo da 2 + baú, itens mágicos, itens por classe, chefes, caverna | 9 a 15, B1–B5, C1, LENDAS 1 |
-| 4 | tudo da 3 + magias de círculo alto, usadas antes das de nível baixo | episódios novos |
+| 4 | tudo da 3 + magias de círculo alto, usadas antes das de nível baixo | LENDAS 2 |
+| 5 | tudo da 4 + invisibilidade de verdade (ninguém mira em quem sumiu) | LENDAS 3 em diante |
 
 ## 20. Entregas de cada episódio
 
@@ -339,3 +349,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 27 | Feitiços de nível alto usados com mais frequência que os de nível baixo | versão 4: 9 magias de 2º/3º círculo na luta, prioridade pelo maior círculo disponível; Dragão vs nível 5 continua ~50% |
 | 28 | Ep novo das lendas | LENDAS #2 (floresta, versão 4): Korrin volta como campeão (nv 8) e cai para Orrin Ventolargo; Mirela Ossovelho vence (nv 7) |
 | 29 | Nas lendas, nível mínimo 5 para todos | campo `nivelMinimo`; LENDAS #3 (calabouço, versão 4): todos no nível 5+ e Mirela Ossovelho defende o título |
+| 30 | A invisibilidade não funcionava (continuavam batendo no invisível) | versão 5: ninguém mira em quem está invisível; LENDAS #3 refeito |

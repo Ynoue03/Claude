@@ -345,6 +345,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const tam = (e: Est) => (e.l.boss ? CHEFES[e.l.boss].raio : 0);
   const adjacente = (a: Est, b: Est) => dist(a.pos, b.pos) <= ALCANCE + tam(a) + tam(b);
   const ameacas = (e: Est) => inimigos(e).filter((o) => adjacente(e, o));
+  // versão 5: quem está invisível não é visto — ninguém mira nele enquanto houver outro inimigo à vista
+  const escondido = (a: Est, t: Est) => versao >= 5 && t.invisivel > 0 && inimigos(a).some((o) => o.invisivel <= 0);
   const nomeArma = (a: Arma) => a.nome.toUpperCase();
   const dadoMarcial = (e: Est) => (e.nivel >= 5 ? 8 : 6);
   const truque = (e: Est) => (e.nivel >= 5 ? 2 : 1);
@@ -597,7 +599,14 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     rotulo?: string; // nome para a ficha/história (ex.: a arma em vez de "ATAQUE")
     extra?: (alvo: Est, res: Resultado, b: Batida & { k: "golpe" }) => void;
   };
-  const atacar = (a: Est, alvo: Est, op: OpAtaque, batidas: Batida[]): Batida & { k: "golpe" } => {
+  // golpe em quem sumiu: troca por um inimigo visível ao alcance, ou perde o ataque
+  const atacar = (a: Est, alvo: Est, op: OpAtaque, batidas: Batida[]): void => {
+    if (!escondido(a, alvo)) return void golpear(a, alvo, op, batidas);
+    const outro = op.distancia ? escolherAlvo(a, true) : ameacas(a).filter((o) => !escondido(a, o)).sort((x, y) => x.pv - y.pv)[0];
+    if (outro && !escondido(a, outro)) return void golpear(a, outro, op, batidas);
+    log(`  ${a.l.nome} perde ${alvo.l.nome} de vista (invisível)`);
+  };
+  const golpear = (a: Est, alvo: Est, op: OpAtaque, batidas: Batida[]): Batida & { k: "golpe" } => {
     const b = novoGolpe(a, op.nome, op.tipo, op.fx, !op.distancia, op.magia, !!op.reacao);
     b.especial = op.especial ?? 0;
     let vant = vantagem(a, alvo, op.distancia, op.magia);
@@ -859,7 +868,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         const q = lerp(pts[i - 1], pts[i], s / nPassos);
         if (!desengajar && !a.itens.has("botasLigeiras")) {
           for (const o of inimigos(a)) {
-            if (!o.reacao || naoProvocou.has(o.id) || !podeCorpo(o)) continue;
+            if (!o.reacao || naoProvocou.has(o.id) || !podeCorpo(o) || escondido(o, a)) continue;
             const al = ALCANCE + tam(o) + tam(a);
             if (dist(pos, o.pos) <= al && dist(q, o.pos) > al) {
               // sai do alcance: ataque de oportunidade
@@ -870,7 +879,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
               naoProvocou.add(o.id);
               log(`  ↯ ${a.l.nome} provoca ataque de oportunidade de ${o.l.nome}`);
               const arma = armaCorpo(o);
-              const ob = atacar(o, a, opArma(o, arma, true), batidas);
+              const ob = golpear(o, a, opArma(o, arma, true), batidas);
               ob.nome = "OPORTUNIDADE";
               if (!a.vivo) return;
               atual = [pos];
@@ -1242,7 +1251,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     }
     // Surto de Ação (guerreiro nível 2+)
     if (cl === "GUERREIRO" && a.surto > 0) {
-      const t = alvo.vivo ? alvo : ameacas(a)[0];
+      const t = alvo.vivo && !escondido(a, alvo) ? alvo : ameacas(a).filter((o) => !escondido(a, o))[0];
       if (t) {
         a.surto--;
         batidas.push(buff(a, "SURTO DE AÇÃO", "cortante", "brilho", a, [], 1, "#e8c040"));
@@ -1304,7 +1313,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     const melhorPonto = (r: number) => {
       let melhor: Est[] = [];
       for (const o of ini) {
-        if (dist(a.pos, o.pos) > 400 || dist(a.pos, o.pos) <= r) continue;
+        if (dist(a.pos, o.pos) > 400 || dist(a.pos, o.pos) <= r || escondido(a, o)) continue;
         const dentro = emRaio(o.pos, r);
         if (dentro.length > melhor.length || (dentro.length === melhor.length && dentro.includes(alvo))) melhor = dentro;
       }
@@ -1339,7 +1348,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     };
     if ((cl === "MAGO" || cl === "FEITICEIRO") && n >= 5 && slot(3) >= 0) {
       const bola = melhorPonto(80);
-      const raio = cl === "MAGO" ? ini.map(naLinha).reduce((m, x) => (x.length > m.length ? x : m), [] as Est[]) : [];
+      const raio = cl === "MAGO" ? ini.filter((o) => !escondido(a, o)).map(naLinha).reduce((m, x) => (x.length > m.length ? x : m), [] as Est[]) : [];
       if (raio.length > bola.length && vale(raio)) return area(slot(3), raio, { nome: "RELÂMPAGO", n: 8, d: 6, tipo: "eletrico", fx: "relampago", atributo: "DES", metade: true });
       if (vale(bola)) return area(slot(3), bola, { nome: "BOLA DE FOGO", n: 8, d: 6, tipo: "fogo", fx: "bolaFogo", atributo: "DES", metade: true });
     }
@@ -1616,7 +1625,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     const ini = inimigos(a);
     if (!ini.length) return fim();
     const score = (o: Est) => dist(a.pos, o.pos) / 40 + o.pv * 0.12 - (o.l.campeao ? 1.5 : 0);
-    let alvo = ini.reduce((m, o) => (score(o) < score(m) ? o : m), ini[0]);
+    const vis = ini.filter((o) => !escondido(a, o));
+    let alvo = vis.reduce((m, o) => (score(o) < score(m) ? o : m), vis[0]);
     const vel = velocidade(a);
     const op = (q: AtaqueChefe, extra?: Partial<OpAtaque>): OpAtaque => ({ nome: q.nome, n: q.n, d: q.d, bonusDano: q.bonus, tipo: q.tipo, fx: q.fx, distancia: false, magia: false, bonusAcerto: q.acerto, rotulo: q.nome, ...extra });
     const irAte = (t: Est, alcance = vel) => {

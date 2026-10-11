@@ -1,61 +1,58 @@
 {
-  "nome": "Korrin Mantonegro",
-  "especie": "HUMANO",
-  "classe": "BARBARO",
-  "nivel": 9,
+  "nome": "Nessa Solposto",
+  "especie": "ORC",
+  "classe": "PATRULHEIRO",
+  "nivel": 6,
   "atributos": {
-    "FOR": 20,
-    "CON": 19,
-    "DES": 15,
-    "SAB": 13,
-    "CAR": 13,
-    "INT": 12
+    "DES": 20,
+    "SAB": 17,
+    "CON": 17,
+    "FOR": 13,
+    "INT": 11,
+    "CAR": 7
   },
-  "pvMax": 97,
+  "pvMax": 53,
   "pvRolagens": [
-    "NV 1: d12 máximo = 12 +3 CON = 15 PV",
-    "NV 2: d12 = 11 +3 CON = +14 PV",
-    "NV 3: d12 = 1 +3 CON = +4 PV",
-    "NV 4: d12 = 11 +4 CON = +18 PV",
-    "NV 5: d12 = 2 +4 CON = +6 PV",
-    "NV 6: d12 = 8 +4 CON = +12 PV",
-    "NV 7: d12 = 6 +4 CON = +10 PV",
-    "NV 8: d12 = 3 +4 CON = +7 PV",
-    "NV 9: d12 = 7 +4 CON = +11 PV"
+    "NV 1: d10 máximo = 10 +3 CON = 13 PV",
+    "NV 2: d10 = 5 +3 CON = +8 PV",
+    "NV 3: d10 = 7 +3 CON = +10 PV",
+    "NV 4: d10 = 9 +3 CON = +12 PV",
+    "NV 5: d10 = 2 +3 CON = +5 PV",
+    "NV 6: d10 = 2 +3 CON = +5 PV"
   ],
   "visual": {
-    "pele": "#e0a878",
-    "cabelo": "#5a3420",
-    "estiloCabelo": "curto",
+    "pele": "#8a9a78",
+    "cabelo": "#8a8a92",
+    "estiloCabelo": "rabo",
     "barba": "",
-    "olho": "#3a6a9a",
-    "marca": "pintura",
-    "roupa": "#c09a2e",
-    "roupa2": "#5e3488",
-    "couro": "#6a4428",
-    "metal": "#a8b0bc",
-    "cabeca": "nada",
+    "olho": "#4a7a3a",
+    "marca": "",
+    "roupa": "#2f6a3a",
+    "roupa2": "#c09a2e",
+    "couro": "#3e2e26",
+    "metal": "#c0a060",
+    "cabeca": "capuz",
     "pluma": "",
-    "corpo": "colete",
+    "corpo": "couro",
     "tabardo": false,
     "ombreiras": false,
-    "capa": "",
-    "peleOmbros": true,
-    "arma": "machadoGrande",
+    "capa": "#2f6a3a",
+    "peleOmbros": false,
+    "arma": "arcoLongo",
     "escudo": "",
-    "brasao": "#c83a3a",
+    "brasao": "#e8e0d0",
     "orbe": "",
-    "aljava": false,
+    "aljava": true,
     "mascara": false,
-    "magia": "#e8701e",
-    "altura": 1
+    "magia": "#a6d62a",
+    "altura": 1.04
   },
-  "vitorias": 8,
+  "vitorias": 1,
   "itens": [
-    "botasFirmes",
-    "machadoBerserker",
-    "luvasCerteiras",
+    "cajadoArcano",
+    "botasLigeiras",
     "capaSombras",
+    "luvasPrecisas",
     "armaduraEspinhos",
     "elmoMente"
   ],
@@ -64,40 +61,40 @@
   "rolagens": [
     [
       6,
+      5,
+      4,
+      5
+    ],
+    [
       2,
+      5,
+      4,
+      2
+    ],
+    [
       1,
-      5
-    ],
-    [
-      2,
-      6,
       5,
-      6
-    ],
-    [
-      6,
-      3,
-      2,
-      6
-    ],
-    [
       5,
-      6,
-      3,
-      5
+      3
     ],
     [
       4,
-      2,
       6,
-      1
+      1,
+      6
     ],
     [
+      6,
+      6,
       5,
+      2
+    ],
+    [
       3,
-      5,
-      1
+      1,
+      2,
+      2
     ]
   ],
-  "antecedente": "+2 FOR / +1 CON"
+  "antecedente": "+2 DES / +1 CON"
 }

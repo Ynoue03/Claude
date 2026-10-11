@@ -97,7 +97,7 @@ tabela(
     ["`lutadores`", "até 16 `{ nome, descricao, autor }` dos comentários; vazio = aleatórios. Classe, espécie, cores, cabelo e arma saem da descrição"],
     ["`campeaoAnterior`", "`null` ou o `campeao.json` do episódio anterior (nível, atributos, PV, visual, vitórias, itens, coroa)"],
     ["`textos`", "`escolha`, `lutem`, `subiu`, `defende`, `cta`"],
-    ["`versao`", "1 = regras dos eps. 1–3; 2 = nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão; 3 = baú, itens, chefes; **4 = + magias de círculo alto, usadas antes das de nível baixo** (usar sempre)"],
+    ["`versao`", "1 = regras dos eps. 1–3; 2 = nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão; 3 = baú, itens, chefes; 4 = + magias de círculo alto, usadas antes das de nível baixo; **5 = + invisibilidade de verdade (ninguém mira em quem sumiu)** (usar sempre)"],
     ["`focoCampeao`", "`\"forte\"` (recomendado, ep. 12+) = 0,31 × PV máximo do campeão − 4,35 (campeão vence ~35–40%); `\"auto\"` (eps. 6–11) = 2,5 × (nível − 2); ou número fixo"],
     ["`arena`", "`\"calabouco\"` ou `\"floresta\"`. A `\"caverna\"` é **só para luta com chefe** e é escolhida sozinha quando há chefe"],
     ["`centro`", "`\"livre\"` (recomendado): sem tablado nem altar d20 no meio"],
@@ -276,7 +276,7 @@ P("# 0 seed pelo ritmo (se vazia) → 1 simulação + FICHA → 2 áudio → 3 v
 P("# saída: remotion/out/arena-epNN-master.mp4 e arena-d20/epNN/ (FICHA.md, campeao.json, lutadores.json, sprites/)");
 P("```");
 P();
-P("Próximo episódio: copiar `arena-d20/epNN/campeao.json` para `campeaoAnterior`, `seed: \"\"`, `versao: 4`, `focoCampeao: \"forte\"`, `centro: \"livre\"`.");
+P("Próximo episódio: copiar `arena-d20/epNN/campeao.json` para `campeaoAnterior`, `seed: \"\"`, `versao: 5`, `focoCampeao: \"forte\"`, `centro: \"livre\"`.");
 P();
 
 // ───────── 13. nomes
