@@ -157,6 +157,18 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 - Diferente dos monstros: age **1 vez por rodada** (campo `turnos` do chefe), é desenhado como herói ampliado 3×.
 - Calibrado contra as 17 lendas (LENDAS #9) para vencer **~70%** (`focoChefe: 4.5`, 80 lutas simuladas: 73%).
 - JSON: `"chefe": "ALDRIC"` (também funciona nas lutas de veteranos).
+- **Paladino 20 completo (versão 6, desde o LENDAS #10)** — todos os poderes do Paladino nível 20 do SRD 5.2:
+  - **Canalizar Divindade ×3**: **Arma Profana** (Arma Sagrada: +5 nos golpes de montante, a luta toda) e Abjurar Inimigos.
+  - **Escudo da Fé** (1º círculo, concentração: +2 CA) · **Destruição Divina grátis** 1× (Destruição do Paladino).
+  - **Destruição da Proteção** (Devoção nv 15): +2 CA até o próximo turno depois de cada Destruição.
+  - **Dádiva da Proeza em Combate** (dádiva épica do nv 19): uma vez por turno, um ataque que errou acerta.
+  - **Maestria de armas**: Raspão no montante (errou = 5 de dano) e Lentidão na azagaia (−10 pés).
+  - **Magias de 5º círculo** (2 espaços): **Onda Destrutiva** (10d6 a 30 pés, CON metade, quem falha cai) e **Coluna
+    Profana** (Golpe Flamejante, 10d6 necrótico num cilindro de 10 pés, DES metade).
+  - **Corcel Fiel**: corcel sombrio que ataca todo turno quem estiver colado (1d8+2 necrótico).
+  - **Toque Restaurador**: a Cura pelas Mãos também tira condições (lento, desvantagem).
+  - Passivos: Aura de Devoção e Aura de Coragem (imune a enfeitiçado e a medo), Sentido Divino.
+  - Recalibrado para ~70% contra as 17 lendas: `focoChefe: 2` (60 lutas simuladas: 72%).
 
 ## 11. Arenas
 
@@ -311,7 +323,8 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 2 | nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão | 4–8 |
 | 3 | tudo da 2 + baú, itens mágicos, itens por classe, chefes, caverna | 9 a 15, B1–B5, C1, LENDAS 1 |
 | 4 | tudo da 3 + magias de círculo alto, usadas antes das de nível baixo | LENDAS 2 |
-| 5 | tudo da 4 + invisibilidade de verdade (ninguém mira em quem sumiu) | LENDAS 3 em diante |
+| 5 | tudo da 4 + invisibilidade de verdade (ninguém mira em quem sumiu) | LENDAS 3 a 9 |
+| 6 | tudo da 5 + Sir Aldric com todos os poderes do Paladino 20 | LENDAS 10 em diante |
 
 ## 20. Entregas de cada episódio
 
@@ -372,3 +385,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 30 | A invisibilidade não funcionava (continuavam batendo no invisível) | versão 5: ninguém mira em quem está invisível; LENDAS #3 refeito |
 | 31 | Próximas 5 batalhas, uma de cada vez | LENDAS #4–#8 (versão 5): Korrin vence o #4, #6 e #8 (chega ao nível 11), Nessa vence o #5, Mirela vence o #7 |
 | 32 | Paladino nível 20 criado juntos como chefe | Sir Aldric, o Último Juramento (Golias, caído, necrótico, preto e roxo, caverna, ~70%); LENDAS #9 |
+| 33 | Aldric com todos os poderes de um paladino nível 20 | versão 6: Arma Profana, Escudo da Fé, Proeza, Maestrias, Onda Destrutiva, Coluna Profana, Corcel, Toque Restaurador…; LENDAS #10 (revanche) |

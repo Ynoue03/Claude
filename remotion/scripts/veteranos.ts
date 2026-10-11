@@ -13,7 +13,7 @@ for (const f of arqs) {
   const cod = ordem(f);
   // LENDAS com nível mínimo: todo mundo sai com a ficha com que entrou (já elevada), para o nível ficar salvo
   const entrada = ep.nivelMinimo ? gerarLutadores(ep).lutadores : [];
-  for (const l of entrada as any[]) vet.set(l.nome, { ep: cod, como: "entrou", ficha: { nome: l.nome, especie: l.especie, classe: l.classe, nivel: l.nivel, atributos: l.atributos, pvMax: l.pvMax, pvRolagens: l.pvRolagens, ancestralidade: l.ancestralidade?.nome, visual: l.visual, vitorias: l.vitorias, itens: l.itens ?? [], autor: l.autor, descricao: l.descricao, rolagens: l.rolagens, antecedente: l.antecedente } });
+  for (const l of (entrada as any[]).filter((x) => !x.boss)) vet.set(l.nome, { ep: cod, como: "entrou", ficha: { nome: l.nome, especie: l.especie, classe: l.classe, nivel: l.nivel, atributos: l.atributos, pvMax: l.pvMax, pvRolagens: l.pvRolagens, ancestralidade: l.ancestralidade?.nome, visual: l.visual, vitorias: l.vitorias, itens: l.itens ?? [], autor: l.autor, descricao: l.descricao, rolagens: l.rolagens, antecedente: l.antecedente } });
   r.lutadores.forEach((l: any, i: number) => {
     if (l.boss) return;
     const subs = r.sim.evolucao[i].subidas;

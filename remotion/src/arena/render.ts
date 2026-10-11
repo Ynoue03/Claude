@@ -692,7 +692,7 @@ const barraPv = (ctx: Ctx, x: number, y: number, w: number, frac: number) => {
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.fillRect(x, y, Math.max(0, Math.round(w * clamp(frac, 0, 1))), 1);
 };
-const COR_COND: Record<string, string> = { MED: "#b070f0", FÚR: "#ff7a3a", MRC: "#b8f060", CNC: "#ffffff", ESC: "#7ae8f0", LNT: "#9ad8ff", ATD: "#ffd84a", INV: "#c8a0ff" };
+const COR_COND: Record<string, string> = { MED: "#b070f0", ARM: "#b070f0", "FÉ": "#e0c0ff", PRT: "#c8c8e0", FÚR: "#ff7a3a", MRC: "#b8f060", CNC: "#ffffff", ESC: "#7ae8f0", LNT: "#9ad8ff", ATD: "#ffd84a", INV: "#c8a0ff" };
 const etiqueta = (ctx: Ctx, x: number, y: number, c: string) => {
   const w = larguraTexto(c, "p") + 2;
   ctx.fillStyle = TINTA;

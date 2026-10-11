@@ -56,7 +56,8 @@ Sem internet para o Remotion baixar o Chrome: `CHROME=/caminho/chrome-headless-s
 | `chefe` | força um chefe (`"MINOTAURO"`, `"GRIFO"`, `"HIDRA"`, `"GIGANTE"`, `"QUIMERA"`, `"DRAGAO"`, ou o chefe-personagem `"ALDRIC"` — Sir Aldric, Golias Paladino caído nível 20, ver REGRAS.md §10b). Sem o campo, na versão 3 os episódios **10, 20, 30…** têm chefe automaticamente, nessa ordem |
 | `focoChefe` | quanto os heróis preferem atacar o chefe (padrão `1.25`, calibrado para o chefe vencer ~30%) |
 | `centro` | `"livre"` (recomendado para episódios novos): sem tablado de degraus e sem pedra d20 no meio, e sem obstáculo na luta. Sem o campo = com o tablado e o altar (episódios 1–6 reproduzem igual) |
-| `versao` `5` | tudo da 4 + invisibilidade de verdade: ninguém mira, persegue ou dá oportunidade em quem está invisível (golpes que sobram trocam de alvo). Use em episódios novos |
+| `versao` `6` | tudo da 5 + Sir Aldric (`"chefe": "ALDRIC"`) com todos os poderes do Paladino 20 (REGRAS.md §10b). Use em episódios novos |
+| `versao` `5` | tudo da 4 + invisibilidade de verdade: ninguém mira, persegue ou dá oportunidade em quem está invisível (golpes que sobram trocam de alvo) |
 | `versao` `4` | tudo da 3 + magias de 2º e 3º círculo na luta (Bola de Fogo, Relâmpago, Raio Ardente, Despedaçar, Raio Lunar, Convocar Relâmpagos, Guardiões e Arma Espiritual, Toque Vampírico), sempre antes das de nível baixo |
 | `versao` `3` | tudo da versão 2 + **baú do campeão** e **itens mágicos** (abaixo). Use em episódios novos |
 | `audio` | WAV em `remotion/public/` (`arena/epNN.wav`); vazio = sem áudio |

@@ -107,6 +107,10 @@ for (const l of L) {
       P(`- Golpes Sombrios (Golpes Radiantes, nv 11): +1d8 necrótico em todo golpe corpo a corpo · Destruição Sombria (Destruição Divina): +2d8 a +6d8 necrótico, espaços ${h.slots.join("/")}`);
       P(`- ${h.aura.nome} (Auréola Sagrada, nv 20): ${h.aura.dano} necrótico em quem estiver a 30 pés no começo do turno dele · Aura de Proteção: +${h.bonusSalv} nas salvaguardas`);
       P(`- Cura pelas Mãos: reserva de ${h.curaMaos} PV (50 por vez abaixo de 40% dos PV) · Resistência da Pedra (Golias): −1d12+CON num golpe, ${h.prof} vezes · Azagaias em quem ele não alcança`);
+      if ((r.ep.versao ?? 1) >= 6) {
+        P(`- **Paladino 20 completo (versão 6):** Arma Profana (Arma Sagrada, Canalizar Divindade ×3: +CAR nos golpes de montante) · Abjurar Inimigos gasta Canalizar Divindade · Escudo da Fé (+2 CA, concentração) · Destruição Divina grátis 1× · Destruição da Proteção (+2 CA depois de cada Destruição) · Dádiva da Proeza em Combate (1 erro vira acerto por turno) · Maestrias: Raspão (montante, errou = 5 de dano) e Lentidão (azagaia)`);
+        P(`- Magias de 5º círculo: Onda Destrutiva (10d6, CON metade, derruba) e Coluna Profana (Golpe Flamejante, 10d6 necrótico, DES metade) · Corcel Fiel (corcel sombrio ataca todo turno, 1d8+2) · Toque Restaurador (Cura pelas Mãos tira condições) · Aura de Devoção e de Coragem (imune a enfeitiçado e medo) · Sentido Divino`);
+      }
     }
     if (c.resistencias.length)
       P(`- Resistência: ${c.resistencias.map((t) => TIPO[t] ?? t).join(", ")}`);

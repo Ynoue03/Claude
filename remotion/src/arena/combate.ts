@@ -224,6 +224,13 @@ type Est = {
   guardioes: boolean; // clérigo: Guardiões Espirituais ativos (versão 4)
   armaEspiritual: boolean; // clérigo: Arma Espiritual invocada (versão 4)
   lento: boolean;
+  // Paladino 20 completo (Sir Aldric, versão 6)
+  canalizar: number; // usos de Canalizar Divindade (3)
+  armaProfana: boolean; // Arma Sagrada: +CAR nos ataques
+  escudoFe: boolean; // Escudo da Fé: +2 CA (concentração)
+  protecao: boolean; // Destruição da Proteção: +2 CA até o próximo turno
+  proeza: boolean; // Dádiva da Proeza em Combate já usada neste turno
+  smiteGratis: boolean; // Destruição Divina sem gastar espaço (1 por descanso)
   medo: number; // turnos com medo (Abjurar Inimigos): desvantagem e não ataca quem o assustou
   desvantagem: boolean;
   vantagemContra: boolean;
@@ -296,6 +303,12 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       escudo: false,
       lento: false,
       medo: 0,
+      canalizar: 0,
+      armaProfana: false,
+      escudoFe: false,
+      protecao: false,
+      proeza: false,
+      smiteGratis: false,
       desvantagem: false,
       vantagemContra: false,
       marcadoPor: new Set(),
@@ -307,6 +320,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       Object.assign(e, { furiaUsos: 0, folego: 0, surto: 0, curaMaos: 0, sopro: 0, inspiracao: false, implacavel: false, pedra: 0, adrenalina: 0, inata: 0, foco: 0, centelha: 0, slots: [] });
       const h = CHEFES[l.boss].heroi;
       if (h) Object.assign(e, { prof: h.prof, slots: [...h.slots], curaMaos: h.curaMaos, pedra: l.especie === "GOLIAS" ? h.prof : 0 });
+      if (h && versao >= 6) Object.assign(e, { canalizar: 3, smiteGratis: true });
     }
     // Mago lança Armadura Arcana antes da luta (gasta 1 espaço de 1º círculo).
     if (l.classe === "MAGO" && e.slots[0] > 0) e.slots[0]--;
@@ -337,7 +351,9 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const m = (e: Est, a: Atributo) => mod(e.at[a]);
   const conj = (e: Est) => (CLASSES[e.l.classe].conjuracao ? m(e, CLASSES[e.l.classe].conjuracao!) : Math.max(m(e, "INT"), m(e, "SAB"), m(e, "CAR")));
   const cd = (e: Est) => 8 + e.prof + conj(e) + (e.inataAtiva ? 1 : 0) + (e.itens.has("cajadoSabedoria") ? 2 : 0);
-  const caAtual = (e: Est) => e.l.ca + (e.escudo ? 5 : 0) + (e.itens.has("armaduraBastiao") ? 2 : 0) + (e.itens.has("botasFirmes") ? 1 : 0) + (e.itens.has("escudoGuardiao") ? 1 : 0);
+  // versão 6: o chefe-personagem usa todos os poderes do Paladino 20
+  const completo = (e: Est) => versao >= 6 && !!(e.l.boss && CHEFES[e.l.boss].heroi);
+  const caAtual = (e: Est) => e.l.ca + (e.escudoFe ? 2 : 0) + (e.protecao ? 2 : 0) + (e.escudo ? 5 : 0) + (e.itens.has("armaduraBastiao") ? 2 : 0) + (e.itens.has("botasFirmes") ? 1 : 0) + (e.itens.has("escudoGuardiao") ? 1 : 0);
   const armaCorpo = (e: Est): Arma => (e.l.arma.distancia ? { ...ARMAS.adaga, nome: e.l.classe === "PATRULHEIRO" ? "Espada Curta" : "Adaga", d: e.l.classe === "PATRULHEIRO" ? 6 : 4 } : e.l.arma);
   const modArma = (e: Est, a: Arma) => (a.atributo === "DES" ? Math.max(m(e, "DES"), m(e, "FOR")) : m(e, "FOR"));
   const podeCorpo = (e: Est) => e.vivo;
@@ -502,6 +518,17 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         res.textos.push("INVISÍVEL!");
         log(`  ${alvo.l.nome}: a Capa das Sombras deixa invisível por 2 turnos`);
       }
+      if (alvo.escudoFe && dano > 0) {
+        const cdC = Math.max(10, Math.floor(dano / 2));
+        const s = rolarD20(alvo, `concentração no Escudo da Fé (CD ${cdC})`, 0);
+        const tot = s.v + m(alvo, "CON") + (CHEFES[alvo.l.boss!]?.heroi?.bonusSalv ?? 0);
+        if (tot < cdC) {
+          alvo.escudoFe = false;
+          res.textos.push("PERDEU O ESCUDO DA FÉ");
+          batida.cond.push({ id: alvo.id, del: "FÉ" });
+          log(`  ${alvo.l.nome} perdeu a concentração no Escudo da Fé (${tot} < ${cdC})`);
+        }
+      }
       if (alvo.conc && dano > 0) {
         const cdC = Math.max(10, Math.floor(dano / 2));
         const profC = CLASSES[alvo.l.classe].salvaguardas.includes("CON") ? alvo.prof : 0;
@@ -628,7 +655,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       a.desvantagem = false;
       b.cond.push({ id: a.id, del: "ZMB" });
     }
-    const bonus = op.bonusAcerto + (a.itens.has("luvasPrecisas") ? 2 : 0);
+    const bonus = op.bonusAcerto + (a.itens.has("luvasPrecisas") ? 2 : 0) + (a.armaProfana && !op.magia && !op.distancia ? m(a, "CAR") : 0);
     let d = rolarD20(a, `ataque (${op.nome}) contra ${alvo.l.nome}`, vant);
     let total = d.v + bonus;
     const critMin = (op.critMin ?? 20) - (a.itens.has("luvasCerteiras") ? 1 : 0);
@@ -656,6 +683,15 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       falha = d.v === 1;
       acertou = !falha && (critico || total >= caEfetiva);
     }
+    // Dádiva da Proeza em Combate (dádiva épica do nível 19): uma vez por turno, um erro vira acerto
+    let proeza = false;
+    if (!acertou && completo(a) && !a.proeza) {
+      a.proeza = true;
+      acertou = true;
+      falha = false;
+      proeza = true;
+      log(`  ${a.l.nome}: Dádiva da Proeza em Combate — o erro vira acerto`);
+    }
     // Escudo do Primeiro Golpe: bloqueia o primeiro ataque que causaria dano
     let bloqueou = false;
     if (acertou && alvo.itens.has("escudoPrimeiroGolpe") && !alvo.itemUsado.has("escudoPrimeiroGolpe")) {
@@ -667,6 +703,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     }
     const res = novoRes(alvo, critico ? "critico" : acertou ? "acerto" : falha ? "falha" : "erro");
     if (insp) res.textos.push("INSPIRAÇÃO!");
+    if (proeza) res.textos.push("PROEZA!");
     if (bloqueou) res.textos.push("BLOQUEOU!");
     b.d20 = { v: d.v, cor: critico ? "critico" : falha ? "falha" : acertou ? "acerto" : "erro" };
     log(`  ${a.l.nome} → ${alvo.l.nome}: ${op.nome}, d20 ${d.dados.join("/")} ${fmt(bonus)} = ${total} vs CA ${caAtual(alvo)} → ${critico ? "CRÍTICO!" : acertou ? "acertou" : falha ? "FALHA (1 natural)" : "errou"}`);
@@ -718,10 +755,17 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         total2 += f.total;
         extraTxt += ` + ${caido ? "sombrio" : "radiante"} ${f.txt}=${f.total}`;
       }
-      if (a.l.classe === "PALADINO" && a.nivel >= 2 && !op.distancia && !op.magia && a.slots.some((s) => s > 0) && (critico || alvo.pv <= 18 || (caido && rng.next() < 0.35))) {
-        // o paladino caído gasta o maior espaço que ainda tiver
-        const i = caido ? a.slots.length - 1 - [...a.slots].reverse().findIndex((s) => s > 0) : a.slots.findIndex((s) => s > 0);
-        a.slots[i]--;
+      const gratis = completo(a) && a.smiteGratis;
+      if (a.l.classe === "PALADINO" && a.nivel >= 2 && !op.distancia && !op.magia && (a.slots.some((s) => s > 0) || gratis) && (critico || alvo.pv <= 18 || (caido && rng.next() < 0.35))) {
+        // o paladino caído gasta o maior espaço que ainda tiver (a Destruição grátis do nível 2 vale 1º círculo)
+        const i = gratis ? 0 : caido ? a.slots.length - 1 - [...a.slots].reverse().findIndex((s) => s > 0) : a.slots.findIndex((s) => s > 0);
+        if (gratis) a.smiteGratis = false;
+        else a.slots[i]--;
+        // Destruição da Proteção (Devoção, nv 15): meia cobertura (+2 CA) até o próximo turno
+        if (completo(a) && !a.protecao) {
+          a.protecao = true;
+          b.cond.push({ id: a.id, add: "PRT" });
+        }
         const f = rolarDano(a, "Destruição Divina", 2 + i, 8, critico);
         total2 += f.total;
         extraTxt += ` + destruição ${f.txt}=${f.total}`;
@@ -801,6 +845,12 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     } else {
       if (!bloqueou) res.textos.push(falha ? "FALHA" : "ERROU");
       b.rolagem = `d20 = ${d.v}`;
+      // Maestria do Montante (Raspão): errou, ainda causa o mod. de FOR
+      if (completo(a) && op.nome === "MONTANTE" && !bloqueou && m(a, "FOR") > 0) {
+        res.textos.push("RASPÃO");
+        log(`  ${a.l.nome}: Raspão (maestria do montante) → ${m(a, "FOR")}`);
+        aplicarDano(a, alvo, m(a, "FOR"), op.tipo, "Raspão", res, b);
+      }
     }
     if (b.especial === 3 || res.morreu) b.rolagem = b.rolagem || `d20 = ${d.v}`;
     b.resultados.push(res);
@@ -1634,6 +1684,11 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       }
     }
     const fim = () => {
+      // Corcel Fiel (nv 5): o corcel sombrio dele ataca quem estiver colado (Investida do Além: 1d8 + 2)
+      if (completo(a) && a.vivo) {
+        const t = ameacas(a).filter((o) => !escondido(a, o)).sort((x, y) => x.pv - y.pv)[0];
+        if (t) atacar(a, t, { nome: "CORCEL SOMBRIO", n: 1, d: 8, bonusDano: 2, tipo: "necrotico", fx: "bruxaria", distancia: false, magia: true, bonusAcerto: a.prof + m(a, "CAR"), rotulo: "Corcel Sombrio" }, batidas);
+      }
       if (a.lento) {
         a.lento = false;
         batidas.push({ k: "estado", cond: [{ id: a.id, del: "LNT" }] });
@@ -1648,6 +1703,14 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     if (!ini.length) return fim();
     // chefe-personagem (Sir Aldric): aura no começo do turno (uma vez por rodada) e Cura pelas Mãos
     const h = CHEFES[a.l.boss!].heroi;
+    let bonusUsada = false;
+    if (completo(a)) {
+      a.proeza = false;
+      if (a.protecao) {
+        a.protecao = false;
+        batidas.push({ k: "estado", cond: [{ id: a.id, del: "PRT" }] });
+      }
+    }
     if (h) {
       if (auraRodada !== rodada) {
         auraRodada = rodada;
@@ -1671,6 +1734,68 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         const v = Math.min(a.curaMaos, 50);
         a.curaMaos -= v;
         curar(a, a, "CURA PELAS MÃOS", v, `${v} da reserva (${a.curaMaos} restam)`, "cura", batidas);
+        bonusUsada = true;
+        // Toque Restaurador (nv 14): a Cura pelas Mãos também tira as condições
+        if (completo(a)) {
+          const tirar: { id: number; del: string }[] = [];
+          if (a.lento) tirar.push({ id: a.id, del: "LNT" });
+          if (a.desvantagem) tirar.push({ id: a.id, del: "ZMB" });
+          a.lento = false;
+          a.desvantagem = false;
+          if (tirar.length) {
+            batidas.push({ k: "estado", cond: tirar });
+            log(`  ${a.l.nome}: Toque Restaurador remove as condições`);
+          }
+        }
+      }
+    }
+    if (completo(a)) {
+      // Arma Sagrada (Canalizar Divindade, nv 3) — aqui Arma Profana: +CAR nos ataques até o fim da luta
+      if (!a.armaProfana && a.canalizar > 0) {
+        a.canalizar--;
+        a.armaProfana = true;
+        batidas.push(buff(a, "ARMA PROFANA", "necrotico", "bruxaria", a, [{ id: a.id, add: "ARM" }], 1, COR_DANO.necrotico));
+        log(`  ${a.l.nome}: ARMA PROFANA (Canalizar Divindade): +${m(a, "CAR")} nos ataques`);
+      }
+      // Escudo da Fé (1º círculo, concentração): +2 CA
+      if (!bonusUsada && !a.escudoFe && a.slots[0] > 0) {
+        a.slots[0]--;
+        a.escudoFe = true;
+        bonusUsada = true;
+        batidas.push(buff(a, "ESCUDO DA FÉ", "radiante", "brilho", a, [{ id: a.id, add: "FÉ" }], 0, COR_DANO.necrotico));
+        log(`  ${a.l.nome}: ESCUDO DA FÉ (+2 CA, concentração) [ação bônus]`);
+      }
+      // magias de 5º círculo no lugar dos ataques: Onda Destrutiva (perto) e Coluna Profana (Golpe Flamejante, de longe)
+      if (a.slots[4] > 0) {
+        const ini2 = inimigos(a).filter((o) => !escondido(a, o));
+        const perto = inimigos(a).filter((o) => dist(o.pos, a.pos) <= 120 + c.raio);
+        if (perto.filter((o) => !escondido(a, o)).length >= 3) {
+          a.slots[4]--;
+          log(`  ${a.l.nome} usa um espaço de 5º círculo`);
+          salvaguarda(a, perto, { nome: "ONDA DESTRUTIVA", n: 10, d: 6, tipo: "trovejante", fx: "despedacar", atributo: "CON", metade: true, especial: 3, cdOverride: 8 + a.prof + m(a, "CAR"), extra: (t, res, falhou) => {
+            if (falhou && t.vivo) {
+              t.vantagemContra = true; // derrubado: o próximo ataque contra ele tem vantagem
+              res.textos.push("CAÍDO!");
+            }
+          } }, batidas);
+          return fim();
+        }
+        let centro: Est | undefined;
+        let dentro: Est[] = [];
+        for (const o of ini2) {
+          if (dist(o.pos, a.pos) > 240 + c.raio) continue;
+          const nele = inimigos(a).filter((x) => dist(x.pos, o.pos) <= 40 + tam(x));
+          if (nele.length > dentro.length) {
+            dentro = nele;
+            centro = o;
+          }
+        }
+        if (centro && dentro.length >= 3) {
+          a.slots[4]--;
+          log(`  ${a.l.nome} usa um espaço de 5º círculo`);
+          salvaguarda(a, dentro, { nome: "COLUNA PROFANA", n: 10, d: 6, tipo: "necrotico", fx: "raioCeu", atributo: "DES", metade: true, especial: 3, cdOverride: 8 + a.prof + m(a, "CAR") }, batidas);
+          return fim();
+        }
       }
     }
     if (!inimigos(a).length) return fim();
@@ -1756,8 +1881,9 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
           .filter((o) => o.medo <= 0 && !escondido(a, o) && dist(o.pos, a.pos) <= esp.alcance + c.raio)
           .sort((x, y) => dist(x.pos, a.pos) - dist(y.pos, a.pos))
           .slice(0, esp.max);
-        if (alvos.length >= 3) {
+        if (alvos.length >= 3 && (!completo(a) || a.canalizar > 0)) {
           a.especialPronto = false;
+          if (completo(a)) a.canalizar--;
           const b = novoGolpe(a, esp.nome, "necrotico", "onda", false, true);
           b.cor = COR_DANO.necrotico;
           b.especial = 1;
@@ -1800,7 +1926,15 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         // chefe-personagem: quem ele não alcança leva azagaia (Ataque Extra: duas)
         if (h) for (let k = 0; k < 2; k++) {
           const t = alvo.vivo ? alvo : inimigos(a).filter((o) => !escondido(a, o))[0];
-          if (t) atacar(a, t, { nome: "AZAGAIA", n: 1, d: 6, bonusDano: 5, tipo: "perfurante", fx: "flecha", distancia: true, magia: false, bonusAcerto: 11, rotulo: "Azagaia" }, batidas);
+          if (t)
+            atacar(a, t, { nome: "AZAGAIA", n: 1, d: 6, bonusDano: 5, tipo: "perfurante", fx: "flecha", distancia: true, magia: false, bonusAcerto: 11, rotulo: "Azagaia", extra: completo(a) ? (alvoA, res, b) => {
+              // Maestria da Azagaia (Lentidão): −10 pés de deslocamento
+              if (alvoA.vivo && !alvoA.lento) {
+                alvoA.lento = true;
+                res.textos.push("LENTO");
+                b.cond.push({ id: alvoA.id, add: "LNT" });
+              }
+            } : undefined }, batidas);
         }
         return fim();
       }
