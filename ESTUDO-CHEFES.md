@@ -94,6 +94,29 @@ passa só a carregá-los e animá-los.
 | Pixel artist | muito alta | semanas | maior | completa | sim |
 | Procedural melhorado | média | 1 dia por chefe | zero | limitada | sim |
 
+## 4b. Só opções gratuitas
+
+| Caminho | Como | Limites |
+| --- | --- | --- |
+| **A. Canva (já conectado) + "pixelizador" nosso** | gero no Canva a ilustração do chefe de lado, fundo liso; um script nosso (Python, grátis) reduz para 100–160 px, limita a paleta (16–24 cores), põe contorno escuro de 1 px e tira o fundo. Animação: respirar, balançar, inclinar no ataque, piscar no dano, tombar na morte (deformações do quadro, como em muitos jogos de celular) | usa a cota de IA do Canva da conta (o plano grátis tem uma cota mensal); a animação é por deformação, não quadro a quadro; o resultado precisa de retoque fino |
+| **B. Pacotes CC0 (domínio público)** | sprites prontos e animados, uso livre sem crédito: Minotauro do rvros (idle, corrida, 2 ataques, dano, morte; 96×77; página pede US$ 1,50, mas aceita US$ 0), dragão do "pixel bosses yes" (OpenGameArt), hidra pequena do PINKCANNON | quase não há CC0 para todos os 6 chefes; estilos diferentes entre si; **sai da regra "tudo desenhado do zero"** |
+| **C. Pacotes CC-BY** | ex.: Boss Minotaur do chierit (itch.io) — de graça, exige dar crédito ao autor na descrição/ficha | mesmos pontos do B + crédito obrigatório |
+| **D. Editor grátis + eu retocando** | Pixelorama (open source, MIT: camadas, animação, exporta sprite sheet) ou LibreSprite/Piskel; você ou alguém desenha/retoca, eu integro | depende de tempo de alguém desenhando |
+| **E. PixelLab de graça** | conta grátis + token reconecta o conector; o plano grátis (fontes de terceiros) dá algumas gerações por dia em até ~200×200, e a ferramenta `pixelart_workbench` do conector é gratuita | não confirmei se o plano grátis inclui o acesso pelo conector; limite diário baixo |
+| **F. Procedural melhorado** | eu redesenho os chefes em código com mais cuidado (como fiz no Minotauro) | zero custo, ganho limitado |
+
+**Melhor gratuito:** A (Canva + pixelizador) para ter arte nova e própria em 1–2 dias, mantendo a regra de criar do
+zero; B como plano rápido para o Minotauro e o Dragão se aceitar arte de terceiros (CC0). E vale tentar em paralelo
+(se a conta grátis liberar o token, ganhamos animação quadro a quadro sem pagar).
+
+Fontes das opções gratuitas: [Animated pixel minotaur — CC0 (rvros)](https://rvros.itch.io/animated-pixel-minotaur) ·
+[Pixel bosses yes — CC0 (OpenGameArt)](https://opengameart.org/content/pixel-bosses-yes) ·
+[Piskel hydra enemy — CC0 (OpenGameArt)](https://opengameart.org/content/piskel-hydra-enemy) ·
+[Boss: Minotaur — CC-BY (chierit)](https://chierit.itch.io/boss-minotaur) ·
+[Pixelorama (LinuxLinks)](https://linuxlinks.com/pixelorama-pixel-art-editor) ·
+[Alternativas ao Aseprite (AlternativeTo)](https://www.alternativeto.net/software/aseprite/) ·
+[PixelLab MCP (glama)](https://glama.ai/mcp/servers/@samedii/PixelLab)
+
 ## 5. Recomendação
 
 1. **Reconectar o PixelLab com o token** e assinar o plano básico.
