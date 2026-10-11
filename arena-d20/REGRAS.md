@@ -334,3 +334,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 25 | Chefe menor e animado (golpes, rugido, machado, caminhada, respiração) | Minotauro com 5 poses geradas no Canva a partir da mesma referência (parado, passo, machado erguido, golpe, rugido), mesma escala e paleta; ~200 px de altura no mundo (antes ~290); respira parado, alterna passos ao andar, ergue e desce o machado no golpe, ruge na entrada e na vitória |
 | 26 | Batalha com todos que já saíram do nível 1 | LENDAS #1: 17 veteranos (A, B e C), Korrin Mantonegro vence com 6 abates (nível 8) |
 | 27 | Feitiços de nível alto usados com mais frequência que os de nível baixo | versão 4: 9 magias de 2º/3º círculo na luta, prioridade pelo maior círculo disponível; Dragão vs nível 5 continua ~50% |
+| 28 | Ep novo das lendas | LENDAS #2 (floresta, versão 4): Korrin volta como campeão (nv 8) e cai para Orrin Ventolargo; Mirela Ossovelho vence (nv 7) |

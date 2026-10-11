@@ -525,7 +525,9 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
   const rng = new Rng(ep.seed);
   // luta de veteranos: só personagens salvos de episódios anteriores, cada um com nível, atributos, PV e itens
   if (ep.veteranos?.length) {
-    const lutadores = rng.shuffle(ep.veteranos.map((f) => deFicha(f, false)));
+    // o campeão da luta anterior de veteranos (se houver) volta com coroa e foco
+    const fichas = ep.campeaoAnterior ? [deFicha(ep.campeaoAnterior, true), ...ep.veteranos.filter((f) => f.nome !== ep.campeaoAnterior!.nome).map((f) => deFicha(f, false))] : ep.veteranos.map((f) => deFicha(f, false));
+    const lutadores = rng.shuffle(fichas);
     lutadores.forEach((l, i) => (l.id = i));
     return { lutadores, rng };
   }
