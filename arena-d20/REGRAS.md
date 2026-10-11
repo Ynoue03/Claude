@@ -255,13 +255,30 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
   itens). Campo `veteranos` do JSON com as fichas. Sem campeão anterior, sem foco; o placar ganha linhas se passar de 16.
 - Na ordem C só contam os que subiram na luta (os demais já começaram no nível 5).
 
+## 18e. Magias de círculo alto (versão 4)
+
+- O conjurador sempre tenta primeiro a magia do **maior círculo** que ainda tem espaço; as de 1º círculo e os truques
+  só voltam quando os espaços altos acabam.
+- Magias novas na luta (áreas do SRD 5.2; a IA mira o ponto que pega mais gente, sem se pegar):
+  - **Bola de Fogo** (Mago/Feiticeiro nv 5, 3º): 8d6 fogo, esfera de 20 pés, DES metade.
+  - **Relâmpago** (Mago nv 5, 3º): 8d6 elétrico, linha de 100 pés, DES metade (usa quando pega mais gente que a Bola).
+  - **Raio Ardente** (Mago/Feiticeiro nv 3, 2º): 3 raios de 2d6 fogo, espalhados.
+  - **Despedaçar** (Bardo e Bruxo nv 3, 2º): 3d8 trovejante, esfera de 10 pés, CON metade.
+  - **Raio Lunar** (Druida nv 3, 2º): 2d10 radiante, cilindro de 5 pés, CON metade.
+  - **Convocar Relâmpagos** (Druida nv 5, 3º): 3d10 elétrico, cilindro de 5 pés, DES metade.
+  - **Guardiões Espirituais** (Clérigo nv 5, 3º): 3d8 radiante em quem está a 15 pés, todo turno.
+  - **Arma Espiritual** (Clérigo nv 3, 2º): ataque extra de 1d8 + SAB todo turno.
+  - **Toque Vampírico** (Bruxo nv 5, 3º): 3d6 necrótico corpo a corpo, cura metade.
+- Efeitos visuais próprios: explosão de fogo, raio em linha, estrondo, raio do céu.
+
 ## 19. Versões das regras
 
 | Versão | O que liga | Episódios |
 | --- | --- | --- |
 | 1 | regras originais | 1–3 |
 | 2 | nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão | 4–8 |
-| 3 | tudo da 2 + baú, itens mágicos, itens por classe, chefes, caverna | a partir do 9 |
+| 3 | tudo da 2 + baú, itens mágicos, itens por classe, chefes, caverna | 9 a 15, B1–B5, C1, LENDAS 1 |
+| 4 | tudo da 3 + magias de círculo alto, usadas antes das de nível baixo | episódios novos |
 
 ## 20. Entregas de cada episódio
 
@@ -316,3 +333,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 24 | Chefes mais bonitos, de graça | Minotauro gerado no Canva (IA) e pixelizado por `scripts/pixelizar.py` (fundo verde → 163×144, 20 cores, contorno sel-out); `scripts/chefes-sprites.py` gera `chefes-sprites.ts`; animação por deformação; os outros chefes continuam no desenho em código até ganharem arte |
 | 25 | Chefe menor e animado (golpes, rugido, machado, caminhada, respiração) | Minotauro com 5 poses geradas no Canva a partir da mesma referência (parado, passo, machado erguido, golpe, rugido), mesma escala e paleta; ~200 px de altura no mundo (antes ~290); respira parado, alterna passos ao andar, ergue e desce o machado no golpe, ruge na entrada e na vitória |
 | 26 | Batalha com todos que já saíram do nível 1 | LENDAS #1: 17 veteranos (A, B e C), Korrin Mantonegro vence com 6 abates (nível 8) |
+| 27 | Feitiços de nível alto usados com mais frequência que os de nível baixo | versão 4: 9 magias de 2º/3º círculo na luta, prioridade pelo maior círculo disponível; Dragão vs nível 5 continua ~50% |

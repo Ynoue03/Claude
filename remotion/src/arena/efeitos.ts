@@ -111,7 +111,7 @@ export const desenharEfeito = (ctx: Ctx, e: EfeitoAtivo): Luz[] => {
   const luz = (p: P, r: number, cor: [number, number, number], i: number) => luzes.push({ x: p.x, y: p.y + 10, r, cor, i });
 
   // brilho de conjuração nas mãos
-  if (["raioFogo", "misseis", "raioGelo", "orbe", "rajada", "chama", "raioGuia", "onda", "chamaSagrada", "zombaria", "sussurros", "bruxaria", "marca", "brilho", "cura"].includes(e.fx) && t < tSolta + 2) {
+  if (["raioFogo", "misseis", "raioGelo", "orbe", "rajada", "chama", "raioGuia", "onda", "chamaSagrada", "zombaria", "sussurros", "bruxaria", "marca", "brilho", "cura", "bolaFogo", "relampago", "despedacar", "raioCeu"].includes(e.fx) && t < tSolta + 2) {
     const r = 1 + (t / Math.max(1, tSolta)) * 3;
     for (let i = 0; i < 6; i++) {
       const a = (i / 6) * Math.PI * 2 + t * 0.4;
@@ -284,6 +284,99 @@ export const desenharEfeito = (ctx: Ctx, e: EfeitoAtivo): Luz[] => {
           linhaPx(ctx, alvo.x, alvo.y + 4, alvo.x + Math.cos(a) * 6, alvo.y + 4 + Math.sin(a) * 4, "#c8f0ff");
         }
       }
+      break;
+    }
+    case "bolaFogo": {
+      // conta de fogo voa até o centro dos alvos e explode numa esfera de 20 pés
+      const c = { x: para.reduce((t, q) => t + q.x, 0) / Math.max(1, para.length), y: para.reduce((t, q) => t + q.y, 0) / Math.max(1, para.length) };
+      if (voando) {
+        const p = { x: lerp(de.x, c.x, k), y: lerp(de.y, c.y, k) - Math.sin(k * Math.PI) * 18 };
+        for (let i = 1; i < 6; i++) {
+          const kk = Math.max(0, k - i * 0.05);
+          px(ctx, lerp(de.x, c.x, kk), lerp(de.y, c.y, kk) - Math.sin(kk * Math.PI) * 18, FOGO[Math.min(4, i)]);
+        }
+        px(ctx, p.x - 1, p.y - 1, FOGO[0], 3);
+        luz(p, 40, [255, 150, 60], 0.7);
+      }
+      if (pos >= 0 && pos < 18) {
+        const tt = pos / 18;
+        const r = 10 + ease(Math.min(1, pos / 7)) * 70;
+        const a = 1 - tt;
+        // núcleo e bordas da esfera (achatada, vista de cima)
+        for (let i = 0; i < 140; i++) {
+          const ang = hash3(i, seed) * Math.PI * 2;
+          const d = Math.sqrt(hash3(i, seed + 1)) * r;
+          if (hash3(i, t, seed) > a + 0.15) continue;
+          px(ctx, c.x + Math.cos(ang) * d, c.y + Math.sin(ang) * d * 0.6 - tt * 6, FOGO[Math.min(4, Math.floor((d / r) * 3 + tt * 2))], i % 6 === 0 ? 2 : 1);
+        }
+        anelPx(ctx, c.x, c.y, r, `rgba(255,208,80,${a})`, 0.6, 0.2, seed);
+        if (pos < 4) {
+          ctx.fillStyle = `rgba(255,246,192,${0.8 - pos * 0.2})`;
+          ctx.fillRect(Math.round(c.x - r * 0.4), Math.round(c.y - r * 0.25), Math.round(r * 0.8), Math.round(r * 0.5));
+        }
+        luz(c, 160, [255, 140, 50], a * 1.4);
+      }
+      break;
+    }
+    case "relampago": {
+      // linha de 100 pés: raio em zigue-zague de quem lança até depois do último alvo
+      if (pos >= -2 && pos < 9) {
+        const ult = para.reduce((m, q) => (Math.hypot(q.x - de.x, q.y - de.y) > Math.hypot(m.x - de.x, m.y - de.y) ? q : m), alvo);
+        const ang = Math.atan2(ult.y - de.y, ult.x - de.x);
+        const L = Math.hypot(ult.x - de.x, ult.y - de.y) + 40;
+        const a = pos < 4 ? 1 : 1 - (pos - 4) / 5;
+        if (Math.floor(t / 2) % 3 !== 2 || pos < 3) {
+          let x0 = de.x,
+            y0 = de.y;
+          const passos = Math.max(4, Math.round(L / 12));
+          for (let i = 1; i <= passos; i++) {
+            const d = (i / passos) * L;
+            const desvio = (hash3(i, Math.floor(t / 2), seed) - 0.5) * 10;
+            const x1 = de.x + Math.cos(ang) * d - Math.sin(ang) * desvio,
+              y1 = de.y + Math.sin(ang) * d + Math.cos(ang) * desvio;
+            linhaPx(ctx, x0, y0, x1, y1, `rgba(255,242,122,${a})`, 3);
+            linhaPx(ctx, x0, y0, x1, y1, `rgba(255,255,255,${a})`, 1);
+            x0 = x1;
+            y0 = y1;
+          }
+        }
+        luz({ x: de.x + Math.cos(ang) * L * 0.5, y: de.y + Math.sin(ang) * L * 0.5 }, 140, [255, 250, 200], a * 1.3);
+      }
+      if (pos >= 0 && pos < 10) para.forEach((q, i) => e.acertou[i] && explosao(ctx, q, pos / 10, ["#ffffff", "#fff27a", "#f2d23a"], 12, 10, seed + i));
+      break;
+    }
+    case "despedacar": {
+      // estrondo numa esfera de 10 pés: anéis e estilhaços
+      const c = { x: para.reduce((t, q) => t + q.x, 0) / Math.max(1, para.length), y: para.reduce((t, q) => t + q.y, 0) / Math.max(1, para.length) };
+      if (pos >= -2 && pos < 12) {
+        const tt = (pos + 2) / 14;
+        const a = 1 - tt;
+        for (let k2 = 0; k2 < 3; k2++) anelPx(ctx, c.x, c.y, 6 + ease(Math.max(0, tt - k2 * 0.12)) * 40, `rgba(${k2 === 1 ? "255,255,255" : "140,190,255"},${a})`, 0.6, 0.25, seed + k2);
+        explosao(ctx, c, tt, AZUL, 26, 38, seed);
+        luz(c, 110, [170, 200, 255], a * 1.2);
+      }
+      break;
+    }
+    case "raioCeu": {
+      // relâmpago caindo do céu em cada alvo
+      if (pos >= -3 && pos < 9) {
+        const a = pos < 3 ? 1 : 1 - (pos - 3) / 6;
+        para.forEach((q, i) => {
+          if (Math.floor(t / 2 + i) % 3 === 2 && pos > 1) return;
+          let x0 = q.x + (hash3(i, seed) - 0.5) * 20,
+            y0 = q.y - 150;
+          for (let j = 1; j <= 10; j++) {
+            const x1 = q.x + (hash3(i, j, Math.floor(t / 2)) - 0.5) * (12 - j),
+              y1 = q.y - 150 + j * 15;
+            linhaPx(ctx, x0, y0, x1, y1, `rgba(255,242,122,${a})`, 3);
+            linhaPx(ctx, x0, y0, x1, y1, `rgba(255,255,255,${a})`, 1);
+            x0 = x1;
+            y0 = y1;
+          }
+          luz(q, 120, [255, 250, 200], a * 1.3);
+        });
+      }
+      if (pos >= 0 && pos < 10) para.forEach((q, i) => explosao(ctx, q, pos / 10, ["#ffffff", "#fff27a", "#f2d23a", "#a88a1a"], 16, 14, seed + i));
       break;
     }
     case "onda": {

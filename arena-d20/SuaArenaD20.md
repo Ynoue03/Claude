@@ -53,7 +53,7 @@ do próximo); nenhuma regra muda por causa do tempo.
 | `lutadores` | até 16 `{ nome, descricao, autor }` dos comentários; vazio = aleatórios. Classe, espécie, cores, cabelo e arma saem da descrição |
 | `campeaoAnterior` | `null` ou o `campeao.json` do episódio anterior (nível, atributos, PV, visual, vitórias, itens, coroa) |
 | `textos` | `escolha`, `lutem`, `subiu`, `defende`, `cta` |
-| `versao` | 1 = regras dos eps. 1–3; 2 = nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão; **3 = baú, itens, chefes** (usar sempre) |
+| `versao` | 1 = regras dos eps. 1–3; 2 = nome + sobrenome únicos, foco no campeão, +1 nível ao derrubar o campeão; 3 = baú, itens, chefes; **4 = + magias de círculo alto, usadas antes das de nível baixo** (usar sempre) |
 | `focoCampeao` | `"forte"` (recomendado, ep. 12+) = 0,31 × PV máximo do campeão − 4,35 (campeão vence ~35–40%); `"auto"` (eps. 6–11) = 2,5 × (nível − 2); ou número fixo |
 | `arena` | `"calabouco"` ou `"floresta"`. A `"caverna"` é **só para luta com chefe** e é escolhida sozinha quando há chefe |
 | `centro` | `"livre"` (recomendado): sem tablado nem altar d20 no meio |
@@ -400,7 +400,7 @@ scripts/arena.sh remotion/src/arena/episodios/epNN.json
 # saída: remotion/out/arena-epNN-master.mp4 e arena-d20/epNN/ (FICHA.md, campeao.json, lutadores.json, sprites/)
 ```
 
-Próximo episódio: copiar `arena-d20/epNN/campeao.json` para `campeaoAnterior`, `seed: ""`, `versao: 3`, `focoCampeao: "forte"`, `centro: "livre"`.
+Próximo episódio: copiar `arena-d20/epNN/campeao.json` para `campeaoAnterior`, `seed: ""`, `versao: 4`, `focoCampeao: "forte"`, `centro: "livre"`.
 
 ## 13. Nomes e sobrenomes
 

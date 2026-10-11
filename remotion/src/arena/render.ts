@@ -334,7 +334,7 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
       const b = estados[res.alvo];
       return { x: b.x, y: b.y - (r.lutadores[res.alvo].boss ? Math.round((PE_Y - alturaCabeca(r.lutadores[res.alvo])) * 0.55) : 16) };
     });
-    const distanciaFx = ["flecha", "raioFogo", "misseis", "raioGelo", "orbe", "rajada", "chama", "raioGuia", "espinhos", "zombaria", "sussurros"].includes(g.fx);
+    const distanciaFx = ["flecha", "raioFogo", "misseis", "raioGelo", "orbe", "rajada", "chama", "raioGuia", "espinhos", "zombaria", "sussurros", "bolaFogo"].includes(g.fx);
     const tSolta = distanciaFx ? Math.min(8, (g.tImp - g.t0) * 0.45) : g.tImp - g.t0;
     ativos.push({
       g,

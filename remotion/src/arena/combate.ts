@@ -99,6 +99,10 @@ export type Efeito =
   | "raioGelo"
   | "orbe"
   | "rajada"
+  | "bolaFogo"
+  | "relampago"
+  | "despedacar"
+  | "raioCeu"
   | "bruxaria"
   | "chamaSagrada"
   | "raioGuia"
@@ -217,6 +221,8 @@ type Est = {
   espadaTurno: boolean;
   miragem: boolean; // Capa da Miragem já desviou um ataque nesta rodada
   especialPronto: boolean; // chefe: habilidade especial carregada
+  guardioes: boolean; // clérigo: Guardiões Espirituais ativos (versão 4)
+  armaEspiritual: boolean; // clérigo: Arma Espiritual invocada (versão 4)
   lento: boolean;
   desvantagem: boolean;
   vantagemContra: boolean;
@@ -262,6 +268,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       espadaTurno: false,
       miragem: false,
       especialPronto: true,
+      guardioes: false,
+      armaEspiritual: false,
       pv: l.pvMax,
       pvTemp: 0,
       vivo: true,
@@ -1026,6 +1034,20 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     let acaoUsada = false;
     const cl = a.l.classe;
     const pct = a.pv / a.pvMax;
+    // versão 4: magias que continuam valendo nos turnos seguintes
+    if (versao >= 4 && a.guardioes) {
+      const perto = inimigos(a).filter((o) => dist(o.pos, a.pos) <= 60 + tam(o));
+      if (perto.length) salvaguarda(a, perto, { nome: "GUARDIÕES ESPIRITUAIS", n: 3, d: 8, tipo: "radiante", fx: "onda", atributo: "SAB", metade: true }, batidas);
+    }
+    if (versao >= 4 && a.armaEspiritual) {
+      const alvoA = inimigos(a)
+        .filter((o) => dist(o.pos, a.pos) <= 240)
+        .sort((x, y) => dist(x.pos, a.pos) - dist(y.pos, a.pos))[0];
+      if (alvoA) {
+        atacar(a, alvoA, opMagia(a, "ARMA ESPIRITUAL", 1, 8, "energia", "fulgor", conj(a)), batidas);
+        bonusUsada = true;
+      }
+    }
 
     // ── curas de emergência ──
     if (pct < 0.4) {
@@ -1263,7 +1285,123 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   };
 
   // Ação de atirador/conjurador
+  // ─── versão 4: magias de círculo alto, sempre antes das de nível baixo ───
+  // Tenta a magia do maior círculo que ainda tem espaço; só cai para as de 1º círculo e truques quando eles acabam.
+  // Áreas no SRD 5.2: Bola de Fogo esfera de 20 pés (80 px), Relâmpago linha de 100 pés × 5 (400 × 20 px),
+  // Despedaçar esfera de 10 pés (40 px), Raio Lunar e Convocar Relâmpagos cilindro de 5 pés (20 px),
+  // Guardiões Espirituais aura de 15 pés (60 px).
+  const magiaAlta = (a: Est, alvo: Est, batidas: Batida[]): boolean => {
+    if (versao < 4) return false;
+    const cl = a.l.classe,
+      n = a.nivel;
+    const slot = (c: number) => {
+      for (let i = c - 1; i < a.slots.length; i++) if ((a.slots[i] ?? 0) > 0) return i;
+      return -1;
+    };
+    const ini = inimigos(a);
+    const emRaio = (c: P, r: number) => ini.filter((o) => dist(o.pos, c) <= r + tam(o));
+    // ponto (em cima de um inimigo) que pega mais gente, sem pegar quem lança
+    const melhorPonto = (r: number) => {
+      let melhor: Est[] = [];
+      for (const o of ini) {
+        if (dist(a.pos, o.pos) > 400 || dist(a.pos, o.pos) <= r) continue;
+        const dentro = emRaio(o.pos, r);
+        if (dentro.length > melhor.length || (dentro.length === melhor.length && dentro.includes(alvo))) melhor = dentro;
+      }
+      return melhor;
+    };
+    const naLinha = (dir: Est) => {
+      const ux = dir.pos.x - a.pos.x,
+        uy = dir.pos.y - a.pos.y,
+        L = Math.hypot(ux, uy) || 1;
+      return ini.filter((o) => {
+        const t = ((o.pos.x - a.pos.x) * ux + (o.pos.y - a.pos.y) * uy) / L;
+        const perp = Math.abs((o.pos.x - a.pos.x) * uy - (o.pos.y - a.pos.y) * ux) / L;
+        return t > 0 && t <= 400 && perp <= 12 + tam(o);
+      });
+    };
+    const vale = (alvos: Est[]) => alvos.length >= 2 || (alvos.length === 1 && (ini.length <= 3 || alvos[0].pv >= 12));
+    const area = (i: number, alvos: Est[], op: Parameters<typeof salvaguarda>[2]) => {
+      a.slots[i]--;
+      log(`  ${a.l.nome} usa um espaço de ${i + 1}º círculo`);
+      salvaguarda(a, alvos, { ...op, especial: alvos.length >= 2 ? 2 : 1 }, batidas);
+      return true;
+    };
+    const ardente = (i: number) => {
+      a.slots[i]--;
+      log(`  ${a.l.nome}: RAIO ARDENTE (espaço de ${i + 1}º círculo) — 3 raios`);
+      const alvos = [alvo, ...ini.filter((o) => o !== alvo && dist(o.pos, a.pos) <= 240).sort((x, y) => x.pv - y.pv)];
+      for (let k = 0; k < 3; k++) {
+        const t = alvos[k % alvos.length];
+        if (t.vivo) atacar(a, t, { ...opMagia(a, "RAIO ARDENTE", 2, 6, "fogo", "raioFogo"), especial: k === 0 ? 1 : 0 }, batidas);
+      }
+      return true;
+    };
+    if ((cl === "MAGO" || cl === "FEITICEIRO") && n >= 5 && slot(3) >= 0) {
+      const bola = melhorPonto(80);
+      const raio = cl === "MAGO" ? ini.map(naLinha).reduce((m, x) => (x.length > m.length ? x : m), [] as Est[]) : [];
+      if (raio.length > bola.length && vale(raio)) return area(slot(3), raio, { nome: "RELÂMPAGO", n: 8, d: 6, tipo: "eletrico", fx: "relampago", atributo: "DES", metade: true });
+      if (vale(bola)) return area(slot(3), bola, { nome: "BOLA DE FOGO", n: 8, d: 6, tipo: "fogo", fx: "bolaFogo", atributo: "DES", metade: true });
+    }
+    if ((cl === "MAGO" || cl === "FEITICEIRO") && n >= 3 && slot(2) >= 0) return ardente(slot(2));
+    if (cl === "DRUIDA" && n >= 5 && slot(3) >= 0) {
+      const alvos = melhorPonto(20);
+      if (alvos.length) return area(slot(3), alvos, { nome: "CONVOCAR RELÂMPAGOS", n: 3, d: 10, tipo: "eletrico", fx: "raioCeu", atributo: "DES", metade: true });
+    }
+    if (cl === "DRUIDA" && n >= 3 && slot(2) >= 0) {
+      const alvos = melhorPonto(20);
+      if (alvos.length) return area(slot(2), alvos, { nome: "RAIO LUNAR", n: 2, d: 10, tipo: "radiante", fx: "chamaSagrada", atributo: "CON", metade: true });
+    }
+    if (cl === "BARDO" && n >= 3 && slot(2) >= 0) {
+      const alvos = melhorPonto(40);
+      if (alvos.length) return area(slot(2), alvos, { nome: "DESPEDAÇAR", n: 3, d: 8, tipo: "trovejante", fx: "despedacar", atributo: "CON", metade: true });
+    }
+    if (cl === "BRUXO" && n >= 5 && slot(3) >= 0 && adjacente(a, alvo)) {
+      const i = slot(3);
+      a.slots[i]--;
+      log(`  ${a.l.nome} usa um espaço de ${i + 1}º círculo`);
+      atacar(
+        a,
+        alvo,
+        {
+          ...opMagia(a, "TOQUE VAMPÍRICO", 3, 6, "necrotico", "bruxaria", 0, (_t, res) => {
+            if (res.dano > 0 && a.vivo) {
+              const cura = Math.floor(res.dano / 2);
+              a.pv = Math.min(a.pvMax, a.pv + cura);
+              res.textos.push(`+${cura} PV`);
+            }
+          }),
+          distancia: false,
+          especial: 1,
+        },
+        batidas,
+      );
+      return true;
+    }
+    if (cl === "BRUXO" && n >= 3 && slot(2) >= 0) {
+      const alvos = melhorPonto(40);
+      if (alvos.length) return area(slot(2), alvos, { nome: "DESPEDAÇAR", n: slot(2) >= 2 ? 4 : 3, d: 8, tipo: "trovejante", fx: "despedacar", atributo: "CON", metade: true });
+    }
+    if (cl === "CLERIGO" && n >= 5 && slot(3) >= 0 && !a.guardioes) {
+      const perto = emRaio(a.pos, 60);
+      if (perto.length) {
+        a.guardioes = true;
+        return area(slot(3), perto, { nome: "GUARDIÕES ESPIRITUAIS", n: 3, d: 8, tipo: "radiante", fx: "onda", atributo: "SAB", metade: true });
+      }
+    }
+    if (cl === "CLERIGO" && n >= 3 && slot(2) >= 0 && !a.armaEspiritual) {
+      const i = slot(2);
+      a.slots[i]--;
+      a.armaEspiritual = true;
+      log(`  ${a.l.nome}: invoca a ARMA ESPIRITUAL (espaço de ${i + 1}º círculo)`);
+      atacar(a, alvo, { ...opMagia(a, "ARMA ESPIRITUAL", 1, 8, "energia", "fulgor", conj(a)), especial: 1 }, batidas);
+      return true;
+    }
+    return false;
+  };
+
   const acaoDistancia = (a: Est, alvo: Est, batidas: Batida[], bonusUsada: boolean) => {
+    if (magiaAlta(a, alvo, batidas)) return;
     const cl = a.l.classe;
     const T = truque(a);
     const perto = inimigos(a).filter((o) => dist(o.pos, a.pos) <= 44 + tam(o));
