@@ -1,0 +1,103 @@
+{
+  "nome": "Korrin Mantonegro",
+  "especie": "HUMANO",
+  "classe": "BARBARO",
+  "nivel": 9,
+  "atributos": {
+    "FOR": 20,
+    "CON": 19,
+    "DES": 15,
+    "SAB": 13,
+    "CAR": 13,
+    "INT": 12
+  },
+  "pvMax": 97,
+  "pvRolagens": [
+    "NV 1: d12 máximo = 12 +3 CON = 15 PV",
+    "NV 2: d12 = 11 +3 CON = +14 PV",
+    "NV 3: d12 = 1 +3 CON = +4 PV",
+    "NV 4: d12 = 11 +4 CON = +18 PV",
+    "NV 5: d12 = 2 +4 CON = +6 PV",
+    "NV 6: d12 = 8 +4 CON = +12 PV",
+    "NV 7: d12 = 6 +4 CON = +10 PV",
+    "NV 8: d12 = 3 +4 CON = +7 PV",
+    "NV 9: d12 = 7 +4 CON = +11 PV"
+  ],
+  "visual": {
+    "pele": "#e0a878",
+    "cabelo": "#5a3420",
+    "estiloCabelo": "curto",
+    "barba": "",
+    "olho": "#3a6a9a",
+    "marca": "pintura",
+    "roupa": "#c09a2e",
+    "roupa2": "#5e3488",
+    "couro": "#6a4428",
+    "metal": "#a8b0bc",
+    "cabeca": "nada",
+    "pluma": "",
+    "corpo": "colete",
+    "tabardo": false,
+    "ombreiras": false,
+    "capa": "",
+    "peleOmbros": true,
+    "arma": "machadoGrande",
+    "escudo": "",
+    "brasao": "#c83a3a",
+    "orbe": "",
+    "aljava": false,
+    "mascara": false,
+    "magia": "#e8701e",
+    "altura": 1
+  },
+  "vitorias": 8,
+  "itens": [
+    "botasFirmes",
+    "machadoBerserker",
+    "luvasCerteiras",
+    "capaSombras",
+    "armaduraEspinhos",
+    "elmoMente"
+  ],
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      6,
+      2,
+      1,
+      5
+    ],
+    [
+      2,
+      6,
+      5,
+      6
+    ],
+    [
+      6,
+      3,
+      2,
+      6
+    ],
+    [
+      5,
+      6,
+      3,
+      5
+    ],
+    [
+      4,
+      2,
+      6,
+      1
+    ],
+    [
+      5,
+      3,
+      5,
+      1
+    ]
+  ],
+  "antecedente": "+2 FOR / +1 CON"
+}

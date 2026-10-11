@@ -1,0 +1,1586 @@
+{
+  "numero": 3,
+  "serie": "L",
+  "seed": "arena-d20-epL03-2",
+  "perfil": "@SuaArenaD20",
+  "lutadores": [],
+  "campeaoAnterior": {
+    "nome": "Mirela Ossovelho",
+    "especie": "ANAO",
+    "classe": "LADINO",
+    "nivel": 7,
+    "atributos": {
+      "DES": 19,
+      "CON": 14,
+      "INT": 13,
+      "SAB": 10,
+      "CAR": 9,
+      "FOR": 6
+    },
+    "pvMax": 66,
+    "pvRolagens": [
+      "NV 1: d8 máximo = 8 +2 CON +1 Robustez Anã = 11 PV",
+      "NV 2: d8 = 8 +2 CON +1 Robustez Anã = +11 PV",
+      "NV 3: d8 = 7 +2 CON +1 Robustez Anã = +10 PV",
+      "NV 4: d8 = 7 +2 CON +1 Robustez Anã = +10 PV",
+      "NV 5: d8 = 7 +2 CON +1 Robustez Anã = +10 PV",
+      "NV 6: d8 = 1 +2 CON +1 Robustez Anã = +4 PV",
+      "NV 7: d8 = 7 +2 CON +1 Robustez Anã = +10 PV"
+    ],
+    "visual": {
+      "pele": "#7e5236",
+      "cabelo": "#c8902e",
+      "estiloCabelo": "rabo",
+      "barba": "trancada",
+      "olho": "#8a5ab0",
+      "marca": "",
+      "roupa": "#2a3038",
+      "roupa2": "#2f6a3a",
+      "couro": "#3e2e26",
+      "metal": "#a8b0bc",
+      "cabeca": "bandana",
+      "pluma": "",
+      "corpo": "couro",
+      "tabardo": false,
+      "ombreiras": false,
+      "capa": "",
+      "peleOmbros": false,
+      "arma": "arcoCurto",
+      "escudo": "",
+      "brasao": "#e8c040",
+      "orbe": "",
+      "aljava": true,
+      "mascara": true,
+      "magia": "#e8701e",
+      "altura": 0.86
+    },
+    "vitorias": 2,
+    "itens": [
+      "botasLigeiras",
+      "cajadoArcano",
+      "capaSombras",
+      "luvasPrecisas",
+      "armaduraEspinhos",
+      "elmoMente"
+    ],
+    "autor": "",
+    "descricao": "",
+    "rolagens": [
+      [
+        6,
+        4,
+        3,
+        5
+      ],
+      [
+        2,
+        6,
+        2,
+        5
+      ],
+      [
+        2,
+        2,
+        1,
+        2
+      ],
+      [
+        2,
+        1,
+        3,
+        4
+      ],
+      [
+        4,
+        4,
+        1,
+        2
+      ],
+      [
+        6,
+        1,
+        1,
+        6
+      ]
+    ],
+    "antecedente": "+2 DES / +1 CON"
+  },
+  "veteranos": [
+    {
+      "nome": "Korrin Mantonegro",
+      "especie": "HUMANO",
+      "classe": "BARBARO",
+      "nivel": 8,
+      "atributos": {
+        "FOR": 20,
+        "CON": 19,
+        "DES": 15,
+        "SAB": 13,
+        "CAR": 13,
+        "INT": 12
+      },
+      "pvMax": 86,
+      "pvRolagens": [
+        "NV 1: d12 máximo = 12 +3 CON = 15 PV",
+        "NV 2: d12 = 11 +3 CON = +14 PV",
+        "NV 3: d12 = 1 +3 CON = +4 PV",
+        "NV 4: d12 = 11 +4 CON = +18 PV",
+        "NV 5: d12 = 2 +4 CON = +6 PV",
+        "NV 6: d12 = 8 +4 CON = +12 PV",
+        "NV 7: d12 = 6 +4 CON = +10 PV",
+        "NV 8: d12 = 3 +4 CON = +7 PV"
+      ],
+      "visual": {
+        "pele": "#e0a878",
+        "cabelo": "#5a3420",
+        "estiloCabelo": "curto",
+        "barba": "",
+        "olho": "#3a6a9a",
+        "marca": "pintura",
+        "roupa": "#c09a2e",
+        "roupa2": "#5e3488",
+        "couro": "#6a4428",
+        "metal": "#a8b0bc",
+        "cabeca": "nada",
+        "pluma": "",
+        "corpo": "colete",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": true,
+        "arma": "machadoGrande",
+        "escudo": "",
+        "brasao": "#c83a3a",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#e8701e",
+        "altura": 1
+      },
+      "vitorias": 7,
+      "itens": [
+        "botasFirmes",
+        "machadoBerserker",
+        "luvasCerteiras",
+        "capaSombras",
+        "armaduraEspinhos",
+        "elmoMente"
+      ],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          6,
+          2,
+          1,
+          5
+        ],
+        [
+          2,
+          6,
+          5,
+          6
+        ],
+        [
+          6,
+          3,
+          2,
+          6
+        ],
+        [
+          5,
+          6,
+          3,
+          5
+        ],
+        [
+          4,
+          2,
+          6,
+          1
+        ],
+        [
+          5,
+          3,
+          5,
+          1
+        ]
+      ],
+      "antecedente": "+2 FOR / +1 CON"
+    },
+    {
+      "nome": "Liora Corvonegro",
+      "especie": "HALFLING",
+      "classe": "PATRULHEIRO",
+      "nivel": 6,
+      "atributos": {
+        "DES": 20,
+        "SAB": 15,
+        "CON": 14,
+        "FOR": 12,
+        "INT": 11,
+        "CAR": 9
+      },
+      "pvMax": 39,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +2 CON = 12 PV",
+        "NV 2: d10 = 1 +2 CON = +3 PV",
+        "NV 3: d10 = 8 +2 CON = +10 PV",
+        "NV 4: d10 = 4 +2 CON = +6 PV",
+        "NV 5: d10 = 3 +2 CON = +5 PV",
+        "NV 6: d10 = 1 +2 CON = +3 PV"
+      ],
+      "visual": {
+        "pele": "#f2c9a0",
+        "cabelo": "#d8d8d8",
+        "estiloCabelo": "longo",
+        "barba": "",
+        "olho": "#3a6a9a",
+        "marca": "",
+        "roupa": "#3e5a2e",
+        "roupa2": "#2a6a72",
+        "couro": "#6a4428",
+        "metal": "#c0a060",
+        "cabeca": "capuz",
+        "pluma": "",
+        "corpo": "couro",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "#3e5a2e",
+        "peleOmbros": false,
+        "arma": "arcoLongo",
+        "escudo": "",
+        "brasao": "#e8c040",
+        "orbe": "",
+        "aljava": true,
+        "mascara": false,
+        "magia": "#a6d62a",
+        "altura": 0.8
+      },
+      "vitorias": 0,
+      "itens": [
+        "cajadoArcano"
+      ],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          6,
+          5,
+          6,
+          6
+        ],
+        [
+          5,
+          1,
+          1,
+          3
+        ],
+        [
+          1,
+          6,
+          6,
+          2
+        ],
+        [
+          3,
+          6,
+          3,
+          2
+        ],
+        [
+          5,
+          4,
+          1,
+          4
+        ],
+        [
+          1,
+          2,
+          4,
+          5
+        ]
+      ],
+      "antecedente": "+2 DES / +1 CON"
+    },
+    {
+      "nome": "Yara Rubrafonte",
+      "especie": "DRACONATO",
+      "classe": "GUERREIRO",
+      "nivel": 5,
+      "atributos": {
+        "FOR": 20,
+        "CON": 17,
+        "DES": 15,
+        "SAB": 13,
+        "CAR": 13,
+        "INT": 11
+      },
+      "pvMax": 40,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +3 CON = 13 PV",
+        "NV 2: d10 = 3 +3 CON = +6 PV",
+        "NV 3: d10 = 6 +3 CON = +9 PV",
+        "NV 4: d10 = 3 +3 CON = +6 PV",
+        "NV 5: d10 = 3 +3 CON = +6 PV"
+      ],
+      "ancestralidade": "azul",
+      "visual": {
+        "pele": "#2f5fc0",
+        "cabelo": "#5a3420",
+        "estiloCabelo": "careca",
+        "barba": "",
+        "olho": "#e8c040",
+        "marca": "cicatriz",
+        "roupa": "#2c4a9a",
+        "roupa2": "#9c2a2e",
+        "couro": "#5a3a26",
+        "metal": "#c0a060",
+        "cabeca": "elmoAberto",
+        "pluma": "",
+        "corpo": "malha",
+        "tabardo": true,
+        "ombreiras": true,
+        "capa": "",
+        "peleOmbros": false,
+        "arma": "montante",
+        "escudo": "",
+        "brasao": "#e8e0d0",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#e8701e",
+        "altura": 1.04
+      },
+      "vitorias": 4,
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          5,
+          3,
+          6,
+          4
+        ],
+        [
+          1,
+          5,
+          5,
+          5
+        ],
+        [
+          6,
+          1,
+          4,
+          1
+        ],
+        [
+          6,
+          6,
+          5,
+          6
+        ],
+        [
+          4,
+          3,
+          6,
+          2
+        ],
+        [
+          6,
+          5,
+          2,
+          1
+        ]
+      ],
+      "antecedente": "+2 FOR / +1 CON"
+    },
+    {
+      "nome": "Pike Valeclaro",
+      "especie": "HUMANO",
+      "classe": "BARBARO",
+      "nivel": 4,
+      "atributos": {
+        "FOR": 20,
+        "CON": 17,
+        "DES": 14,
+        "SAB": 14,
+        "CAR": 13,
+        "INT": 8
+      },
+      "pvMax": 40,
+      "pvRolagens": [
+        "NV 1: d12 máximo = 12 +3 CON = 15 PV",
+        "NV 2: d12 = 2 +3 CON = +5 PV",
+        "NV 3: d12 = 9 +3 CON = +12 PV",
+        "NV 4: d12 = 5 +3 CON = +8 PV"
+      ],
+      "visual": {
+        "pele": "#8e5a3a",
+        "cabelo": "#2a1e18",
+        "estiloCabelo": "rabo",
+        "barba": "",
+        "olho": "#8a5ab0",
+        "marca": "pintura",
+        "roupa": "#2c4a9a",
+        "roupa2": "#4e5a6a",
+        "couro": "#6a4428",
+        "metal": "#a8b0bc",
+        "cabeca": "elmoChifres",
+        "pluma": "",
+        "corpo": "colete",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": true,
+        "arma": "machadoGrande",
+        "escudo": "",
+        "brasao": "#3a5ac8",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#e8701e",
+        "altura": 1
+      },
+      "vitorias": 2,
+      "itens": [
+        "botasFirmes"
+      ],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          4,
+          2,
+          1,
+          2
+        ],
+        [
+          3,
+          5,
+          4,
+          4
+        ],
+        [
+          5,
+          3,
+          6,
+          2
+        ],
+        [
+          5,
+          4,
+          3,
+          6
+        ],
+        [
+          5,
+          6,
+          3,
+          2
+        ],
+        [
+          6,
+          5,
+          6,
+          3
+        ]
+      ],
+      "antecedente": "+2 FOR / +1 CON"
+    },
+    {
+      "nome": "Zara Pontavento",
+      "especie": "ANAO",
+      "classe": "PALADINO",
+      "nivel": 4,
+      "atributos": {
+        "FOR": 20,
+        "CAR": 18,
+        "CON": 14,
+        "SAB": 12,
+        "DES": 11,
+        "INT": 7
+      },
+      "pvMax": 34,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +2 CON +1 Robustez Anã = 13 PV",
+        "NV 2: d10 = 1 +2 CON +1 Robustez Anã = +4 PV",
+        "NV 3: d10 = 7 +2 CON +1 Robustez Anã = +10 PV",
+        "NV 4: d10 = 4 +2 CON +1 Robustez Anã = +7 PV"
+      ],
+      "visual": {
+        "pele": "#b07850",
+        "cabelo": "#2e8a6a",
+        "estiloCabelo": "coque",
+        "barba": "longa",
+        "olho": "#6a4a2a",
+        "marca": "tatuagem",
+        "roupa": "#2f6a3a",
+        "roupa2": "#4e5a6a",
+        "couro": "#5a3a26",
+        "metal": "#c0a060",
+        "cabeca": "elmoFechado",
+        "pluma": "#c83a3a",
+        "corpo": "placas",
+        "tabardo": true,
+        "ombreiras": true,
+        "capa": "#e8e0d0",
+        "peleOmbros": false,
+        "arma": "martelo",
+        "escudo": "brasao",
+        "brasao": "#c83a3a",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#f0d060",
+        "altura": 0.86
+      },
+      "vitorias": 2,
+      "itens": [
+        "luvasCerteiras"
+      ],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          4,
+          5,
+          2,
+          4
+        ],
+        [
+          3,
+          1,
+          1,
+          3
+        ],
+        [
+          6,
+          6,
+          5,
+          3
+        ],
+        [
+          5,
+          4,
+          2,
+          1
+        ],
+        [
+          6,
+          2,
+          1,
+          4
+        ],
+        [
+          6,
+          5,
+          6,
+          1
+        ]
+      ],
+      "antecedente": "+2 FOR / +1 CON"
+    },
+    {
+      "nome": "Orrin Ventolargo",
+      "especie": "ELFO",
+      "classe": "PATRULHEIRO",
+      "nivel": 3,
+      "atributos": {
+        "DES": 19,
+        "SAB": 17,
+        "CON": 18,
+        "FOR": 14,
+        "INT": 13,
+        "CAR": 12
+      },
+      "pvMax": 36,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +4 CON = 14 PV",
+        "NV 2: d10 = 7 +4 CON = +11 PV",
+        "NV 3: d10 = 7 +4 CON = +11 PV"
+      ],
+      "visual": {
+        "pele": "#e8c09a",
+        "cabelo": "#2a1e18",
+        "estiloCabelo": "rabo",
+        "barba": "",
+        "olho": "#3a6a9a",
+        "marca": "",
+        "roupa": "#4a6a3a",
+        "roupa2": "#9c2a2e",
+        "couro": "#6a4428",
+        "metal": "#a8b0bc",
+        "cabeca": "capuz",
+        "pluma": "",
+        "corpo": "couro",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "#4a6a3a",
+        "peleOmbros": false,
+        "arma": "arcoLongo",
+        "escudo": "",
+        "brasao": "#3a5ac8",
+        "orbe": "",
+        "aljava": true,
+        "mascara": false,
+        "magia": "#a6d62a",
+        "altura": 1
+      },
+      "vitorias": 1,
+      "itens": [
+        "botasFirmes"
+      ],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          6,
+          6,
+          3,
+          5
+        ],
+        [
+          5,
+          3,
+          6,
+          3
+        ],
+        [
+          5,
+          3,
+          3,
+          5
+        ],
+        [
+          6,
+          6,
+          5,
+          5
+        ],
+        [
+          6,
+          5,
+          5,
+          6
+        ],
+        [
+          3,
+          5,
+          1,
+          4
+        ]
+      ],
+      "antecedente": "+2 DES / +1 CON"
+    },
+    {
+      "nome": "Talia Águaclara",
+      "especie": "ORC",
+      "classe": "MONGE",
+      "nivel": 3,
+      "atributos": {
+        "DES": 18,
+        "SAB": 12,
+        "CON": 13,
+        "FOR": 11,
+        "INT": 9,
+        "CAR": 8
+      },
+      "pvMax": 20,
+      "pvRolagens": [
+        "NV 1: d8 máximo = 8 +1 CON = 9 PV",
+        "NV 2: d8 = 2 +1 CON = +3 PV",
+        "NV 3: d8 = 7 +1 CON = +8 PV"
+      ],
+      "visual": {
+        "pele": "#9aa486",
+        "cabelo": "#c8902e",
+        "estiloCabelo": "careca",
+        "barba": "curta",
+        "olho": "#8a5ab0",
+        "marca": "cicatriz",
+        "roupa": "#2c4a9a",
+        "roupa2": "#2c4a9a",
+        "couro": "#7a5034",
+        "metal": "#9aa2ae",
+        "cabeca": "nada",
+        "pluma": "",
+        "corpo": "gi",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": false,
+        "arma": "punhos",
+        "escudo": "",
+        "brasao": "#e8e0d0",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#9ad8f0",
+        "altura": 1.04
+      },
+      "vitorias": 1,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          5,
+          3,
+          4,
+          1
+        ],
+        [
+          4,
+          6,
+          5,
+          5
+        ],
+        [
+          1,
+          1,
+          5,
+          6
+        ],
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          2,
+          4,
+          2
+        ],
+        [
+          3,
+          1,
+          2,
+          6
+        ]
+      ],
+      "antecedente": "+2 DES / +1 CON"
+    },
+    {
+      "nome": "Wren",
+      "especie": "ORC",
+      "classe": "PALADINO",
+      "nivel": 2,
+      "atributos": {
+        "FOR": 19,
+        "CAR": 15,
+        "CON": 15,
+        "SAB": 13,
+        "DES": 11,
+        "INT": 11
+      },
+      "pvMax": 17,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +2 CON = 12 PV",
+        "NV 2: d10 = 3 +2 CON = +5 PV"
+      ],
+      "visual": {
+        "pele": "#6e7e60",
+        "cabelo": "#c8902e",
+        "estiloCabelo": "careca",
+        "barba": "",
+        "olho": "#3a6a9a",
+        "marca": "",
+        "roupa": "#5e3488",
+        "roupa2": "#6e2238",
+        "couro": "#7a5034",
+        "metal": "#a8b0bc",
+        "cabeca": "nada",
+        "pluma": "",
+        "corpo": "placas",
+        "tabardo": true,
+        "ombreiras": true,
+        "capa": "#e8e0d0",
+        "peleOmbros": false,
+        "arma": "martelo",
+        "escudo": "brasao",
+        "brasao": "#3a5ac8",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#f0d060",
+        "altura": 1.04
+      },
+      "vitorias": 1,
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          1,
+          4,
+          3,
+          6
+        ],
+        [
+          6,
+          5,
+          4,
+          6
+        ],
+        [
+          1,
+          6,
+          4,
+          1
+        ],
+        [
+          6,
+          6,
+          1,
+          3
+        ],
+        [
+          5,
+          6,
+          3,
+          2
+        ],
+        [
+          3,
+          2,
+          6,
+          1
+        ]
+      ],
+      "antecedente": "+2 FOR / +1 CON"
+    },
+    {
+      "nome": "Elowen Ouroverde",
+      "especie": "DRACONATO",
+      "classe": "BRUXO",
+      "nivel": 2,
+      "atributos": {
+        "CAR": 16,
+        "CON": 14,
+        "DES": 12,
+        "SAB": 11,
+        "INT": 10,
+        "FOR": 10
+      },
+      "pvMax": 20,
+      "pvRolagens": [
+        "NV 1: d8 máximo = 8 +2 CON = 10 PV",
+        "NV 2: d8 = 8 +2 CON = +10 PV"
+      ],
+      "ancestralidade": "verde",
+      "visual": {
+        "pele": "#3f8f3a",
+        "cabelo": "#d8d8d8",
+        "estiloCabelo": "careca",
+        "barba": "",
+        "olho": "#e8c040",
+        "marca": "sardas",
+        "roupa": "#4a1e2e",
+        "roupa2": "#5e3488",
+        "couro": "#7a5034",
+        "metal": "#a8b0bc",
+        "cabeca": "capuz",
+        "pluma": "",
+        "corpo": "manto",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": false,
+        "arma": "adaga",
+        "escudo": "",
+        "brasao": "#3a5ac8",
+        "orbe": "#a24ae0",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#a24ae0",
+        "altura": 1.04
+      },
+      "vitorias": 0,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          4,
+          2,
+          2,
+          5
+        ],
+        [
+          5,
+          4,
+          3,
+          4
+        ],
+        [
+          6,
+          3,
+          5,
+          3
+        ],
+        [
+          1,
+          1,
+          5,
+          4
+        ],
+        [
+          1,
+          3,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          4,
+          5
+        ]
+      ],
+      "antecedente": "+2 CAR / +1 CON"
+    },
+    {
+      "nome": "Soren Rocharrubra",
+      "especie": "DRACONATO",
+      "classe": "DRUIDA",
+      "nivel": 2,
+      "atributos": {
+        "SAB": 18,
+        "CON": 14,
+        "DES": 12,
+        "INT": 11,
+        "CAR": 10,
+        "FOR": 10
+      },
+      "pvMax": 16,
+      "pvRolagens": [
+        "NV 1: d8 máximo = 8 +2 CON = 10 PV",
+        "NV 2: d8 = 4 +2 CON = +6 PV"
+      ],
+      "ancestralidade": "negro",
+      "visual": {
+        "pele": "#3a3442",
+        "cabelo": "#2a1e18",
+        "estiloCabelo": "careca",
+        "barba": "",
+        "olho": "#e8c040",
+        "marca": "sardas",
+        "roupa": "#4a6a3a",
+        "roupa2": "#d8cdb4",
+        "couro": "#3e2e26",
+        "metal": "#a8b0bc",
+        "cabeca": "capuz",
+        "pluma": "",
+        "corpo": "manto",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": false,
+        "arma": "cimitarra",
+        "escudo": "madeira",
+        "brasao": "#3a5ac8",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#7ad04a",
+        "altura": 1.04
+      },
+      "vitorias": 0,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          5,
+          2,
+          3,
+          1
+        ],
+        [
+          6,
+          3,
+          3,
+          2
+        ],
+        [
+          5,
+          1,
+          4,
+          1
+        ],
+        [
+          5,
+          6,
+          2,
+          2
+        ],
+        [
+          4,
+          5,
+          6,
+          5
+        ],
+        [
+          3,
+          5,
+          3,
+          3
+        ]
+      ],
+      "antecedente": "+2 SAB / +1 CON"
+    },
+    {
+      "nome": "Tobias Cinzafria",
+      "especie": "DRACONATO",
+      "classe": "FEITICEIRO",
+      "nivel": 2,
+      "atributos": {
+        "CAR": 17,
+        "CON": 16,
+        "DES": 13,
+        "SAB": 11,
+        "INT": 9,
+        "FOR": 4
+      },
+      "pvMax": 13,
+      "pvRolagens": [
+        "NV 1: d6 máximo = 6 +3 CON = 9 PV",
+        "NV 2: d6 = 1 +3 CON = +4 PV"
+      ],
+      "ancestralidade": "azul",
+      "visual": {
+        "pele": "#2f5fc0",
+        "cabelo": "#3a5ab0",
+        "estiloCabelo": "careca",
+        "barba": "",
+        "olho": "#e8c040",
+        "marca": "",
+        "roupa": "#2c4a9a",
+        "roupa2": "#c09a2e",
+        "couro": "#3e2e26",
+        "metal": "#9aa2ae",
+        "cabeca": "diadema",
+        "pluma": "",
+        "corpo": "tunica",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": false,
+        "arma": "adaga",
+        "escudo": "",
+        "brasao": "#e8e0d0",
+        "orbe": "#6cc7f0",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#6cc7f0",
+        "altura": 1.04
+      },
+      "vitorias": 0,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          1,
+          6,
+          1,
+          4
+        ],
+        [
+          1,
+          2,
+          1,
+          1
+        ],
+        [
+          6,
+          5,
+          4,
+          1
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          5,
+          3,
+          5,
+          5
+        ],
+        [
+          3,
+          1,
+          4,
+          6
+        ]
+      ],
+      "antecedente": "+2 CAR / +1 CON"
+    },
+    {
+      "nome": "Rhea Ouroverde",
+      "especie": "ANAO",
+      "classe": "DRUIDA",
+      "nivel": 2,
+      "atributos": {
+        "SAB": 18,
+        "CON": 16,
+        "DES": 14,
+        "INT": 13,
+        "CAR": 11,
+        "FOR": 10
+      },
+      "pvMax": 22,
+      "pvRolagens": [
+        "NV 1: d8 máximo = 8 +3 CON +1 Robustez Anã = 12 PV",
+        "NV 2: d8 = 6 +3 CON +1 Robustez Anã = +10 PV"
+      ],
+      "visual": {
+        "pele": "#d49870",
+        "cabelo": "#9a3ab0",
+        "estiloCabelo": "coque",
+        "barba": "trancada",
+        "olho": "#8a5ab0",
+        "marca": "",
+        "roupa": "#5a5a2e",
+        "roupa2": "#8a5a32",
+        "couro": "#6a4428",
+        "metal": "#a8b0bc",
+        "cabeca": "folhas",
+        "pluma": "",
+        "corpo": "manto",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": false,
+        "arma": "cimitarra",
+        "escudo": "madeira",
+        "brasao": "#c83a3a",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#7ad04a",
+        "altura": 0.86
+      },
+      "vitorias": 1,
+      "itens": [
+        "botasFirmes",
+        "luvasPrecisas"
+      ],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          4,
+          1,
+          6,
+          5
+        ],
+        [
+          6,
+          1,
+          2,
+          6
+        ],
+        [
+          4,
+          6,
+          6,
+          1
+        ],
+        [
+          3,
+          2,
+          2,
+          6
+        ],
+        [
+          3,
+          5,
+          3,
+          5
+        ],
+        [
+          3,
+          2,
+          2,
+          5
+        ]
+      ],
+      "antecedente": "+2 SAB / +1 CON"
+    },
+    {
+      "nome": "Nessa Solposto",
+      "especie": "ORC",
+      "classe": "PATRULHEIRO",
+      "nivel": 2,
+      "atributos": {
+        "DES": 19,
+        "SAB": 16,
+        "CON": 17,
+        "FOR": 13,
+        "INT": 11,
+        "CAR": 7
+      },
+      "pvMax": 21,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +3 CON = 13 PV",
+        "NV 2: d10 = 5 +3 CON = +8 PV"
+      ],
+      "visual": {
+        "pele": "#8a9a78",
+        "cabelo": "#8a8a92",
+        "estiloCabelo": "rabo",
+        "barba": "",
+        "olho": "#4a7a3a",
+        "marca": "",
+        "roupa": "#2f6a3a",
+        "roupa2": "#c09a2e",
+        "couro": "#3e2e26",
+        "metal": "#c0a060",
+        "cabeca": "capuz",
+        "pluma": "",
+        "corpo": "couro",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "#2f6a3a",
+        "peleOmbros": false,
+        "arma": "arcoLongo",
+        "escudo": "",
+        "brasao": "#e8e0d0",
+        "orbe": "",
+        "aljava": true,
+        "mascara": false,
+        "magia": "#a6d62a",
+        "altura": 1.04
+      },
+      "vitorias": 0,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          6,
+          5,
+          4,
+          5
+        ],
+        [
+          2,
+          5,
+          4,
+          2
+        ],
+        [
+          1,
+          5,
+          5,
+          3
+        ],
+        [
+          4,
+          6,
+          1,
+          6
+        ],
+        [
+          6,
+          6,
+          5,
+          2
+        ],
+        [
+          3,
+          1,
+          2,
+          2
+        ]
+      ],
+      "antecedente": "+2 DES / +1 CON"
+    },
+    {
+      "nome": "Grom Rubrafonte",
+      "especie": "ELFO",
+      "classe": "PALADINO",
+      "nivel": 2,
+      "atributos": {
+        "FOR": 16,
+        "CAR": 14,
+        "CON": 13,
+        "SAB": 12,
+        "DES": 10,
+        "INT": 9
+      },
+      "pvMax": 13,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +1 CON = 11 PV",
+        "NV 2: d10 = 1 +1 CON = +2 PV"
+      ],
+      "visual": {
+        "pele": "#f6dcc0",
+        "cabelo": "#d8d8d8",
+        "estiloCabelo": "coque",
+        "barba": "",
+        "olho": "#5a5a6a",
+        "marca": "cicatriz",
+        "roupa": "#2a6a72",
+        "roupa2": "#2c4a9a",
+        "couro": "#7a5034",
+        "metal": "#b8bcc4",
+        "cabeca": "nada",
+        "pluma": "",
+        "corpo": "placas",
+        "tabardo": true,
+        "ombreiras": true,
+        "capa": "#e8e0d0",
+        "peleOmbros": false,
+        "arma": "espadaLonga",
+        "escudo": "brasao",
+        "brasao": "#e8c040",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#f0d060",
+        "altura": 1
+      },
+      "vitorias": 1,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          1,
+          3,
+          4,
+          3
+        ],
+        [
+          1,
+          6,
+          4,
+          4
+        ],
+        [
+          1,
+          4,
+          2,
+          6
+        ],
+        [
+          4,
+          1,
+          5,
+          5
+        ],
+        [
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          1,
+          4,
+          2,
+          6
+        ]
+      ],
+      "antecedente": "+2 FOR / +1 CON"
+    },
+    {
+      "nome": "Yara Ferrocinza",
+      "especie": "GOLIAS",
+      "classe": "GUERREIRO",
+      "nivel": 2,
+      "atributos": {
+        "FOR": 18,
+        "CON": 16,
+        "DES": 14,
+        "SAB": 14,
+        "CAR": 14,
+        "INT": 9
+      },
+      "pvMax": 19,
+      "pvRolagens": [
+        "NV 1: d10 máximo = 10 +3 CON = 13 PV",
+        "NV 2: d10 = 3 +3 CON = +6 PV"
+      ],
+      "visual": {
+        "pele": "#b4aca0",
+        "cabelo": "#c8902e",
+        "estiloCabelo": "rabo",
+        "barba": "",
+        "olho": "#5a5a6a",
+        "marca": "tatuagem",
+        "roupa": "#4e5a6a",
+        "roupa2": "#c09a2e",
+        "couro": "#3e2e26",
+        "metal": "#c0a060",
+        "cabeca": "elmoChifres",
+        "pluma": "#3a5ac8",
+        "corpo": "placas",
+        "tabardo": false,
+        "ombreiras": true,
+        "capa": "#4e5a6a",
+        "peleOmbros": false,
+        "arma": "montante",
+        "escudo": "",
+        "brasao": "#c83a3a",
+        "orbe": "",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#e8701e",
+        "altura": 1.1
+      },
+      "vitorias": 1,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          6,
+          2,
+          5,
+          4
+        ],
+        [
+          1,
+          3,
+          3,
+          3
+        ],
+        [
+          1,
+          6,
+          5,
+          3
+        ],
+        [
+          5,
+          3,
+          3,
+          6
+        ],
+        [
+          6,
+          3,
+          5,
+          5
+        ],
+        [
+          4,
+          6,
+          3,
+          4
+        ]
+      ],
+      "antecedente": "+2 FOR / +1 CON"
+    },
+    {
+      "nome": "Oona Galhoverde",
+      "especie": "GNOMO",
+      "classe": "BRUXO",
+      "nivel": 2,
+      "atributos": {
+        "CAR": 18,
+        "CON": 13,
+        "DES": 11,
+        "SAB": 10,
+        "INT": 9,
+        "FOR": 9
+      },
+      "pvMax": 13,
+      "pvRolagens": [
+        "NV 1: d8 máximo = 8 +1 CON = 9 PV",
+        "NV 2: d8 = 3 +1 CON = +4 PV"
+      ],
+      "visual": {
+        "pele": "#8c6040",
+        "cabelo": "#8a5a2e",
+        "estiloCabelo": "curto",
+        "barba": "",
+        "olho": "#2a2a3a",
+        "marca": "tatuagem",
+        "roupa": "#4a1e2e",
+        "roupa2": "#2f6a3a",
+        "couro": "#3e2e26",
+        "metal": "#c0a060",
+        "cabeca": "capuz",
+        "pluma": "",
+        "corpo": "manto",
+        "tabardo": false,
+        "ombreiras": false,
+        "capa": "",
+        "peleOmbros": false,
+        "arma": "adaga",
+        "escudo": "",
+        "brasao": "#e8c040",
+        "orbe": "#a24ae0",
+        "aljava": false,
+        "mascara": false,
+        "magia": "#a24ae0",
+        "altura": 0.8
+      },
+      "vitorias": 0,
+      "itens": [],
+      "autor": "",
+      "descricao": "",
+      "rolagens": [
+        [
+          5,
+          4,
+          6,
+          5
+        ],
+        [
+          2,
+          2,
+          5,
+          1
+        ],
+        [
+          3,
+          4,
+          3,
+          4
+        ],
+        [
+          2,
+          2,
+          3,
+          5
+        ],
+        [
+          4,
+          2,
+          3,
+          1
+        ],
+        [
+          2,
+          4,
+          3,
+          5
+        ]
+      ],
+      "antecedente": "+2 CAR / +1 CON"
+    }
+  ],
+  "nivelMinimo": 5,
+  "textos": {
+    "escolha": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta": "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!"
+  },
+  "audio": "arena/epL03.wav",
+  "versao": 4,
+  "focoCampeao": "forte",
+  "arena": "calabouco",
+  "centro": "livre"
+}

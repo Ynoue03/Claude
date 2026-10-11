@@ -47,6 +47,7 @@ do próximo); nenhuma regra muda por causa do tempo.
 | --- | --- |
 | `numero` | número do episódio (ARENA D20 #N) |
 | `nivelInicial` / `itemInicial` | todos começam no nível N (subindo com rolagens) e com 1 item da classe; o chefe se fortalece junto (PV × 1 + 0,125/nível, +1 acerto/nível, dano × 1 + 0,25/nível, CD +1 a cada 2 níveis; heróis o tratam como um herói de PV médio) — Dragão vs 16 nv 5 com item vence ~45% |
+| `veteranos` / `nivelMinimo` | luta só com fichas salvas (LENDAS); quem estiver abaixo de `nivelMinimo` sobe até ele com rolagens (LENDAS: 5) |
 | `serie` | ordem: sem o campo = A; `"B"`, `"C"`… recomeçam do 1 sem campeão (ARENA D20 B #1); arquivos com código `B01`; nomes únicos entre as ordens (A = sequência do ep. 1, B = do 61, C = do 121) |
 | `seed` | texto da seed; `""` = escolhida automaticamente pelo ritmo |
 | `perfil` | @ do CTA (`@SuaArenaD20`) |

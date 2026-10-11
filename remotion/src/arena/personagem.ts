@@ -464,6 +464,7 @@ export type Episodio = {
   numero: number;
   veteranos?: FichaCampeao[]; // luta só com personagens salvos (ex.: LENDAS: todos que já subiram de nível)
   nivelInicial?: number; // todos os sorteados começam neste nível (sobem do 1 com rolagens de verdade); padrão 1
+  nivelMinimo?: number; // luta de veteranos: quem estiver abaixo sobe até este nível (rolagens de verdade)
   itemInicial?: boolean; // cada sorteado começa com 1 item (d30, só da sua classe)
   chefePv?: number; // multiplica os PV do chefe (padrão: cresce com o nível inicial dos heróis)
   serie?: string; // ordem da série: "A" (padrão, eps. 1–12…) ou "B", "C"… — cada ordem recomeça do episódio 1
@@ -521,6 +522,19 @@ const deFicha = (f: FichaCampeao, campeao: boolean): Lutador => {
   };
 };
 
+// sobe o lutador até o nível pedido, cada nível com dado de vida rolado (como a subida do campeão)
+const subirAte = (l: Lutador, nivel: number, rng: Rng) => {
+  if (l.nivel >= nivel) return;
+  while (l.nivel < nivel) {
+    const s = subirNivel(l, rng);
+    l.nivel = s.para;
+    l.atributos = { ...s.atributosDepois };
+    l.pvMax = s.pvDepois;
+    l.pvRolagens = s.ficha.pvRolagens ?? l.pvRolagens;
+  }
+  [l.ca, l.caDesc] = calcularCA(l.classe, l.visual, l.atributos);
+};
+
 export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng } => {
   const rng = new Rng(ep.seed);
   // luta de veteranos: só personagens salvos de episódios anteriores, cada um com nível, atributos, PV e itens
@@ -529,6 +543,7 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
     const fichas = ep.campeaoAnterior ? [deFicha(ep.campeaoAnterior, true), ...ep.veteranos.filter((f) => f.nome !== ep.campeaoAnterior!.nome).map((f) => deFicha(f, false))] : ep.veteranos.map((f) => deFicha(f, false));
     const lutadores = rng.shuffle(fichas);
     lutadores.forEach((l, i) => (l.id = i));
+    if (ep.nivelMinimo) for (const l of lutadores) subirAte(l, Math.min(NIVEL_MAX, ep.nivelMinimo), rng);
     return { lutadores, rng };
   }
   const camp = ep.campeaoAnterior;
@@ -616,17 +631,7 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
   // ordens que começam mais fortes: os sorteados sobem até o nível inicial (cada nível com dado de vida rolado,
   // como a subida do campeão) e recebem um item da sua classe
   const nivel0 = Math.max(1, Math.min(NIVEL_MAX, ep.nivelInicial ?? 1));
-  if (nivel0 > 1)
-    for (const l of lutadores) {
-      while (l.nivel < nivel0) {
-        const s = subirNivel(l, rng);
-        l.nivel = s.para;
-        l.atributos = { ...s.atributosDepois };
-        l.pvMax = s.pvDepois;
-        l.pvRolagens = s.ficha.pvRolagens ?? l.pvRolagens;
-      }
-      [l.ca, l.caDesc] = calcularCA(l.classe, l.visual, l.atributos);
-    }
+  if (nivel0 > 1) for (const l of lutadores) subirAte(l, nivel0, rng);
   if (ep.itemInicial)
     for (const l of lutadores) {
       const distancia = CLASSES[l.classe].distancia || l.arma.distancia;

@@ -254,6 +254,9 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
   campeões, quem derrubou um campeão e quem derrotou um chefe — cada um no estado mais recente (nível, atributos, PV e
   itens). Campo `veteranos` do JSON com as fichas. Sem campeão anterior, sem foco; o placar ganha linhas se passar de 16.
 - Na ordem C só contam os que subiram na luta (os demais já começaram no nível 5).
+- **Nível mínimo 5** (desde LENDAS #3, campo `nivelMinimo: 5`): quem estiver abaixo sobe até o nível 5 antes da luta,
+  cada nível com dado de vida rolado e melhorias de atributo, como a subida do campeão. Quem já está acima entra como está.
+  O campeão da luta de lendas anterior volta com coroa e foco "forte".
 
 ## 18e. Magias de círculo alto (versão 4)
 
@@ -335,3 +338,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 26 | Batalha com todos que já saíram do nível 1 | LENDAS #1: 17 veteranos (A, B e C), Korrin Mantonegro vence com 6 abates (nível 8) |
 | 27 | Feitiços de nível alto usados com mais frequência que os de nível baixo | versão 4: 9 magias de 2º/3º círculo na luta, prioridade pelo maior círculo disponível; Dragão vs nível 5 continua ~50% |
 | 28 | Ep novo das lendas | LENDAS #2 (floresta, versão 4): Korrin volta como campeão (nv 8) e cai para Orrin Ventolargo; Mirela Ossovelho vence (nv 7) |
+| 29 | Nas lendas, nível mínimo 5 para todos | campo `nivelMinimo`; LENDAS #3 (calabouço, versão 4): todos no nível 5+ e Mirela Ossovelho defende o título |
