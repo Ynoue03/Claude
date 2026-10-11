@@ -1,7 +1,7 @@
 // Sprites procedurais dos lutadores (48×64), retratos 96×64 (cut-in/pergaminho) e 16×16 (HUD).
 // Tudo desenhado do zero em código: corpo chibi de ~2,5 cabeças, peças por classe, 7 expressões.
 import { Tela, rampa, novoCanvas, tomVol, tomCil, tomFixo, variar } from "./pixel.ts";
-import { quadroChefe, retratoChefe, miniChefe, CABECA, CX, CY } from "./chefes-arte.ts";
+import { quadroChefe, retratoChefe, miniChefe, cabecaChefe, CX, CY } from "./chefes-arte.ts";
 export const ESCALA_CHEFE = 3; // o chefe no mundo: 3× o desenho de 112×112
 import type { Rampa, Tom, OpForma } from "./pixel.ts";
 import type { Lutador, Visual } from "./personagem.ts";
@@ -1569,7 +1569,7 @@ export const mini = (l: Lutador, expr: Expr, cinza = false): HTMLCanvasElement =
 };
 
 // altura da cabeça medida como num herói (âncora PE_Y): o chefe usa a cabeça do desenho dele
-export const alturaCabeca = (l: Lutador) => (l.boss ? (CABECA[l.boss].y - CY) * ESCALA_CHEFE + PE_Y : geo(l.visual, P0).hcy);
+export const alturaCabeca = (l: Lutador) => (l.boss ? (cabecaChefe(l.boss).y - CY) * ESCALA_CHEFE + PE_Y : geo(l.visual, P0).hcy);
 // âncora (pés) dentro do quadro devolvido por quadro()
 export const ancora = (l: Lutador) => (l.boss ? { x: CX * ESCALA_CHEFE, y: CY * ESCALA_CHEFE } : { x: PE_X, y: PE_Y });
 export const corClasse = (l: Lutador) => l.visual.magia;

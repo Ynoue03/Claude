@@ -140,3 +140,17 @@ Fontes das opções gratuitas: [Animated pixel minotaur — CC0 (rvros)](https:/
 - [Sorceress — AI pixel sprite generator](https://sorceress.games/blog/drop-in-an-ai-pixel-sprite-generator-no-aseprite)
 - Aseprite MCP: [rkdfx/aseprite-mcp](https://github.com/rkdfx/aseprite-mcp) · [willibrandon/pixel-mcp](https://pkg.go.dev/github.com/willibrandon/pixel-mcp) · [diivi/aseprite-mcp](https://cdn.jsdelivr.net/gh/diivi/aseprite-mcp@main/README.md) · [AsepriteMCP (sakamoro)](https://mcpservers.org/en/servers/ext-sakamoro/AsepriteMCP)
 - Pacotes: [Minotaurs 2D (itch.io)](https://free-game-assets.itch.io/minotaurs-2d-game-character-sprite-sheet) · [Animated pixel minotaur (itch.io)](https://rvros.itch.io/animated-pixel-minotaur) · [Minotaur 2 (OpenGameArt)](https://opengameart.org/content/minotaur-2) · [Licenças da CraftPix (citado em itch.io)](https://itch.io/post/1613473)
+
+## 6. Piloto feito (gratuito): Minotauro pelo Canva
+
+1. `generate-image` do Canva com o pedido em inglês (vista de lado, pixel art 16-bit, fundo verde liso #00FF00) →
+   `arena-d20/chefes-ia/minotauro-canva.jpg` (o conector entrega 200×200, suficiente para o tamanho final).
+2. `python3 remotion/scripts/pixelizar.py entrada.jpg arena-d20/chefes-ia/minotauro.png 140 20` — tira o verde,
+   reduz para 140 px de altura, 20 cores, contorno escuro de 1 px.
+3. `python3 remotion/scripts/chefes-sprites.py` — gera `remotion/src/arena/chefes-sprites.ts` (paleta + índices).
+4. O motor usa o sprite quando ele existe (2 px do mundo por pixel); senão, o desenho em código. Animação por
+   deformação: balanço, passo, inclinação/avanço no ataque, recuo no dano, rugido, desabar na morte.
+
+Para os outros chefes: repetir 1–3 com o nome do chefe e acrescentar a posição da cabeça em `CABECA` no
+`chefes-sprites.py`.
+
