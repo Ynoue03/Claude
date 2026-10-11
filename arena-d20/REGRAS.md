@@ -257,6 +257,9 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 - **Nível mínimo 5** (desde LENDAS #3, campo `nivelMinimo: 5`): quem estiver abaixo sobe até o nível 5 antes da luta,
   cada nível com dado de vida rolado e melhorias de atributo, como a subida do campeão. Quem já está acima entra como está.
   O campeão da luta de lendas anterior volta com coroa e foco "forte".
+- O nível ganho fica salvo: cada lenda volta no próximo episódio com a ficha com que entrou (ou a de quando subiu).
+  Lista pronta: `cd remotion && node scripts/veteranos.ts lista.json` (campo `veteranos`).
+- Acima do nível 10 o personagem continua subindo, mas só ganha PV (as tabelas de poderes vão até o 10).
 
 ## 18e. Magias de círculo alto (versão 4)
 
@@ -350,3 +353,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 28 | Ep novo das lendas | LENDAS #2 (floresta, versão 4): Korrin volta como campeão (nv 8) e cai para Orrin Ventolargo; Mirela Ossovelho vence (nv 7) |
 | 29 | Nas lendas, nível mínimo 5 para todos | campo `nivelMinimo`; LENDAS #3 (calabouço, versão 4): todos no nível 5+ e Mirela Ossovelho defende o título |
 | 30 | A invisibilidade não funcionava (continuavam batendo no invisível) | versão 5: ninguém mira em quem está invisível; LENDAS #3 refeito |
+| 31 | Próximas 5 batalhas, uma de cada vez | LENDAS #4–#8 (versão 5): Korrin vence o #4, #6 e #8 (chega ao nível 11), Nessa vence o #5, Mirela vence o #7 |
