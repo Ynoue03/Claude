@@ -1,0 +1,87 @@
+[
+  {
+    "nome": "Pike Valeclaro",
+    "classe": "BARBARO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Korrin Mantonegro",
+    "classe": "BARBARO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Zara Pontavento",
+    "classe": "PALADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Oona Galhoverde",
+    "classe": "BRUXO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Tobias Cinzafria",
+    "classe": "FEITICEIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Grom Rubrafonte",
+    "classe": "PALADINO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Yara Ferrocinza",
+    "classe": "GUERREIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Rhea Ouroverde",
+    "classe": "DRUIDA",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Talia Águaclara",
+    "classe": "MONGE",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Nessa Solposto",
+    "classe": "PATRULHEIRO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Mirela Ossovelho",
+    "classe": "LADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Yara Rubrafonte",
+    "classe": "GUERREIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Soren Rocharrubra",
+    "classe": "DRUIDA",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Orrin Ventolargo",
+    "classe": "PATRULHEIRO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Elowen Ouroverde",
+    "classe": "BRUXO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Wren",
+    "classe": "PALADINO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Liora Corvonegro",
+    "classe": "PATRULHEIRO",
+    "especie": "HALFLING"
+  }
+]
