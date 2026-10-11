@@ -2,6 +2,7 @@
 // Tudo desenhado do zero em código: corpo chibi de ~2,5 cabeças, peças por classe, 7 expressões.
 import { Tela, rampa, novoCanvas, tomVol, tomCil, tomFixo, variar } from "./pixel.ts";
 import { quadroChefe, retratoChefe, miniChefe, cabecaChefe, CX, CY } from "./chefes-arte.ts";
+import { CHEFES } from "./chefes.ts";
 export const ESCALA_CHEFE = 3; // o chefe no mundo: 3× o desenho de 112×112
 import type { Rampa, Tom, OpForma } from "./pixel.ts";
 import type { Lutador, Visual } from "./personagem.ts";
@@ -1488,8 +1489,28 @@ const renderizar = (l: Lutador, fq: Quadro): HTMLCanvasElement => {
   return canvas;
 };
 
+// chefe-personagem (Sir Aldric): desenhado como herói, ampliado 3× (Forma Grande do Golias)
+const ESC_HEROI = 3;
+const heroiChefe = (l: Lutador) => !!(l.boss && CHEFES[l.boss].heroi);
+const ampliados = new Map<HTMLCanvasElement, HTMLCanvasElement>();
+const ampliar = (cv: HTMLCanvasElement) => {
+  let g = ampliados.get(cv);
+  if (!g) {
+    g = novoCanvas(cv.width * ESC_HEROI, cv.height * ESC_HEROI);
+    const ctx = g.getContext("2d")!;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(cv, 0, 0, g.width, g.height);
+    ampliados.set(cv, g);
+  }
+  return g;
+};
+
 export const quadro = (l: Lutador, fq: Quadro): HTMLCanvasElement => {
-  if (l.boss) return quadroChefe(l.boss, fq.anim, fq.q, fq.dir === "W" ? "W" : "E", ESCALA_CHEFE);
+  if (l.boss && !heroiChefe(l)) return quadroChefe(l.boss, fq.anim, fq.q, fq.dir === "W" ? "W" : "E", ESCALA_CHEFE);
+  if (heroiChefe(l)) return ampliar(quadroHeroi(l, fq));
+  return quadroHeroi(l, fq);
+};
+const quadroHeroi = (l: Lutador, fq: Quadro): HTMLCanvasElement => {
   let m = caches.get(l.id);
   if (!m) {
     m = new Map();
@@ -1507,7 +1528,7 @@ export const quadro = (l: Lutador, fq: Quadro): HTMLCanvasElement => {
 // retrato grande 96×64 (cut-in e pergaminho)
 const retratos = new Map<string, HTMLCanvasElement>();
 export const retrato = (l: Lutador, expr: Expr): HTMLCanvasElement => {
-  if (l.boss) return retratoChefe(l.boss);
+  if (l.boss && !heroiChefe(l)) return retratoChefe(l.boss);
   const chave = `${l.id}|${expr}`;
   const r0 = retratos.get(chave);
   if (r0) return r0;
@@ -1550,9 +1571,9 @@ export const mini = (l: Lutador, expr: Expr, cinza = false): HTMLCanvasElement =
   if (m0) return m0;
   const cv = novoCanvas(16, 16);
   const ctx = cv.getContext("2d")!;
-  if (l.boss) ctx.drawImage(miniChefe(l.boss), 0, 0);
+  if (l.boss && !heroiChefe(l)) ctx.drawImage(miniChefe(l.boss), 0, 0);
   else {
-    const sp = quadro(l, { anim: "idle", q: 0, dir: "S", expr, rasgado: expr === "pvbaixo" });
+    const sp = quadroHeroi(l, { anim: "idle", q: 0, dir: "S", expr, rasgado: expr === "pvbaixo" });
     const g = geo(l.visual, P0);
     ctx.drawImage(sp, PE_X - 8, g.hcy - 7, 16, 16, 0, 0, 16, 16);
   }
@@ -1569,7 +1590,8 @@ export const mini = (l: Lutador, expr: Expr, cinza = false): HTMLCanvasElement =
 };
 
 // altura da cabeça medida como num herói (âncora PE_Y): o chefe usa a cabeça do desenho dele
-export const alturaCabeca = (l: Lutador) => (l.boss ? (cabecaChefe(l.boss).y - CY) * ESCALA_CHEFE + PE_Y : geo(l.visual, P0).hcy);
+export const alturaCabeca = (l: Lutador) => (heroiChefe(l) ? (geo(l.visual, P0).hcy - PE_Y) * ESC_HEROI + PE_Y : l.boss ? (cabecaChefe(l.boss).y - CY) * ESCALA_CHEFE + PE_Y : geo(l.visual, P0).hcy);
 // âncora (pés) dentro do quadro devolvido por quadro()
-export const ancora = (l: Lutador) => (l.boss ? { x: CX * ESCALA_CHEFE, y: CY * ESCALA_CHEFE } : { x: PE_X, y: PE_Y });
+export const ancora = (l: Lutador) => (heroiChefe(l) ? { x: PE_X * ESC_HEROI, y: PE_Y * ESC_HEROI } : l.boss ? { x: CX * ESCALA_CHEFE, y: CY * ESCALA_CHEFE } : { x: PE_X, y: PE_Y });
+export { heroiChefe };
 export const corClasse = (l: Lutador) => l.visual.magia;

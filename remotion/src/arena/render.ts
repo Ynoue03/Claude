@@ -388,6 +388,24 @@ export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
     const b = r.lutadores[i].boss;
     sombra(ctx, e.x, e.y, k * (b ? CHEFES[b].raio / 7 : 1) * (e.anim === "derrota" && e.q >= 2 ? 1.4 : 1));
   }
+  // Auréola Profana do chefe-personagem: anel roxo no chão (alcance da aura)
+  for (const { e, i } of ordem) {
+    const b = r.lutadores[i].boss;
+    const hc = b ? CHEFES[b].heroi : undefined;
+    if (!hc || e.morto || e.caindo > 0) continue;
+    const rr = hc.aura.alcance + CHEFES[b!].raio;
+    ctx.save();
+    ctx.globalAlpha = 0.16 + 0.06 * Math.sin(s * 0.3);
+    ctx.fillStyle = "#6a2aa8";
+    ctx.beginPath();
+    ctx.ellipse(e.x, e.y, rr, rr * 0.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = "#b070f0";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+  }
   // coluna de luz dourada do vencedor (atrás)
   if (v >= V.vitoria && v < r.fases.pergaminho + 10) colunaLuz(ctx, estados[r.vencedor].x, estados[r.vencedor].y, v - V.vitoria);
 
@@ -674,7 +692,7 @@ const barraPv = (ctx: Ctx, x: number, y: number, w: number, frac: number) => {
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.fillRect(x, y, Math.max(0, Math.round(w * clamp(frac, 0, 1))), 1);
 };
-const COR_COND: Record<string, string> = { FÚR: "#ff7a3a", MRC: "#b8f060", CNC: "#ffffff", ESC: "#7ae8f0", LNT: "#9ad8ff", ATD: "#ffd84a", INV: "#c8a0ff" };
+const COR_COND: Record<string, string> = { MED: "#b070f0", FÚR: "#ff7a3a", MRC: "#b8f060", CNC: "#ffffff", ESC: "#7ae8f0", LNT: "#9ad8ff", ATD: "#ffd84a", INV: "#c8a0ff" };
 const etiqueta = (ctx: Ctx, x: number, y: number, c: string) => {
   const w = larguraTexto(c, "p") + 2;
   ctx.fillStyle = TINTA;
@@ -756,7 +774,7 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
   texto(ui, v < V.batalha ? `VIVOS ${r.lutadores.length}` : `RODADA ${rodada} · VIVOS ${vivos}`, W - 34, y0 + 9, { cor: "#ffffff", contorno: TINTA, alinhar: "dir" });
   const ativos = new Set(r.turnos.filter((t) => s >= t.t0 && s < t.t1).map((t) => t.ator));
   r.lutadores.forEach((l, i) => {
-    if (l.boss) return barraChefe(ui, l, estados[i], v >= POUSO(i), s >= r.morte[i], ativos.has(i) && Math.floor(v / 3) % 2 === 0);
+    if (l.boss) return barraChefe(ui, l, estados[i], v >= POUSO(i), s >= r.morte[i], ativos.has(i) && Math.floor(v / 3) % 2 === 0, Math.max(168, y0 + alt + 3));
     const col = i % 4,
       row = Math.floor(i / 4);
     const x = 32 + col * 74,
@@ -796,9 +814,8 @@ const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
 };
 
 // barra de vida do chefe (embaixo do HUD)
-const barraChefe = (ui: Ctx, l: Lutador, e: EstadoL, visivel: boolean, morto: boolean, ativo: boolean) => {
+const barraChefe = (ui: Ctx, l: Lutador, e: EstadoL, visivel: boolean, morto: boolean, ativo: boolean, y = 168) => {
   if (!visivel) return;
-  const y = 168;
   ui.fillStyle = "rgba(10,8,16,0.82)";
   ui.fillRect(28, y, W - 56, 20);
   ui.fillStyle = ativo ? DOURADO : "#7a1e22";
@@ -808,7 +825,8 @@ const barraChefe = (ui: Ctx, l: Lutador, e: EstadoL, visivel: boolean, morto: bo
   ui.fillRect(32, y + 2, 16, 16);
   ui.drawImage(mini(l, "neutra", morto), 32, y + 2);
   texto(ui, l.nome.toUpperCase(), 52, y + 3, { cor: morto ? "#6a6470" : VERMELHO, contorno: TINTA });
-  texto(ui, "CHEFE", 52, y + 12, { cor: "#c8c0b8", fonte: "p" });
+  const hc = l.boss ? CHEFES[l.boss].heroi : undefined;
+  texto(ui, hc ? `${CLASSES[l.classe].nome.toUpperCase()} ${l.nivel}` : "CHEFE", 52, y + 12, { cor: "#c8c0b8", fonte: "p" });
   const bx = 52 + Math.max(larguraTexto(l.nome.toUpperCase()), 30) + 8,
     bw = W - 34 - bx;
   const frac = morto ? 0 : clamp(e.pv / e.pvMax, 0, 1);
@@ -1040,8 +1058,9 @@ const telaVs = (ui: Ctx, r: Roteiro, k: number, estados: EstadoL[]) => {
     texto(ui, prim, tx, y0 + 26, { cor: "#ffffff", contorno: TINTA, escala: 2 });
     if (resto.length) texto(ui, resto.join(" "), tx, y0 + 43, { cor: "#ffffff", contorno: TINTA });
     const nvAgora = valorEm(r.niveis[i], r.sDuelo)?.nivel ?? l.nivel;
-    texto(ui, l.boss ? "CHEFE" : `${classeTxt(l)} NV${nvAgora}`, tx, y0 + 54, { cor: l.boss ? VERMELHO : DOURADO, contorno: TINTA });
-    texto(ui, l.boss ? "CRIATURA LENDÁRIA" : ESPECIES[l.especie].nome.toUpperCase(), tx, y0 + 65, { cor: "#c8c0b8", contorno: TINTA });
+    const hc = l.boss ? CHEFES[l.boss].heroi : undefined;
+    texto(ui, hc ? `CHEFE · ${CLASSES[l.classe].nome.toUpperCase()} NV${l.nivel}` : l.boss ? "CHEFE" : `${classeTxt(l)} NV${nvAgora}`, tx, y0 + 54, { cor: l.boss ? VERMELHO : DOURADO, contorno: TINTA });
+    texto(ui, hc ? `${ESPECIES[l.especie].nome.toUpperCase()} · ${hc.titulo}` : l.boss ? "CRIATURA LENDÁRIA" : ESPECIES[l.especie].nome.toUpperCase(), tx, y0 + 65, { cor: "#c8c0b8", contorno: TINTA });
     texto(ui, `PV ${e.pv}/${e.pvMax}`, tx, y0 + 78, { cor: "#6aff7a", contorno: TINTA });
     texto(ui, `CA ${l.ca}`, tx, y0 + 90, { cor: "#9ad8ff", contorno: TINTA });
     texto(ui, `ABATES ${r.sim.stats[i].abates}`, tx, y0 + 102, { cor: "#ff9a6a", contorno: TINTA });
@@ -1195,7 +1214,8 @@ const pergaminho = (ui: Ctx, r: Roteiro, v: number) => {
       const esc = larguraTexto(l.nome.toUpperCase(), "g", 2) > 180 ? 1 : 2;
       texto(ui, l.nome.toUpperCase(), 146, 98, { cor: TINTA_P, escala: esc });
       if (l.boss) {
-        texto(ui, "CHEFE · CRIATURA LENDÁRIA", 146, 118, { cor: "#8a1e1e" });
+        const hc = CHEFES[l.boss].heroi;
+        texto(ui, hc ? `CHEFE · ${hc.titulo} NV${l.nivel}` : "CHEFE · CRIATURA LENDÁRIA", 146, 118, { cor: "#8a1e1e" });
         texto(ui, "INVICTO NA ARENA", 146, 134, { cor: TINTA_P });
         texto(ui, CHEFES[l.boss].fonte.toUpperCase(), 146, 148, { cor: "#6a4428", fonte: "p" });
       } else {
@@ -1318,7 +1338,8 @@ const cta = (ui: Ctx, r: Roteiro, t: number) => {
   ui.globalAlpha = a;
   const l = r.lutadores[r.vencedor];
   const sp = quadro(l, { anim: "vitoria", q: Math.floor(t / 6) % 4, dir: "S", expr: "vitoria", rasgado: false });
-  if (l.boss) ui.drawImage(quadroChefe(l.boss, "vitoria", Math.floor(t / 6) % 4, "E"), W / 2 - 112, 248 - 212, 224, 224);
+  if (l.boss && CHEFES[l.boss].heroi) ui.drawImage(sp, W / 2 - 72, 56, 144, 192);
+  else if (l.boss) ui.drawImage(quadroChefe(l.boss, "vitoria", Math.floor(t / 6) % 4, "E"), W / 2 - 112, 248 - 212, 224, 224);
   else {
     ui.drawImage(sp, W / 2 - 48, 120, 96, 128);
     coroa(ui, W / 2, 120 + (alturaCabeca(l) - 14) * 2);

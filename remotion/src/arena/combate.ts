@@ -224,6 +224,7 @@ type Est = {
   guardioes: boolean; // clérigo: Guardiões Espirituais ativos (versão 4)
   armaEspiritual: boolean; // clérigo: Arma Espiritual invocada (versão 4)
   lento: boolean;
+  medo: number; // turnos com medo (Abjurar Inimigos): desvantagem e não ataca quem o assustou
   desvantagem: boolean;
   vantagemContra: boolean;
   marcadoPor: Set<number>;
@@ -294,15 +295,18 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       conc: null,
       escudo: false,
       lento: false,
+      medo: 0,
       desvantagem: false,
       vantagemContra: false,
       marcadoPor: new Set(),
       amaldicoadoPor: new Set(),
       stats: { abates: 0, dano: 0, criticos: 0, menorPv: l.pvMax, golpeFinal: "", derrubados: [], derrubadoPor: "", primeiroCritico: "", curou: 0 },
     };
-    // chefe não usa recursos de classe nem de espécie
+    // chefe não usa recursos de classe nem de espécie (o chefe-personagem usa os da ficha dele)
     if (l.boss) {
       Object.assign(e, { furiaUsos: 0, folego: 0, surto: 0, curaMaos: 0, sopro: 0, inspiracao: false, implacavel: false, pedra: 0, adrenalina: 0, inata: 0, foco: 0, centelha: 0, slots: [] });
+      const h = CHEFES[l.boss].heroi;
+      if (h) Object.assign(e, { prof: h.prof, slots: [...h.slots], curaMaos: h.curaMaos, pedra: l.especie === "GOLIAS" ? h.prof : 0 });
     }
     // Mago lança Armadura Arcana antes da luta (gasta 1 espaço de 1º círculo).
     if (l.classe === "MAGO" && e.slots[0] > 0) e.slots[0]--;
@@ -339,7 +343,8 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
   const podeCorpo = (e: Est) => e.vivo;
   // chefes têm corpo maior: alcance, contato e espaço em volta crescem com o raio deles
   // heróis fortes (nível inicial > 1): o chefe pesa na escolha como um herói de PV médio, senão os 16 só batem nele
-  const nivelChefe = lutadores.find((l) => l.boss)?.bossNivel ?? 1;
+  const chefeL = lutadores.find((l) => l.boss);
+  const nivelChefe = chefeL ? (CHEFES[chefeL.boss!].heroi ? 2 : (chefeL.bossNivel ?? 1)) : 1; // chefe-personagem conta como forte
   const herois = lutadores.filter((l) => !l.boss);
   const pesoChefeForte = nivelChefe > 1 ? (PESO_CHEFE_FORTE * herois.reduce((t, l) => t + l.pvMax, 0)) / herois.length : 0;
   const tam = (e: Est) => (e.l.boss ? CHEFES[e.l.boss].raio : 0);
@@ -574,6 +579,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     if (alvo.invisivel > 0) d++; // …e é atacado com desvantagem
     if (magia && a.inataAtiva) v++;
     if (a.desvantagem) d++;
+    if (a.medo > 0) d++; // com medo
     if (distancia && ameacas(a).length > 0) d++;
     if (a.l.classe === "BARBARO" && a.nivel >= 2 && !distancia) v++; // Ataque Descuidado
     if (alvo.l.classe === "BARBARO" && alvo.nivel >= 2) v++; // ...e quem ataca o bárbaro descuidado também tem vantagem
@@ -705,15 +711,23 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
         extraTxt += " + fúria 2";
       }
       // Destruição Divina (paladino nível 2+)
-      if (a.l.classe === "PALADINO" && a.nivel >= 2 && !op.distancia && !op.magia && a.slots.some((s) => s > 0) && (critico || alvo.pv <= 18)) {
-        const i = a.slots.findIndex((s) => s > 0);
+      const caido = !!(a.l.boss && CHEFES[a.l.boss].heroi);
+      // Golpes Radiantes (paladino nível 11): +1d8 em todo golpe corpo a corpo — no paladino caído, necrótico
+      if (a.l.classe === "PALADINO" && a.nivel >= 11 && !op.distancia && !op.magia) {
+        const f = rolarDano(a, caido ? "Golpes Sombrios" : "Golpes Radiantes", 1, 8, critico);
+        total2 += f.total;
+        extraTxt += ` + ${caido ? "sombrio" : "radiante"} ${f.txt}=${f.total}`;
+      }
+      if (a.l.classe === "PALADINO" && a.nivel >= 2 && !op.distancia && !op.magia && a.slots.some((s) => s > 0) && (critico || alvo.pv <= 18 || (caido && rng.next() < 0.35))) {
+        // o paladino caído gasta o maior espaço que ainda tiver
+        const i = caido ? a.slots.length - 1 - [...a.slots].reverse().findIndex((s) => s > 0) : a.slots.findIndex((s) => s > 0);
         a.slots[i]--;
         const f = rolarDano(a, "Destruição Divina", 2 + i, 8, critico);
         total2 += f.total;
         extraTxt += ` + destruição ${f.txt}=${f.total}`;
-        b.nome = "DESTRUIÇÃO DIVINA";
-        b.cor = COR_DANO.radiante;
-        b.fx = "fulgor";
+        b.nome = caido ? "DESTRUIÇÃO SOMBRIA" : "DESTRUIÇÃO DIVINA";
+        b.cor = caido ? COR_DANO.necrotico : COR_DANO.radiante;
+        b.fx = caido ? "bruxaria" : "fulgor";
         b.especial = Math.max(b.especial, 1) as 1;
       }
       // itens que somam dano
@@ -814,11 +828,12 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       const vant = (alvo.l.especie === "GNOMO" && mental) || sentido || alvo.itens.has("elmoMente") ? 1 : 0;
       const profS = CLASSES[alvo.l.classe].salvaguardas.includes(op.atributo) ? alvo.prof : 0;
       const s = rolarD20(alvo, `salvaguarda de ${op.atributo} contra ${op.nome}`, vant);
-      const tot = s.v + m(alvo, op.atributo) + profS;
+      const auraP = alvo.l.boss ? (CHEFES[alvo.l.boss].heroi?.bonusSalv ?? 0) : 0; // Aura de Proteção
+      const tot = s.v + m(alvo, op.atributo) + profS + auraP;
       const passou = tot >= CD;
       const res = novoRes(alvo, passou ? "salvou" : "falhou");
       const dano = passou ? (op.metade ? Math.floor(total / 2) : 0) : total;
-      log(`    ${alvo.l.nome}: d20 ${s.dados.join("/")} ${fmt(m(alvo, op.atributo) + profS)} = ${tot} → ${passou ? "SALVOU" : "falhou"} (${dano} de dano)`);
+      log(`    ${alvo.l.nome}: d20 ${s.dados.join("/")} ${fmt(m(alvo, op.atributo) + profS + auraP)} = ${tot} → ${passou ? "SALVOU" : "falhou"} (${dano} de dano)`);
       if (passou) res.textos.push("SALVOU");
       if (dano > 0) aplicarDano(a, alvo, dano, op.tipo, op.nome, res, b);
       op.extra?.(alvo, res, !passou, b);
@@ -937,7 +952,9 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     const todos = inimigos(a);
     if (!todos.length) return undefined;
     // ninguém mira em quem está invisível (a não ser que só sobre ele)
-    const visiveis = todos.filter((o) => o.invisivel <= 0);
+    let visiveis = todos.filter((o) => o.invisivel <= 0);
+    // com medo (Abjurar Inimigos) ninguém vai para cima de quem o assustou
+    if (a.medo > 0 && visiveis.some((o) => !o.l.boss)) visiveis = visiveis.filter((o) => !o.l.boss);
     const ini = visiveis.length ? visiveis : todos;
     let melhor: Est | undefined;
     let ms = Infinity;
@@ -1225,6 +1242,10 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
       if (a.desvantagem) {
         a.desvantagem = false;
         batidas.push({ k: "estado", cond: [{ id: a.id, del: "ZMB" }] });
+      }
+      if (a.medo > 0) {
+        a.medo--;
+        if (a.medo === 0) batidas.push({ k: "estado", cond: [{ id: a.id, del: "MED" }] });
       }
       turnos.push(turnoAtual);
     }
@@ -1597,6 +1618,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     void bonusUsada;
   };
 
+  let auraRodada = -1; // rodada em que a aura do chefe-personagem já queimou
   // ─── turno do chefe: move, usa o especial quando carregado e ataca várias vezes ───
   const jogarTurnoChefe = (a: Est, rodada: number) => {
     const c = fichaChefe(a.l.boss!, a.l.bossNivel ?? 1);
@@ -1624,6 +1646,34 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     };
     const ini = inimigos(a);
     if (!ini.length) return fim();
+    // chefe-personagem (Sir Aldric): aura no começo do turno (uma vez por rodada) e Cura pelas Mãos
+    const h = CHEFES[a.l.boss!].heroi;
+    if (h) {
+      if (auraRodada !== rodada) {
+        auraRodada = rodada;
+        const perto = ini.filter((o) => dist(o.pos, a.pos) <= h.aura.alcance + c.raio);
+        if (perto.length) {
+          const b = novoGolpe(a, h.aura.nome, "necrotico", "onda", false, true);
+          b.cor = COR_DANO.necrotico;
+          b.rolagem = `CAR + proficiência = ${h.aura.dano}`;
+          log(`  ${a.l.nome}: ${h.aura.nome} → ${h.aura.dano} necrótico em quem está a 30 pés`);
+          for (const o of perto) {
+            const res = novoRes(o, "falhou");
+            aplicarDano(a, o, h.aura.dano, "necrotico", h.aura.nome, res, b);
+            b.resultados.push(res);
+          }
+          if (perto.length >= 2) b.especial = 1;
+          batidas.push(b);
+          if (!a.vivo) return fim();
+        }
+      }
+      if (a.curaMaos > 0 && a.pv / a.pvMax < 0.4) {
+        const v = Math.min(a.curaMaos, 50);
+        a.curaMaos -= v;
+        curar(a, a, "CURA PELAS MÃOS", v, `${v} da reserva (${a.curaMaos} restam)`, "cura", batidas);
+      }
+    }
+    if (!inimigos(a).length) return fim();
     const score = (o: Est) => dist(a.pos, o.pos) / 40 + o.pv * 0.12 - (o.l.campeao ? 1.5 : 0);
     const vis = ini.filter((o) => !escondido(a, o));
     let alvo = vis.reduce((m, o) => (score(o) < score(m) ? o : m), vis[0]);
@@ -1700,6 +1750,38 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
           }
           return fim();
         }
+      } else if (esp.k === "abjurar") {
+        // Abjurar Inimigos (Canalizar Divindade): até 5 inimigos perto fazem salvaguarda ou ficam com medo
+        const alvos = inimigos(a)
+          .filter((o) => o.medo <= 0 && !escondido(a, o) && dist(o.pos, a.pos) <= esp.alcance + c.raio)
+          .sort((x, y) => dist(x.pos, a.pos) - dist(y.pos, a.pos))
+          .slice(0, esp.max);
+        if (alvos.length >= 3) {
+          a.especialPronto = false;
+          const b = novoGolpe(a, esp.nome, "necrotico", "onda", false, true);
+          b.cor = COR_DANO.necrotico;
+          b.especial = 1;
+          b.rolagem = `CD ${esp.cd} ${esp.atributo}`;
+          log(`  ${a.l.nome}: ${esp.nome} (CD ${esp.cd} ${esp.atributo}) em ${alvos.length} inimigos`);
+          for (const o of alvos) {
+            const vant = (o.l.especie === "GNOMO") || o.itens.has("elmoMente") ? 1 : 0;
+            const profS = CLASSES[o.l.classe].salvaguardas.includes(esp.atributo) ? o.prof : 0;
+            const sv = rolarD20(o, `salvaguarda de ${esp.atributo} contra ${esp.nome}`, vant);
+            const tot = sv.v + m(o, esp.atributo) + profS;
+            const passou = tot >= esp.cd;
+            const res = novoRes(o, passou ? "salvou" : "falhou");
+            log(`    ${o.l.nome}: d20 ${sv.dados.join("/")} ${fmt(m(o, esp.atributo) + profS)} = ${tot} → ${passou ? "SALVOU" : "falhou: COM MEDO"}`);
+            if (passou) res.textos.push("SALVOU");
+            else {
+              o.medo = 2;
+              res.textos.push("COM MEDO!");
+              b.cond.push({ id: o.id, add: "MED" });
+            }
+            b.resultados.push(res);
+          }
+          batidas.push(b);
+          return fim();
+        }
       } else if (esp.k === "cabecas") {
         const perto = ini.filter((o) => adjacente(a, o) || dist(a.pos, o.pos) <= ALCANCE + c.raio + 20);
         if (perto.length >= 2) {
@@ -1714,7 +1796,14 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     if (!a.vivo) return fim();
     if (!adjacente(a, alvo)) {
       const colado = ameacas(a)[0];
-      if (!colado) return fim();
+      if (!colado) {
+        // chefe-personagem: quem ele não alcança leva azagaia (Ataque Extra: duas)
+        if (h) for (let k = 0; k < 2; k++) {
+          const t = alvo.vivo ? alvo : inimigos(a).filter((o) => !escondido(a, o))[0];
+          if (t) atacar(a, t, { nome: "AZAGAIA", n: 1, d: 6, bonusDano: 5, tipo: "perfurante", fx: "flecha", distancia: true, magia: false, bonusAcerto: 11, rotulo: "Azagaia" }, batidas);
+        }
+        return fim();
+      }
       alvo = colado;
     }
     c.ataques.forEach((q, k) => {
@@ -1735,7 +1824,7 @@ export const simular = (lutadores: Lutador[], rng: Rng, opcoes: { versao?: numbe
     // o chefe age duas vezes por rodada: na sua iniciativa e de novo no meio da rodada
     const chefe = E.find((e) => e.l.boss);
     for (const [idx, ini] of iniciativa.entries()) {
-      if (chefe && chefe.vivo && idx === Math.floor(iniciativa.length / 2) && vivos().length > 1) jogarTurnoChefe(chefe, rodada);
+      if (chefe && chefe.vivo && (CHEFES[chefe.l.boss!].turnos ?? 2) > 1 && idx === Math.floor(iniciativa.length / 2) && vivos().length > 1) jogarTurnoChefe(chefe, rodada);
       const a = E[ini.id];
       if (!a.vivo) continue;
       if (vivos().length <= 1) break;

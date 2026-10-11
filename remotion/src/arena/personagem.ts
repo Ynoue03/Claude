@@ -535,6 +535,45 @@ const subirAte = (l: Lutador, nivel: number, rng: Rng) => {
   [l.ca, l.caDesc] = calcularCA(l.classe, l.visual, l.atributos);
 };
 
+// chefe do episódio (o campo "chefe" do JSON ou um da ordem a cada 10 episódios); null se não houver
+const criarChefe = (ep: Episodio, base: Lutador, nivel0: number): Lutador | null => {
+  const chefeId = chefeDoEpisodio(ep);
+  if (!chefeId) return null;
+  {
+    const c = CHEFES[chefeId];
+    const a0 = c.ataques[0];
+    const h = c.heroi;
+    return {
+      ...base,
+      id: 0,
+      nome: c.nome,
+      especie: h?.especie ?? "HUMANO",
+      classe: h?.classe ?? "GUERREIRO",
+      nivel: h?.nivel ?? 5,
+      ancestralidade: undefined,
+      atributos: { ...c.atributos },
+      rolagens: [],
+      tentativas: 0,
+      antecedente: "",
+      pvMax: Math.round(c.pv * (ep.chefePv ?? 1 + CHEFE_PV_POR_NIVEL * (nivel0 - 1))),
+      pvRolagens: h?.pvRolagens ?? [],
+      ca: c.ca,
+      caDesc: h ? "placas + Estilo de Luta: Defesa" : `armadura natural (${c.fonte})`,
+      arma: h ? ARMAS[h.visual.arma] : { nome: a0.nome, n: a0.n, d: a0.d, tipo: a0.tipo, atributo: "FOR", distancia: false, duasMaos: true },
+      armaDistancia: undefined,
+      deslocamento: c.deslocamento,
+      visual: h?.visual ?? base.visual,
+      autor: "",
+      descricao: "",
+      campeao: false,
+      vitorias: 0,
+      itens: [],
+      boss: chefeId,
+      bossNivel: nivel0,
+    };
+  }
+};
+
 export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng } => {
   const rng = new Rng(ep.seed);
   // luta de veteranos: só personagens salvos de episódios anteriores, cada um com nível, atributos, PV e itens
@@ -544,6 +583,12 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
     const lutadores = rng.shuffle(fichas);
     lutadores.forEach((l, i) => (l.id = i));
     if (ep.nivelMinimo) for (const l of lutadores) subirAte(l, Math.min(NIVEL_MAX, ep.nivelMinimo), rng);
+    // chefe também nas lutas de veteranos (entra por último, depois do sorteio)
+    const chefe = criarChefe(ep, lutadores[0], 1);
+    if (chefe) {
+      chefe.id = lutadores.length;
+      lutadores.push(chefe);
+    }
     return { lutadores, rng };
   }
   const camp = ep.campeaoAnterior;
@@ -673,39 +718,8 @@ export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng }
     });
   }
   // chefe do episódio entra por último (17º lutador)
-  const chefeId = chefeDoEpisodio(ep);
-  if (chefeId) {
-    const c = CHEFES[chefeId];
-    const a0 = c.ataques[0];
-    const base = lutadores[0];
-    lutadores.push({
-      ...base,
-      id: 0,
-      nome: c.nome,
-      especie: "HUMANO",
-      classe: "GUERREIRO",
-      nivel: 5,
-      ancestralidade: undefined,
-      atributos: { ...c.atributos },
-      rolagens: [],
-      tentativas: 0,
-      antecedente: "",
-      pvMax: Math.round(c.pv * (ep.chefePv ?? 1 + CHEFE_PV_POR_NIVEL * (nivel0 - 1))),
-      pvRolagens: [],
-      ca: c.ca,
-      caDesc: `armadura natural (${c.fonte})`,
-      arma: { nome: a0.nome, n: a0.n, d: a0.d, tipo: a0.tipo, atributo: "FOR", distancia: false, duasMaos: true },
-      armaDistancia: undefined,
-      deslocamento: c.deslocamento,
-      autor: "",
-      descricao: "",
-      campeao: false,
-      vitorias: 0,
-      itens: [],
-      boss: chefeId,
-      bossNivel: nivel0,
-    });
-  }
+  const chefe = criarChefe(ep, lutadores[0], nivel0);
+  if (chefe) lutadores.push(chefe);
   lutadores.forEach((l, i) => (l.id = i));
   return { lutadores, rng };
 };

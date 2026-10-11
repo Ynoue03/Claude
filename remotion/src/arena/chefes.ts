@@ -1,9 +1,10 @@
 // Chefes (a cada 10 episódios): criaturas grandes do SRD 5.2, com ficha simplificada para uma luta
 // contra 16 heróis de nível baixo. Eles entram na luta de todos contra todos como o 17º lutador.
-import type { TipoDano } from "./regras.ts";
+import type { Atributo, ClasseId, EspecieId, TipoDano } from "./regras.ts";
+import type { Visual } from "./personagem.ts";
 import type { Efeito } from "./combate.ts";
 
-export type ChefeId = "MINOTAURO" | "GRIFO" | "HIDRA" | "GIGANTE" | "DRAGAO" | "QUIMERA";
+export type ChefeId = "MINOTAURO" | "GRIFO" | "HIDRA" | "GIGANTE" | "DRAGAO" | "QUIMERA" | "ALDRIC";
 export const ORDEM_CHEFES: ChefeId[] = ["MINOTAURO", "GRIFO", "HIDRA", "GIGANTE", "QUIMERA", "DRAGAO"];
 
 export type AtaqueChefe = { nome: string; acerto: number; n: number; d: number; bonus: number; tipo: TipoDano; fx: Efeito };
@@ -12,7 +13,23 @@ export type EspecialChefe =
   | { k: "rasante"; nome: string }
   | { k: "cabecas"; nome: string }
   | { k: "pedra"; nome: string; acerto: number; n: number; d: number; bonus: number }
-  | { k: "sopro"; nome: string; n: number; d: number; cd: number; tipo: TipoDano; alcance: number };
+  | { k: "sopro"; nome: string; n: number; d: number; cd: number; tipo: TipoDano; alcance: number }
+  | { k: "abjurar"; nome: string; cd: number; atributo: Atributo; alcance: number; max: number };
+
+// Chefe que é um personagem de verdade (ficha de classe): desenhado como herói, em tamanho de chefe
+export type HeroiChefe = {
+  classe: ClasseId;
+  especie: EspecieId;
+  nivel: number;
+  prof: number;
+  slots: number[]; // espaços de magia por círculo
+  curaMaos: number; // reserva de Cura pelas Mãos
+  aura: { nome: string; dano: number; alcance: number }; // dano em quem está perto, no começo do turno dele
+  bonusSalv: number; // Aura de Proteção
+  visual: Visual;
+  pvRolagens: string[];
+  titulo: string; // linha de baixo no cartão do chefe
+};
 
 export type Chefe = {
   id: ChefeId;
@@ -28,6 +45,8 @@ export type Chefe = {
   recarga: number; // especial volta com d6 >= recarga
   resistencias: TipoDano[];
   fonte: string; // de onde vem a ficha
+  heroi?: HeroiChefe;
+  turnos?: number; // turnos por rodada (padrão 2: na iniciativa e no meio da rodada)
 };
 
 export const CHEFES: Record<ChefeId, Chefe> = {
@@ -140,6 +159,66 @@ export const CHEFES: Record<ChefeId, Chefe> = {
     recarga: 5,
     resistencias: ["fogo"],
     fonte: "Young Red Dragon (SRD 5.2)",
+  },
+  // Paladino caído nível 20, criado com a gente para o LENDAS #9 (regras do Paladino e do Golias no SRD 5.2;
+  // o poder sagrado do Juramento da Devoção virou necrótico). PV = d10 máximo no 1º nível + média nos outros.
+  ALDRIC: {
+    id: "ALDRIC",
+    nome: "Sir Aldric",
+    ca: 19, // placas 18 + Estilo de Luta: Defesa
+    pv: 204, // 10+4 no NV 1 + 19 × (6+4)
+    atributos: { FOR: 20, DES: 10, CON: 18, INT: 10, SAB: 14, CAR: 20 },
+    deslocamento: 45, // Golias 35 + Forma Grande 10
+    voa: false,
+    raio: 30,
+    ataques: [
+      { nome: "MONTANTE", acerto: 11, n: 2, d: 6, bonus: 5, tipo: "cortante", fx: "corteGrande" },
+      { nome: "MONTANTE", acerto: 11, n: 2, d: 6, bonus: 5, tipo: "cortante", fx: "corteGrande" },
+    ],
+    especial: { k: "abjurar", nome: "ABJURAR INIMIGOS", cd: 19, atributo: "SAB", alcance: 240, max: 5 },
+    recarga: 6,
+    resistencias: [],
+    fonte: "Paladino 20 · Golias (SRD 5.2)",
+    turnos: 1,
+    heroi: {
+      classe: "PALADINO",
+      especie: "GOLIAS",
+      nivel: 20,
+      prof: 6,
+      slots: [4, 3, 3, 3, 2],
+      curaMaos: 100,
+      aura: { nome: "AURÉOLA PROFANA", dano: 11, alcance: 120 }, // CAR + proficiência, aura de 30 pés
+      bonusSalv: 5, // Aura de Proteção: + CAR
+      pvRolagens: ["NV 1: d10 máximo = 10 +4 CON = 14 PV", "NV 2–20: média 6 +4 CON = +10 PV por nível (×19) = +190 PV"],
+      titulo: "PALADINO CAÍDO",
+      visual: {
+        pele: "#8a8478",
+        cabelo: "#d8d8e0",
+        estiloCabelo: "careca",
+        barba: "longa",
+        olho: "#c070ff",
+        marca: "tatuagem",
+        roupa: "#1c1822",
+        roupa2: "#7a3cc4",
+        couro: "#2a2026",
+        metal: "#3a3644",
+        cabeca: "elmoChifres",
+        pluma: "",
+        corpo: "placas",
+        tabardo: true,
+        ombreiras: true,
+        capa: "#5a2a8a",
+        peleOmbros: false,
+        arma: "montante",
+        escudo: "",
+        brasao: "#7a3cc4",
+        orbe: "",
+        aljava: false,
+        mascara: false,
+        magia: "#a050f0",
+        altura: 1.1,
+      },
+    },
   },
 };
 

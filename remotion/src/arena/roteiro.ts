@@ -318,7 +318,7 @@ export const criarRoteiro = (ep0: Episodio): Roteiro => {
   cond.forEach((p) => p.sort((a, b) => a.f - b.f));
   // concentração some quando o lutador cai
   lutadores.forEach((_, i) => {
-    if (morte[i] < Infinity) ["CNC", "MRC", "FÚR", "ESC", "LNT", "ZMB"].forEach((c) => cond[i].push({ f: morte[i], c, on: false }));
+    if (morte[i] < Infinity) ["CNC", "MRC", "FÚR", "ESC", "LNT", "ZMB", "MED"].forEach((c) => cond[i].push({ f: morte[i], c, on: false }));
   });
 
   const vencedor = sim.vencedor;

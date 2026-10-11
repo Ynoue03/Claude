@@ -48,7 +48,8 @@ const pose = (anim: Anim, q: number): Pose => {
 
 // ───────────── paletas por chefe ─────────────
 type Pal = Record<string, string>;
-const PALETAS: Record<ChefeId, Pal> = {
+// (Sir Aldric é desenhado como herói, em sprite.ts)
+const PALETAS: Partial<Record<ChefeId, Pal>> = {
   MINOTAURO: { pelo: "#6a3e26", pele: "#94603e", focinho: "#b07a52", crina: "#5e6a2c", chifre: "#c8ccd4", casco: "#2e2424", cinto: "#3e3240", tanga: "#4e5a30", metal: "#a8b0bc", madeira: "#7a5232", olho: "#ff3a2a", ouro: "#d8a838", boca: "#3a1414", dente: "#f0ece0" },
   GRIFO: { pena: "#f0ece0", bico: "#e8b030", corpo: "#c09050", asa: "#8a5a32", garra: "#3a2e26", olho: "#e8c040", boca: "#5a2a1a", ponta: "#5a3a22" },
   HIDRA: { escama: "#3e8a4a", ventre: "#c8c080", espinho: "#2a5a3a", olho: "#ffd040", boca: "#8a2030", dente: "#f0ece0", escuro: "#1e3a28" },
@@ -61,8 +62,8 @@ const cacheRampas = new Map<ChefeId, { nomes: string[]; rampas: Rampa[] }>();
 const rampasDe = (id: ChefeId) => {
   let r = cacheRampas.get(id);
   if (!r) {
-    const nomes = Object.keys(PALETAS[id]);
-    r = { nomes, rampas: nomes.map((n) => rampa(PALETAS[id][n])) };
+    const nomes = Object.keys(PALETAS[id]!);
+    r = { nomes, rampas: nomes.map((n) => rampa(PALETAS[id]![n])) };
     cacheRampas.set(id, r);
   }
   return r;
@@ -393,7 +394,7 @@ const dragao = (P: Pinta, p: Pose) => {
   for (let k = 0; k < 3; k++) P.li(30 - k * 5, 4 + asa + b + k * 6, 46, 58 + b, P.m("chifre"), 2);
 };
 
-const DESENHO: Record<ChefeId, (P: Pinta, p: Pose) => void> = { MINOTAURO: minotauro, GRIFO: grifo, HIDRA: hidra, GIGANTE: gigante, QUIMERA: quimera, DRAGAO: dragao };
+const DESENHO: Partial<Record<ChefeId, (P: Pinta, p: Pose) => void>> = { MINOTAURO: minotauro, GRIFO: grifo, HIDRA: hidra, GIGANTE: gigante, QUIMERA: quimera, DRAGAO: dragao };
 // onde fica a cabeça de cada um (para retrato, setas e textos)
 export const CABECA: Record<ChefeId, { x: number; y: number }> = {
   MINOTAURO: { x: 82, y: 34 },
@@ -402,6 +403,7 @@ export const CABECA: Record<ChefeId, { x: number; y: number }> = {
   GIGANTE: { x: 60, y: 18 },
   QUIMERA: { x: 78, y: 50 },
   DRAGAO: { x: 86, y: 32 },
+  ALDRIC: { x: 56, y: 30 },
 };
 
 const cache = new Map<string, HTMLCanvasElement>();
@@ -505,7 +507,7 @@ const desenharProcedural = (id: ChefeId, p: Pose, E: number): HTMLCanvasElement 
     px: (x, y, mat, tom = 1) => (E === 1 ? t.px(x, y, m(mat), tom) : t.ret(x * E, y * E, x * E + E - 1, y * E + E - 1, m(mat), { tom: tomFixo(tom) })),
     li: (x0, y0, x1, y1, mat, tom) => (E === 1 ? t.linha(x0, y0, x1, y1, mat, tom) : t.capsula(x0 * E, y0 * E, x1 * E, y1 * E, E / 2, mat, { tom: tomFixo(tom) })),
   };
-  DESENHO[id](P, p);
+  DESENHO[id]!(P, p);
   const cv = novoCanvas(w, h);
   cv.getContext("2d")!.putImageData(t.cores(rampas), 0, 0);
   return cv;

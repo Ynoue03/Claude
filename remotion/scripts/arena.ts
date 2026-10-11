@@ -92,15 +92,22 @@ for (const l of L) {
       `- FOR ${at.FOR} (${fmt(mod(at.FOR))}) · DES ${at.DES} (${fmt(mod(at.DES))}) · CON ${at.CON} (${fmt(mod(at.CON))}) · INT ${at.INT} (${fmt(mod(at.INT))}) · SAB ${at.SAB} (${fmt(mod(at.SAB))}) · CAR ${at.CAR} (${fmt(mod(at.CAR))})`,
     );
     P(
-      `- PV ${l.pvMax}${l.pvMax !== c.pv ? ` (${c.pv} da ficha × ${(l.pvMax / c.pv).toFixed(1).replace(".", ",")}, heróis mais fortes)` : ""} · CA ${c.ca} · Deslocamento ${c.deslocamento} pés${c.voa ? " (voa: sem ataque de oportunidade ao se mover)" : ""} · age **2 vezes por rodada** (no seu número de iniciativa e no meio da ordem) · não é empurrado`,
+      `- PV ${l.pvMax}${l.pvMax !== c.pv ? ` (${c.pv} da ficha × ${(l.pvMax / c.pv).toFixed(1).replace(".", ",")}, heróis mais fortes)` : ""} · CA ${c.ca} · Deslocamento ${c.deslocamento} pés${c.voa ? " (voa: sem ataque de oportunidade ao se mover)" : ""} · ${(c.turnos ?? 2) > 1 ? "age **2 vezes por rodada** (no seu número de iniciativa e no meio da ordem)" : "age 1 vez por rodada"} · não é empurrado`,
     );
     P(
       `- Ataques (todos em cada turno): ${c.ataques.map((a) => `${a.nome} +${a.acerto} ${a.n}d${a.d}+${a.bonus} ${TIPO[a.tipo] ?? a.tipo}`).join("; ")}`,
     );
     const e = c.especial;
     P(
-      `- Especial (recarga ${c.recarga}–6): ${e.nome}${e.k === "sopro" ? ` — cone ${e.n}d${e.d} ${TIPO[e.tipo] ?? e.tipo}, salvaguarda de DES CD ${e.cd} (metade)` : e.k === "pedra" ? ` — à distância +${e.acerto} ${e.n}d${e.d}+${e.bonus}` : e.k === "investida" ? ` — corre o dobro e soma ${e.extraN}d${e.extraD}, empurra` : e.k === "rasante" ? " — voa até o alvo e ataca com vantagem" : " — uma mordida em cada herói por perto"}`,
+      `- Especial (recarga ${c.recarga}–6): ${e.nome}${e.k === "sopro" ? ` — cone ${e.n}d${e.d} ${TIPO[e.tipo] ?? e.tipo}, salvaguarda de DES CD ${e.cd} (metade)` : e.k === "pedra" ? ` — à distância +${e.acerto} ${e.n}d${e.d}+${e.bonus}` : e.k === "investida" ? ` — corre o dobro e soma ${e.extraN}d${e.extraD}, empurra` : e.k === "rasante" ? " — voa até o alvo e ataca com vantagem" : e.k === "abjurar" ? ` — até ${e.max} inimigos a 60 pés fazem salvaguarda de ${e.atributo} CD ${e.cd} ou ficam com medo por 2 turnos (desvantagem e não o atacam)` : " — uma mordida em cada herói por perto"}`,
     );
+    const h = c.heroi;
+    if (h) {
+      P(`- Ficha de personagem: ${CLASSES[h.classe].nome} nível ${h.nivel} · ${ESPECIES[h.especie].nome} · proficiência +${h.prof} · PV ${h.pvRolagens.join("; ")}`);
+      P(`- Golpes Sombrios (Golpes Radiantes, nv 11): +1d8 necrótico em todo golpe corpo a corpo · Destruição Sombria (Destruição Divina): +2d8 a +6d8 necrótico, espaços ${h.slots.join("/")}`);
+      P(`- ${h.aura.nome} (Auréola Sagrada, nv 20): ${h.aura.dano} necrótico em quem estiver a 30 pés no começo do turno dele · Aura de Proteção: +${h.bonusSalv} nas salvaguardas`);
+      P(`- Cura pelas Mãos: reserva de ${h.curaMaos} PV (50 por vez abaixo de 40% dos PV) · Resistência da Pedra (Golias): −1d12+CON num golpe, ${h.prof} vezes · Azagaias em quem ele não alcança`);
+    }
     if (c.resistencias.length)
       P(`- Resistência: ${c.resistencias.map((t) => TIPO[t] ?? t).join(", ")}`);
     P(
