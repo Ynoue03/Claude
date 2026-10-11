@@ -248,6 +248,13 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
   heróis de nível 5 com 1 item vence ~45%.
 - O chefe pode ser escolhido em qualquer episódio com o campo `chefe` (ex.: `"DRAGAO"` no C #1).
 
+## 18d. LENDAS (luta de veteranos)
+
+- Ordem especial `serie: "L"` ("ARENA D20 LENDAS #1"): só personagens que **já subiram de nível** em qualquer ordem —
+  campeões, quem derrubou um campeão e quem derrotou um chefe — cada um no estado mais recente (nível, atributos, PV e
+  itens). Campo `veteranos` do JSON com as fichas. Sem campeão anterior, sem foco; o placar ganha linhas se passar de 16.
+- Na ordem C só contam os que subiram na luta (os demais já começaram no nível 5).
+
 ## 19. Versões das regras
 
 | Versão | O que liga | Episódios |
@@ -308,3 +315,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 23 | Ordem C ep 1: todos nível 5 com 1 item, chefe Dragão Vermelho | `nivelInicial`, `itemInicial`, chefe fortalecido pelo nível dos heróis; C #1: Liora Corvonegro derruba o Dragão e Mirela Ossovelho vence (nv 6, 6 itens) |
 | 24 | Chefes mais bonitos, de graça | Minotauro gerado no Canva (IA) e pixelizado por `scripts/pixelizar.py` (fundo verde → 163×144, 20 cores, contorno sel-out); `scripts/chefes-sprites.py` gera `chefes-sprites.ts`; animação por deformação; os outros chefes continuam no desenho em código até ganharem arte |
 | 25 | Chefe menor e animado (golpes, rugido, machado, caminhada, respiração) | Minotauro com 5 poses geradas no Canva a partir da mesma referência (parado, passo, machado erguido, golpe, rugido), mesma escala e paleta; ~200 px de altura no mundo (antes ~290); respira parado, alterna passos ao andar, ergue e desce o machado no golpe, ruge na entrada e na vitória |
+| 26 | Batalha com todos que já saíram do nível 1 | LENDAS #1: 17 veteranos (A, B e C), Korrin Mantonegro vence com 6 abates (nível 8) |

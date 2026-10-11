@@ -462,6 +462,7 @@ export type FichaCampeao = {
 
 export type Episodio = {
   numero: number;
+  veteranos?: FichaCampeao[]; // luta só com personagens salvos (ex.: LENDAS: todos que já subiram de nível)
   nivelInicial?: number; // todos os sorteados começam neste nível (sobem do 1 com rolagens de verdade); padrão 1
   itemInicial?: boolean; // cada sorteado começa com 1 item (d30, só da sua classe)
   chefePv?: number; // multiplica os PV do chefe (padrão: cresce com o nível inicial dos heróis)
@@ -490,8 +491,44 @@ export type Episodio = {
   centro?: "altar" | "livre"; // "livre" = sem tablado de degraus e sem pedra d20 no meio (nem obstáculo)
 };
 
+// lutador a partir de uma ficha salva (campeão que volta, ou veterano de episódios anteriores)
+const deFicha = (f: FichaCampeao, campeao: boolean): Lutador => {
+  const anc = f.ancestralidade ? ANCESTRALIDADES.find((a) => a.nome === f.ancestralidade) : undefined;
+  const [ca, caDesc] = calcularCA(f.classe, f.visual, f.atributos);
+  return {
+    id: 0,
+    nome: f.nome,
+    especie: f.especie,
+    classe: f.classe,
+    nivel: f.nivel,
+    ancestralidade: anc,
+    atributos: { ...f.atributos },
+    rolagens: f.rolagens ?? [],
+    tentativas: 0,
+    antecedente: f.antecedente ?? "",
+    pvMax: f.pvMax,
+    pvRolagens: f.pvRolagens ?? [],
+    ca,
+    caDesc,
+    arma: ARMAS[f.visual.arma],
+    deslocamento: ESPECIES[f.especie].deslocamento,
+    visual: f.visual,
+    autor: f.autor ?? "",
+    descricao: f.descricao ?? "",
+    campeao,
+    vitorias: f.vitorias,
+    itens: f.itens ?? [],
+  };
+};
+
 export const gerarLutadores = (ep: Episodio): { lutadores: Lutador[]; rng: Rng } => {
   const rng = new Rng(ep.seed);
+  // luta de veteranos: só personagens salvos de episódios anteriores, cada um com nível, atributos, PV e itens
+  if (ep.veteranos?.length) {
+    const lutadores = rng.shuffle(ep.veteranos.map((f) => deFicha(f, false)));
+    lutadores.forEach((l, i) => (l.id = i));
+    return { lutadores, rng };
+  }
   const camp = ep.campeaoAnterior;
   const total = 16;
   const pedidos: Pedido[] = ep.lutadores.slice(0, camp ? 15 : 16);
@@ -677,7 +714,8 @@ export const numeroGlobal = (ep: { numero: number; serie?: string }) => (ordemDe
 // "07" na ordem A (como sempre foi) e "B01" nas outras: nome dos arquivos do episódio
 export const codigoEp = (ep: { numero: number; serie?: string }) => `${ordemDe(ep) === "A" ? "" : ordemDe(ep)}${String(ep.numero).padStart(2, "0")}`;
 // "#7" na ordem A e "B #1" nas outras: como o episódio aparece no vídeo
-export const rotuloEp = (ep: { numero: number; serie?: string }) => `${ordemDe(ep) === "A" ? "" : `${ordemDe(ep)} `}#${ep.numero}`;
+const NOME_ORDEM: Record<string, string> = { L: "LENDAS" }; // ordens com nome próprio
+export const rotuloEp = (ep: { numero: number; serie?: string }) => `${ordemDe(ep) === "A" ? "" : `${NOME_ORDEM[ordemDe(ep)] ?? ordemDe(ep)} `}#${ep.numero}`;
 // Nome e sobrenome do lutador `i` do episódio `numero`: sai de uma sequência única para a série inteira,
 // então nunca se repete entre episódios. Também não repete o primeiro nome de ninguém da mesma luta.
 const nomeLivre = (numero: number, i: number, usados: Set<string>): string => {

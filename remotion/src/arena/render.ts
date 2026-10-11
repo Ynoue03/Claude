@@ -124,7 +124,8 @@ const dirDe = (dx: number, dy: number, atual: Dir = "S"): Dir => {
   return Math.abs(dx) > Math.abs(dy) * 0.9 ? (dx > 0 ? "E" : "W") : dy > 0 ? "S" : "N";
 };
 
-const POUSO = (i: number) => (i >= 16 ? 4 : 10 + i * 4); // o chefe (17º) chega primeiro
+let IDX_CHEFE = -1; // índice do chefe no episódio desenhado (-1 = sem chefe)
+const POUSO = (i: number) => (i === IDX_CHEFE ? 4 : 10 + i * 4); // o chefe chega primeiro
 // textos que mudam quando o lutador é o chefe
 const classeTxt = (l: Lutador) => (l.boss ? "CHEFE" : CLASSES[l.classe].nome.toUpperCase());
 const corDe = (l: Lutador) => (l.boss ? "#e04040" : CLASSES[l.classe].cor);
@@ -299,6 +300,7 @@ let ROT_Y = { y0: 0, y1: H }; // faixa vertical das caixas de golpe (no mesmo es
 
 export const desenharQuadro = (r: Roteiro, v: number): Camadas => {
   const arena = r.ep.arena ?? "calabouco";
+  IDX_CHEFE = r.lutadores.findIndex((l) => l.boss);
   GEOM = geoDe(arena);
   MW = GEOM.w;
   MH = GEOM.h;
@@ -729,14 +731,25 @@ const numerosFlutuantes = (ctx: Ctx, x: number, y: number, res: Golpe["resultado
 // ───────────── HUD ─────────────
 const hud = (ui: Ctx, r: Roteiro, s: number, v: number, estados: EstadoL[]) => {
   const y0 = 73;
+  // 4 linhas de 4 (16 heróis); lutas de veteranos com mais gente ganham linhas
+  const linhas = Math.max(4, Math.ceil(r.lutadores.filter((l) => !l.boss).length / 4));
+  const alt = 92 + (linhas - 4) * 17;
   ui.fillStyle = "rgba(10,8,16,0.78)";
-  ui.fillRect(28, y0, W - 56, 92);
+  ui.fillRect(28, y0, W - 56, alt);
   ui.fillStyle = "#5a4a3a";
   ui.fillRect(28, y0, W - 56, 1);
-  ui.fillRect(28, y0 + 91, W - 56, 1);
+  ui.fillRect(28, y0 + alt - 1, W - 56, 1);
   ui.fillStyle = "#8a6a3a";
   ui.fillRect(28, y0 + 1, W - 56, 1);
-  texto(ui, `ARENA D20 ${rotuloEp(r.ep)}`, 34, y0 + 5, { cor: DOURADO, contorno: TINTA, escala: 2 });
+  {
+    // "ARENA D20 #7" grande; rótulos longos (LENDAS #1) vão menores ao lado
+    const rot = rotuloEp(r.ep);
+    if (larguraTexto(`ARENA D20 ${rot}`, "g", 2) <= 170) texto(ui, `ARENA D20 ${rot}`, 34, y0 + 5, { cor: DOURADO, contorno: TINTA, escala: 2 });
+    else {
+      texto(ui, "ARENA D20", 34, y0 + 5, { cor: DOURADO, contorno: TINTA, escala: 2 });
+      texto(ui, rot, 34 + larguraTexto("ARENA D20", "g", 2) + 6, y0 + 9, { cor: "#ffffff", contorno: TINTA });
+    }
+  }
   const vivos = r.morte.filter((m) => s < m).length;
   const iniciados = r.turnos.filter((t) => s >= t.t0);
   const rodada = v < V.batalha ? 0 : Math.max(1, ...iniciados.map((t) => t.rodada));

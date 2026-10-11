@@ -638,7 +638,10 @@ const gerarSons = (r: Roteiro): SomEv[] => {
   const add = (v: number, s: string, vol = 1) => S.push({ v: Math.round(v), s, vol });
   const N = r.lutadores.length;
   // intro
-  for (let i = 0; i < N; i++) add(i >= 16 ? 14 : 8 + i * 4 + 10, i >= 16 ? "impacto" : "queda", i >= 16 ? 1 : 0.5); // o chefe chega primeiro
+  for (let i = 0; i < N; i++) {
+    const chefe = !!r.lutadores[i].boss; // o chefe chega primeiro
+    add(chefe ? 14 : 8 + i * 4 + 10, chefe ? "impacto" : "queda", chefe ? 1 : 0.5);
+  }
   add(78, "banner", 0.9);
   if (r.lutadores.some((l) => l.boss)) add(17, "rugido", 1);
   add(100, "conta", 1);
