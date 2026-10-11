@@ -315,6 +315,7 @@ Cores dos tipos de dano (números e efeitos): fogo `#e8701e` · frio `#6cc7f0` �
 ## 7. Chefes (versão 3, episódios 10, 20, 30…)
 
 - Ordem: Minotauro → Grifo → Hidra → Gigante da Colina → Quimera → Dragão Vermelho (e repete). O Beholder não está no SRD, então o "de muitos olhos" virou a Quimera.
+- Chefe-personagem (fora da ordem, `"chefe": "ALDRIC"`): Sir Aldric, Paladino 20 · Golias (SRD 5.2) — PV 204, CA 19, AURÉOLA PROFANA 11/turno, 1 turno por rodada; desenhado como herói 3× (REGRAS.md §10b).
 - A luta é **sempre na caverna** e a caverna é **só** para chefe. O chefe entra como 17º lutador, no **centro** do círculo dos 16 heróis; é todos contra todos, mas os heróis preferem o chefe (`focoChefe`).
 - Tamanho: sprite desenhado em 112×112 e mostrado **3× maior** no mundo (336×336), redesenhado em resolução 3× para o pixel do chefe ter o mesmo tamanho do pixel dos heróis. O corpo (alcance e espaço) acompanha: raio = coluna "Corpo".
 - Age **2 vezes por rodada** (no seu número de iniciativa e no meio da ordem), todos os ataques em cada turno; especial com recarga (d6 ≥ recarga); não é empurrado; quem voa não provoca ataque de oportunidade. Não sobe acima de y = 640 px (a cabeça não some atrás do placar).

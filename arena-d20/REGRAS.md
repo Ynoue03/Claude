@@ -141,6 +141,23 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 - PV ajustados para o chefe vencer ~30% das vezes (o Dragão, o mais difícil, ~50%).
 - Interface: aviso "CUIDADO: [CHEFE]!" com rugido na abertura e barra de vida própria embaixo do placar.
 
+## 10b. Chefe-personagem: Sir Aldric, o Último Juramento
+
+- Criado junto com o dono do canal: **Golias Paladino caído, nível 20**, de montante, armadura preta e capa roxa.
+  Regras do Paladino e do Golias no SRD 5.2; o poder sagrado (Juramento da Devoção, quebrado) virou **necrótico**.
+- Ficha: FOR 20 · DES 10 · CON 18 · INT 10 · SAB 14 · CAR 20 · **PV 204** (d10 máximo no 1º nível + média nos outros) ·
+  **CA 19** (placas + Estilo Defesa) · proficiência +6 · deslocamento 45 pés (Forma Grande).
+- Ataque: 2 golpes de montante (+11, 2d6+5) + **Golpes Sombrios** 1d8 necrótico em cada; **Destruição Sombria**
+  (+2d8 a +6d8, espaços 4/3/3/3/2, sempre o maior); **azagaias** em quem ele não alcança.
+- **Auréola Profana** (nv 20): 11 de dano necrótico (CAR + proficiência) em quem estiver a 30 pés no começo do turno
+  dele — anel roxo no chão. **Aura de Proteção**: +5 nas salvaguardas dele.
+- **Abjurar Inimigos** (especial, recarga 6): até 5 inimigos a 60 pés fazem salvaguarda de SAB CD 19 ou ficam **com
+  medo** por 2 turnos (desvantagem e não o atacam).
+- **Cura pelas Mãos** (100 PV, 50 por vez abaixo de 40%) e **Resistência da Pedra** (−1d12+4, 6 vezes).
+- Diferente dos monstros: age **1 vez por rodada** (campo `turnos` do chefe), é desenhado como herói ampliado 3×.
+- Calibrado contra as 17 lendas (LENDAS #9) para vencer **~70%** (`focoChefe: 4.5`, 80 lutas simuladas: 73%).
+- JSON: `"chefe": "ALDRIC"` (também funciona nas lutas de veteranos).
+
 ## 11. Arenas
 
 - **Calabouço** (padrão): salão de pedra top-down, lajotas, paredes com arcos, portões, correntes e estandartes,
@@ -354,3 +371,4 @@ Detalhes técnicos e tabelas completas (classes, poderes, itens, chefes, cores, 
 | 29 | Nas lendas, nível mínimo 5 para todos | campo `nivelMinimo`; LENDAS #3 (calabouço, versão 4): todos no nível 5+ e Mirela Ossovelho defende o título |
 | 30 | A invisibilidade não funcionava (continuavam batendo no invisível) | versão 5: ninguém mira em quem está invisível; LENDAS #3 refeito |
 | 31 | Próximas 5 batalhas, uma de cada vez | LENDAS #4–#8 (versão 5): Korrin vence o #4, #6 e #8 (chega ao nível 11), Nessa vence o #5, Mirela vence o #7 |
+| 32 | Paladino nível 20 criado juntos como chefe | Sir Aldric, o Último Juramento (Golias, caído, necrótico, preto e roxo, caverna, ~70%); LENDAS #9 |

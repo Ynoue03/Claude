@@ -175,6 +175,7 @@ tabela(
 P("## 7. Chefes (versão 3, episódios 10, 20, 30…)");
 P();
 P(`- Ordem: ${ORDEM_CHEFES.map((c) => CHEFES[c].nome).join(" → ")} (e repete). O Beholder não está no SRD, então o "de muitos olhos" virou a Quimera.`);
+P(`- Chefe-personagem (fora da ordem, \`"chefe": "ALDRIC"\`): ${CHEFES.ALDRIC.nome}, ${CHEFES.ALDRIC.fonte} — PV ${CHEFES.ALDRIC.pv}, CA ${CHEFES.ALDRIC.ca}, ${CHEFES.ALDRIC.heroi!.aura.nome} ${CHEFES.ALDRIC.heroi!.aura.dano}/turno, 1 turno por rodada; desenhado como herói 3× (REGRAS.md §10b).`);
 P("- A luta é **sempre na caverna** e a caverna é **só** para chefe. O chefe entra como 17º lutador, no **centro** do círculo dos 16 heróis; é todos contra todos, mas os heróis preferem o chefe (`focoChefe`).");
 P(`- Tamanho: sprite desenhado em ${CW}×${CH} e mostrado **${ESCALA_CHEFE}× maior** no mundo (${CW * ESCALA_CHEFE}×${CH * ESCALA_CHEFE}), redesenhado em resolução ${ESCALA_CHEFE}× para o pixel do chefe ter o mesmo tamanho do pixel dos heróis. O corpo (alcance e espaço) acompanha: raio = coluna "Corpo".`);
 P(`- Age **2 vezes por rodada** (no seu número de iniciativa e no meio da ordem), todos os ataques em cada turno; especial com recarga (d6 ≥ recarga); não é empurrado; quem voa não provoca ataque de oportunidade. Não sobe acima de y = ${Y_MIN_CHEFE} px (a cabeça não some atrás do placar).`);
