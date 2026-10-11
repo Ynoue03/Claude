@@ -151,6 +151,12 @@ Fontes das opções gratuitas: [Animated pixel minotaur — CC0 (rvros)](https:/
 4. O motor usa o sprite quando ele existe (2 px do mundo por pixel); senão, o desenho em código. Animação por
    deformação: balanço, passo, inclinação/avanço no ataque, recuo no dano, rugido, desabar na morte.
 
-Para os outros chefes: repetir 1–3 com o nome do chefe e acrescentar a posição da cabeça em `CABECA` no
-`chefes-sprites.py`.
+**Animação com poses (versão atual):** além da pose parada, geramos no Canva, usando a primeira imagem como
+referência (`imageReferences`), as poses `passo`, `ergue` (machado no alto), `golpe` e `ruge`. Ficam em
+`arena-d20/chefes-ia/<chefe>/*.jpg`; `python3 remotion/scripts/pixelizar.py arena-d20/chefes-ia/<chefe> 100 24`
+pixeliza todas com a mesma escala e paleta (ancoradas pelos cascos) e `python3 remotion/scripts/chefes-sprites.py`
+gera o módulo. O motor escolhe a pose por animação e acrescenta respiração, balanço do passo e avanço do golpe.
+
+Para os outros chefes: gerar as 5 poses no Canva, rodar os dois scripts e acrescentar `CABECA` e `CINTURA` do chefe
+no `chefes-sprites.py`.
 

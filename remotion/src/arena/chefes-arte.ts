@@ -3,7 +3,7 @@
 import { Tela, rampa, novoCanvas, tomVol, tomFixo } from "./pixel.ts";
 import type { Rampa, OpForma, Tom } from "./pixel.ts";
 import type { ChefeId } from "./chefes.ts";
-import { SPRITES_CHEFE } from "./chefes-sprites.ts";
+import { SPRITES_CHEFE, CHARS_SPRITE } from "./chefes-sprites.ts";
 import type { SpriteChefe } from "./chefes-sprites.ts";
 
 export const CW = 112,
@@ -407,54 +407,75 @@ export const CABECA: Record<ChefeId, { x: number; y: number }> = {
 const cache = new Map<string, HTMLCanvasElement>();
 
 // ───────────── chefes com sprite de pixel art (arte por IA pixelizada, chefes-sprites.ts) ─────────────
-// Cada pixel do sprite vale 2 px do mundo (o mundo do chefe é 3× o desenho de 112). Animação por deformação do quadro:
-// balanço, passo, inclinação para trás e avanço no ataque, recuo no dano, rugido; a queda é a mesma dos outros chefes.
+// Cada pixel do sprite vale 2 px do mundo. Poses desenhadas: base (parado), passo, ergue (machado no alto), golpe e
+// ruge; por cima delas: respiração (o tronco sobe 1 px), balanço ao andar, avanço no golpe, recuo no dano, desabar.
 const ESC_SPRITE = 2 / 3; // pixel do sprite → unidade do desenho de 112
-const spriteBase = new Map<ChefeId, HTMLCanvasElement>();
-const baseDoSprite = (id: ChefeId, sp: SpriteChefe) => {
-  let cv = spriteBase.get(id);
+const poseCv = new Map<string, HTMLCanvasElement>();
+const canvasDaPose = (id: ChefeId, sp: SpriteChefe, nome: string) => {
+  const chave = `${id}|${nome}`;
+  let cv = poseCv.get(chave);
   if (cv) return cv;
-  cv = novoCanvas(sp.w, sp.h);
+  const ps = sp.poses[nome] ?? sp.poses.base;
+  cv = novoCanvas(ps.w, ps.h);
   const ctx = cv.getContext("2d")!;
-  const img = ctx.createImageData(sp.w, sp.h);
+  const img = ctx.createImageData(ps.w, ps.h);
   const rgb = sp.pal.map((c) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]);
-  const CH_ = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for (let i = 0; i < sp.px.length; i++) {
-    const ch = sp.px[i];
+  for (let i = 0; i < ps.px.length; i++) {
+    const ch = ps.px[i];
     if (ch === ".") continue;
-    const [r, g, b] = rgb[CH_.indexOf(ch)];
+    const [r, g, b] = rgb[CHARS_SPRITE.indexOf(ch)];
     img.data.set([r, g, b, 255], i * 4);
   }
   ctx.putImageData(img, 0, 0);
-  spriteBase.set(id, cv);
+  poseCv.set(chave, cv);
   return cv;
 };
-// cabeça no espaço do desenho de 112 (o mesmo de CABECA), com os pés do sprite na âncora (CX, CY)
+// cabeça no espaço do desenho de 112 (o mesmo de CABECA), com os pés da pose parada na âncora (CX, CY)
 export const cabecaChefe = (id: ChefeId): { x: number; y: number } => {
   const sp = SPRITES_CHEFE[id];
   if (!sp) return CABECA[id];
-  return { x: CX + (sp.cabeca[0] - sp.pes[0]) * ESC_SPRITE, y: CY + (sp.cabeca[1] - sp.pes[1]) * ESC_SPRITE };
+  const b = sp.poses.base;
+  return { x: CX + (sp.cabeca[0] - b.pes[0]) * ESC_SPRITE, y: CY + (sp.cabeca[1] - b.pes[1]) * ESC_SPRITE };
 };
-const desenharSprite = (ctx: CanvasRenderingContext2D, id: ChefeId, sp: SpriteChefe, p: Pose, E: number) => {
-  const base = baseDoSprite(id, sp);
+// qual pose e que ajuste (deslocamento em px do sprite, respiração) para cada animação e quadro
+const poseDoQuadro = (anim: Anim, q: number): { nome: string; dx: number; dy: number; respira: boolean } => {
+  switch (anim) {
+    case "idle":
+      return { nome: "base", dx: 0, dy: 0, respira: q === 1 || q === 2 };
+    case "andar": {
+      // passo · passo · parado, duas vezes; o corpo sobe no meio do passo
+      const ciclo = ["passo", "passo", "base", "passo", "passo", "base"][q % 6];
+      return { nome: ciclo, dx: 0, dy: [0, -1, 0, 0, -1, 0][q % 6], respira: false };
+    }
+    case "ataque":
+      // 0–1 ergue o machado; 2 desce com tudo (avança); 3 termina o golpe
+      return q <= 1 ? { nome: "ergue", dx: -1, dy: 0, respira: q === 1 } : { nome: "golpe", dx: q === 2 ? 4 : 2, dy: 0, respira: false };
+    case "magia":
+      return q <= 2 ? { nome: "ergue", dx: -1, dy: 0, respira: false } : q <= 4 ? { nome: "golpe", dx: q === 3 ? 4 : 2, dy: 0, respira: false } : { nome: "base", dx: 0, dy: 0, respira: false };
+    case "dano":
+      return { nome: "base", dx: q === 0 ? -3 : -1, dy: 0, respira: false };
+    case "vitoria":
+      return { nome: "ruge", dx: 0, dy: [0, -1, -1, 0][q % 4], respira: q === 1 || q === 2 };
+    default:
+      return { nome: "base", dx: 0, dy: 0, respira: false };
+  }
+};
+const desenharSprite = (ctx: CanvasRenderingContext2D, id: ChefeId, sp: SpriteChefe, anim: Anim, q: number, E: number) => {
+  const { nome, dx, dy, respira } = poseDoQuadro(anim, q);
+  const ps = sp.poses[nome] ?? sp.poses.base;
+  const cv = canvasDaPose(id, sp, nome);
   const k = ESC_SPRITE * E; // 2 px por pixel do sprite no mundo
-  // inclinação (cisalhamento em volta dos pés) e deslocamento por pose
-  let skew = 0,
-    dx = 0;
-  const dy = p.bob * 2 - p.ruge * 3;
-  if (p.golpe >= 0.9) [skew, dx] = [-0.14, 10];
-  else if (p.golpe >= 0.55) [skew, dx] = [-0.05, 4];
-  else if (p.golpe > 0) [skew, dx] = [0.07 * Math.min(1, p.golpe / 0.45), -3];
-  if (p.recua) [skew, dx] = [0.05 * (p.recua / 3), -2 * p.recua];
-  if (p.ruge) skew = 0.07;
-  dx += p.passo * 2;
   ctx.imageSmoothingEnabled = k < 1.5;
-  ctx.setTransform(1, 0, -skew, 1, Math.round(CX * E + dx * (E / 3)), Math.round(CY * E + dy * (E / 3)));
-  ctx.drawImage(base, -sp.pes[0] * k, -sp.pes[1] * k, sp.w * k, sp.h * k);
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const x0 = Math.round(CX * E + (dx - ps.pes[0]) * k),
+    y0 = Math.round(CY * E + (dy - ps.pes[1]) * k);
+  ctx.drawImage(cv, x0, y0, ps.w * k, ps.h * k);
+  if (respira) {
+    // respiração: tudo acima da cintura sobe 1 pixel do sprite
+    const c = Math.round(sp.cintura * (ps.h / sp.poses.base.h));
+    ctx.drawImage(cv, 0, 0, ps.w, c, x0, y0 - k, ps.w * k, c * k);
+  }
 };
-// escala: 1 = desenho original 112×112 (retrato, mini, CTA); 3 = no mundo (3× maior, redesenhado em resolução
-// tripla — não é ampliado, então o pixel do chefe tem o mesmo tamanho do pixel dos heróis)
+
 export const quadroChefe = (id: ChefeId, anim: Anim, q: number, dir: string, escala = 1): HTMLCanvasElement => {
   const chave = `${id}|${anim}|${q}|${dir}|${escala}`;
   const c0 = cache.get(chave);
@@ -465,7 +486,7 @@ export const quadroChefe = (id: ChefeId, anim: Anim, q: number, dir: string, esc
   const p = pose(anim, q);
   const sp = SPRITES_CHEFE[id];
   let cv = novoCanvas(w, h);
-  if (sp) desenharSprite(cv.getContext("2d")!, id, sp, p, E);
+  if (sp) desenharSprite(cv.getContext("2d")!, id, sp, anim, q, E);
   else cv = desenharProcedural(id, p, E);
   return finalizarQuadro(chave, cv, p, E, dir, w, h, id);
 };
@@ -529,10 +550,10 @@ export const retratoChefe = (id: ChefeId): HTMLCanvasElement => {
   const spr = SPRITES_CHEFE[id];
   if (spr) {
     // recorte 96×64 em volta da cabeça, direto do sprite (1 pixel do sprite = 1 pixel do retrato)
-    const base = baseDoSprite(id, spr);
+    const base = canvasDaPose(id, spr, "base");
     const cv = novoCanvas(96, 64);
-    const x0 = Math.max(0, Math.min(spr.w - 96, spr.cabeca[0] - 52)),
-      y0 = Math.max(0, Math.min(spr.h - 64, spr.cabeca[1] - 30));
+    const x0 = Math.max(0, Math.min(base.width - 96, spr.cabeca[0] - 52)),
+      y0 = Math.max(0, Math.min(base.height - 64, spr.cabeca[1] - 30));
     cv.getContext("2d")!.drawImage(base, x0, y0, 96, 64, 0, 0, 96, 64);
     cache.set(chave, cv);
     return cv;
@@ -550,7 +571,7 @@ export const miniChefe = (id: ChefeId): HTMLCanvasElement => {
   const c0 = cache.get(chave);
   if (c0) return c0;
   const spr = SPRITES_CHEFE[id];
-  const sp = spr ? baseDoSprite(id, spr) : quadroChefe(id, "idle", 0, "E");
+  const sp = spr ? canvasDaPose(id, spr, "base") : quadroChefe(id, "idle", 0, "E");
   const cab = spr ? { x: spr.cabeca[0] + 2, y: spr.cabeca[1] + 2 } : CABECA[id];
   const cv = novoCanvas(16, 16);
   const ctx = cv.getContext("2d")!;

@@ -193,6 +193,11 @@ const estadoBase = (r: Roteiro, i: number, s: number, v: number): EstadoL => {
     st.expr = "neutra";
     st.anim = "idle";
     st.q = Math.floor((v + i * 3) / 8) % 4;
+    // o chefe ruge enquanto aparece o "CUIDADO: …!"
+    if (l.boss && v >= 16 && v < 62) {
+      st.anim = "vitoria";
+      st.q = Math.floor(v / 6) % 4;
+    }
     return st;
   }
   const morte = r.morte[i];
