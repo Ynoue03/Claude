@@ -1,0 +1,100 @@
+{
+  "nome": "Nessa Solposto",
+  "especie": "ORC",
+  "classe": "PATRULHEIRO",
+  "nivel": 6,
+  "atributos": {
+    "DES": 20,
+    "SAB": 17,
+    "CON": 17,
+    "FOR": 13,
+    "INT": 11,
+    "CAR": 7
+  },
+  "pvMax": 53,
+  "pvRolagens": [
+    "NV 1: d10 máximo = 10 +3 CON = 13 PV",
+    "NV 2: d10 = 5 +3 CON = +8 PV",
+    "NV 3: d10 = 7 +3 CON = +10 PV",
+    "NV 4: d10 = 9 +3 CON = +12 PV",
+    "NV 5: d10 = 2 +3 CON = +5 PV",
+    "NV 6: d10 = 2 +3 CON = +5 PV"
+  ],
+  "visual": {
+    "pele": "#8a9a78",
+    "cabelo": "#8a8a92",
+    "estiloCabelo": "rabo",
+    "barba": "",
+    "olho": "#4a7a3a",
+    "marca": "",
+    "roupa": "#2f6a3a",
+    "roupa2": "#c09a2e",
+    "couro": "#3e2e26",
+    "metal": "#c0a060",
+    "cabeca": "capuz",
+    "pluma": "",
+    "corpo": "couro",
+    "tabardo": false,
+    "ombreiras": false,
+    "capa": "#2f6a3a",
+    "peleOmbros": false,
+    "arma": "arcoLongo",
+    "escudo": "",
+    "brasao": "#e8e0d0",
+    "orbe": "",
+    "aljava": true,
+    "mascara": false,
+    "magia": "#a6d62a",
+    "altura": 1.04
+  },
+  "vitorias": 1,
+  "itens": [
+    "cajadoArcano",
+    "botasLigeiras",
+    "capaSombras",
+    "luvasPrecisas",
+    "armaduraEspinhos",
+    "elmoMente"
+  ],
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      6,
+      5,
+      4,
+      5
+    ],
+    [
+      2,
+      5,
+      4,
+      2
+    ],
+    [
+      1,
+      5,
+      5,
+      3
+    ],
+    [
+      4,
+      6,
+      1,
+      6
+    ],
+    [
+      6,
+      6,
+      5,
+      2
+    ],
+    [
+      3,
+      1,
+      2,
+      2
+    ]
+  ],
+  "antecedente": "+2 DES / +1 CON"
+}

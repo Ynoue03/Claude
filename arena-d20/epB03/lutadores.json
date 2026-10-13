@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Orrin Mantonegro",
+    "classe": "BARDO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Kira Raizfunda",
+    "classe": "BARBARO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Tobias Corvonegro",
+    "classe": "PATRULHEIRO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Vex Ossovelho",
+    "classe": "FEITICEIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Lorcan Rocharrubra",
+    "classe": "CLERIGO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Rhea Chamaviva",
+    "classe": "LADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Dax Montanegra",
+    "classe": "MAGO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Yara Ferrocinza",
+    "classe": "GUERREIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Elowen Lâminarrubra",
+    "classe": "PALADINO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Maeve Brasaviva",
+    "classe": "DRUIDA",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Borin Pedranegra",
+    "classe": "BRUXO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Oona Galhoverde",
+    "classe": "BRUXO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Azura Serrabrava",
+    "classe": "MONGE",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Garruk Sombralonga",
+    "classe": "BARBARO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Talia Águaclara",
+    "classe": "MONGE",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Nessa Torrealta",
+    "classe": "PATRULHEIRO",
+    "especie": "ELFO"
+  }
+]

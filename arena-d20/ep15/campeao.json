@@ -1,0 +1,92 @@
+{
+  "nome": "Rhea Ouroverde",
+  "especie": "ANAO",
+  "classe": "DRUIDA",
+  "nivel": 2,
+  "atributos": {
+    "SAB": 18,
+    "CON": 16,
+    "DES": 14,
+    "INT": 13,
+    "CAR": 11,
+    "FOR": 10
+  },
+  "pvMax": 22,
+  "pvRolagens": [
+    "NV 1: d8 máximo = 8 +3 CON +1 Robustez Anã = 12 PV",
+    "NV 2: d8 = 6 +3 CON +1 Robustez Anã = +10 PV"
+  ],
+  "visual": {
+    "pele": "#d49870",
+    "cabelo": "#9a3ab0",
+    "estiloCabelo": "coque",
+    "barba": "trancada",
+    "olho": "#8a5ab0",
+    "marca": "",
+    "roupa": "#5a5a2e",
+    "roupa2": "#8a5a32",
+    "couro": "#6a4428",
+    "metal": "#a8b0bc",
+    "cabeca": "folhas",
+    "pluma": "",
+    "corpo": "manto",
+    "tabardo": false,
+    "ombreiras": false,
+    "capa": "",
+    "peleOmbros": false,
+    "arma": "cimitarra",
+    "escudo": "madeira",
+    "brasao": "#c83a3a",
+    "orbe": "",
+    "aljava": false,
+    "mascara": false,
+    "magia": "#7ad04a",
+    "altura": 0.86
+  },
+  "vitorias": 1,
+  "itens": [
+    "botasFirmes",
+    "luvasPrecisas"
+  ],
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      4,
+      1,
+      6,
+      5
+    ],
+    [
+      6,
+      1,
+      2,
+      6
+    ],
+    [
+      4,
+      6,
+      6,
+      1
+    ],
+    [
+      3,
+      2,
+      2,
+      6
+    ],
+    [
+      3,
+      5,
+      3,
+      5
+    ],
+    [
+      3,
+      2,
+      2,
+      5
+    ]
+  ],
+  "antecedente": "+2 SAB / +1 CON"
+}

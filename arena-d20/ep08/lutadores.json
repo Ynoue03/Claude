@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Hale Montanegra",
+    "classe": "MONGE",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Korrin Mantonegro",
+    "classe": "BARBARO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Ulric Ferrocinza",
+    "classe": "MAGO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Talia Lâminarrubra",
+    "classe": "CLERIGO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Marek Brasaviva",
+    "classe": "PALADINO",
+    "especie": "TIEFLING"
+  },
+  {
+    "nome": "Bruk Pedranegra",
+    "classe": "FEITICEIRO",
+    "especie": "TIEFLING"
+  },
+  {
+    "nome": "Ivo Galhoverde",
+    "classe": "GUERREIRO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Wren Serrabrava",
+    "classe": "PATRULHEIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Vesna Sombralonga",
+    "classe": "BRUXO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Quill Torrealta",
+    "classe": "LADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Seraphine Folhaseca",
+    "classe": "BARDO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Juno Martelo",
+    "classe": "DRUIDA",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Tamsin Rubrafonte",
+    "classe": "MAGO",
+    "especie": "TIEFLING"
+  },
+  {
+    "nome": "Ash Fogaréu",
+    "classe": "GUERREIRO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Sable Lagofundo",
+    "classe": "BRUXO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Doran Marévoa",
+    "classe": "PATRULHEIRO",
+    "especie": "HUMANO"
+  }
+]

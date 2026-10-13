@@ -1,0 +1,90 @@
+{
+  "nome": "Zara Pontavento",
+  "especie": "ANAO",
+  "classe": "PALADINO",
+  "nivel": 3,
+  "atributos": {
+    "FOR": 19,
+    "CAR": 17,
+    "CON": 14,
+    "SAB": 12,
+    "DES": 11,
+    "INT": 7
+  },
+  "pvMax": 27,
+  "pvRolagens": [
+    "NV 1: d10 máximo = 10 +2 CON +1 Robustez Anã = 13 PV",
+    "NV 2: d10 = 1 +2 CON +1 Robustez Anã = +4 PV",
+    "NV 3: d10 = 7 +2 CON +1 Robustez Anã = +10 PV"
+  ],
+  "visual": {
+    "pele": "#b07850",
+    "cabelo": "#2e8a6a",
+    "estiloCabelo": "coque",
+    "barba": "longa",
+    "olho": "#6a4a2a",
+    "marca": "tatuagem",
+    "roupa": "#2f6a3a",
+    "roupa2": "#4e5a6a",
+    "couro": "#5a3a26",
+    "metal": "#c0a060",
+    "cabeca": "elmoFechado",
+    "pluma": "#c83a3a",
+    "corpo": "placas",
+    "tabardo": true,
+    "ombreiras": true,
+    "capa": "#e8e0d0",
+    "peleOmbros": false,
+    "arma": "martelo",
+    "escudo": "brasao",
+    "brasao": "#c83a3a",
+    "orbe": "",
+    "aljava": false,
+    "mascara": false,
+    "magia": "#f0d060",
+    "altura": 0.86
+  },
+  "vitorias": 1,
+  "itens": [],
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      4,
+      5,
+      2,
+      4
+    ],
+    [
+      3,
+      1,
+      1,
+      3
+    ],
+    [
+      6,
+      6,
+      5,
+      3
+    ],
+    [
+      5,
+      4,
+      2,
+      1
+    ],
+    [
+      6,
+      2,
+      1,
+      4
+    ],
+    [
+      6,
+      5,
+      6,
+      1
+    ]
+  ],
+  "antecedente": "+2 FOR / +1 CON"
+}

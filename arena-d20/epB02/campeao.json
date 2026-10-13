@@ -1,0 +1,90 @@
+{
+  "nome": "Talia Águaclara",
+  "especie": "ORC",
+  "classe": "MONGE",
+  "nivel": 3,
+  "atributos": {
+    "DES": 18,
+    "SAB": 12,
+    "CON": 13,
+    "FOR": 11,
+    "INT": 9,
+    "CAR": 8
+  },
+  "pvMax": 20,
+  "pvRolagens": [
+    "NV 1: d8 máximo = 8 +1 CON = 9 PV",
+    "NV 2: d8 = 2 +1 CON = +3 PV",
+    "NV 3: d8 = 7 +1 CON = +8 PV"
+  ],
+  "visual": {
+    "pele": "#9aa486",
+    "cabelo": "#c8902e",
+    "estiloCabelo": "careca",
+    "barba": "curta",
+    "olho": "#8a5ab0",
+    "marca": "cicatriz",
+    "roupa": "#2c4a9a",
+    "roupa2": "#2c4a9a",
+    "couro": "#7a5034",
+    "metal": "#9aa2ae",
+    "cabeca": "nada",
+    "pluma": "",
+    "corpo": "gi",
+    "tabardo": false,
+    "ombreiras": false,
+    "capa": "",
+    "peleOmbros": false,
+    "arma": "punhos",
+    "escudo": "",
+    "brasao": "#e8e0d0",
+    "orbe": "",
+    "aljava": false,
+    "mascara": false,
+    "magia": "#9ad8f0",
+    "altura": 1.04
+  },
+  "vitorias": 1,
+  "itens": [],
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      5,
+      3,
+      4,
+      1
+    ],
+    [
+      4,
+      6,
+      5,
+      5
+    ],
+    [
+      1,
+      1,
+      5,
+      6
+    ],
+    [
+      1,
+      2,
+      3,
+      4
+    ],
+    [
+      1,
+      2,
+      4,
+      2
+    ],
+    [
+      3,
+      1,
+      2,
+      6
+    ]
+  ],
+  "antecedente": "+2 DES / +1 CON"
+}

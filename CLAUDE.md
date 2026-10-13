@@ -7,6 +7,10 @@ Este repositório produz vídeos curtos de motion graphics com o Claude, em dois
 | `remotion/`    | Remotion (React)              | **Templates em série** — mesmo vídeo, dados diferentes (treinos, receitas) |
 | `hyperframes/` | HyperFrames (HTML + GSAP)     | **Peças únicas e rápidas** — motion graphic de 8–15 s, dica, chamada, legenda em vídeo gravado |
 
+**Exceção — ARENA D20** (`arena-d20/README.md`): série em pixel art com regras de RPG de mesa (Remotion, composição
+`ArenaD20`). Tem estética própria de jogo retrô e não segue a identidade abaixo. Episódio novo = novo JSON em
+`remotion/src/arena/episodios/` + `scripts/arena.sh`.
+
 Antes de mexer em um projeto, entre na pasta dele e use as skills instaladas lá
 (`remotion-best-practices` / `hyperframes`). Elas têm as regras técnicas de cada motor.
 

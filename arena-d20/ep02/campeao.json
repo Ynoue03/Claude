@@ -1,0 +1,89 @@
+{
+  "nome": "Yara",
+  "especie": "DRACONATO",
+  "classe": "GUERREIRO",
+  "nivel": 2,
+  "atributos": {
+    "FOR": 20,
+    "CON": 16,
+    "DES": 15,
+    "SAB": 13,
+    "CAR": 13,
+    "INT": 11
+  },
+  "pvMax": 19,
+  "pvRolagens": [
+    "NV 1: d10 máximo = 10 +3 CON = 13 PV",
+    "NV 2: d10 = 3 +3 CON = +6 PV"
+  ],
+  "ancestralidade": "azul",
+  "visual": {
+    "pele": "#2f5fc0",
+    "cabelo": "#5a3420",
+    "estiloCabelo": "careca",
+    "barba": "",
+    "olho": "#e8c040",
+    "marca": "cicatriz",
+    "roupa": "#2c4a9a",
+    "roupa2": "#9c2a2e",
+    "couro": "#5a3a26",
+    "metal": "#c0a060",
+    "cabeca": "elmoAberto",
+    "pluma": "",
+    "corpo": "malha",
+    "tabardo": true,
+    "ombreiras": true,
+    "capa": "",
+    "peleOmbros": false,
+    "arma": "montante",
+    "escudo": "",
+    "brasao": "#e8e0d0",
+    "orbe": "",
+    "aljava": false,
+    "mascara": false,
+    "magia": "#e8701e",
+    "altura": 1.04
+  },
+  "vitorias": 1,
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      5,
+      3,
+      6,
+      4
+    ],
+    [
+      1,
+      5,
+      5,
+      5
+    ],
+    [
+      6,
+      1,
+      4,
+      1
+    ],
+    [
+      6,
+      6,
+      5,
+      6
+    ],
+    [
+      4,
+      3,
+      6,
+      2
+    ],
+    [
+      6,
+      5,
+      2,
+      1
+    ]
+  ],
+  "antecedente": "+2 FOR / +1 CON"
+}

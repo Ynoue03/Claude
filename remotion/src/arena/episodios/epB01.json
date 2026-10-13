@@ -1,0 +1,20 @@
+{
+  "numero": 1,
+  "serie": "B",
+  "seed": "arena-d20-epB01",
+  "perfil": "@SuaArenaD20",
+  "lutadores": [],
+  "campeaoAnterior": null,
+  "textos": {
+    "escolha": "ESCOLHA SEU CAMPEÃO!",
+    "lutem": "LUTEM!",
+    "subiu": "SUBIU DE NÍVEL!",
+    "defende": "DEFENDE O TÍTULO NA PRÓXIMA BATALHA!",
+    "cta": "COMENTE NOME + DESCRIÇÃO DO SEU PERSONAGEM · OS DADOS DECIDEM O RESTO!"
+  },
+  "audio": "arena/epB01.wav",
+  "versao": 3,
+  "focoCampeao": "forte",
+  "arena": "calabouco",
+  "centro": "livre"
+}

@@ -1,0 +1,101 @@
+{
+  "nome": "Mirela Ossovelho",
+  "especie": "ANAO",
+  "classe": "LADINO",
+  "nivel": 7,
+  "atributos": {
+    "DES": 19,
+    "CON": 14,
+    "INT": 13,
+    "SAB": 10,
+    "CAR": 9,
+    "FOR": 6
+  },
+  "pvMax": 66,
+  "pvRolagens": [
+    "NV 1: d8 máximo = 8 +2 CON +1 Robustez Anã = 11 PV",
+    "NV 2: d8 = 8 +2 CON +1 Robustez Anã = +11 PV",
+    "NV 3: d8 = 7 +2 CON +1 Robustez Anã = +10 PV",
+    "NV 4: d8 = 7 +2 CON +1 Robustez Anã = +10 PV",
+    "NV 5: d8 = 7 +2 CON +1 Robustez Anã = +10 PV",
+    "NV 6: d8 = 1 +2 CON +1 Robustez Anã = +4 PV",
+    "NV 7: d8 = 7 +2 CON +1 Robustez Anã = +10 PV"
+  ],
+  "visual": {
+    "pele": "#7e5236",
+    "cabelo": "#c8902e",
+    "estiloCabelo": "rabo",
+    "barba": "trancada",
+    "olho": "#8a5ab0",
+    "marca": "",
+    "roupa": "#2a3038",
+    "roupa2": "#2f6a3a",
+    "couro": "#3e2e26",
+    "metal": "#a8b0bc",
+    "cabeca": "bandana",
+    "pluma": "",
+    "corpo": "couro",
+    "tabardo": false,
+    "ombreiras": false,
+    "capa": "",
+    "peleOmbros": false,
+    "arma": "arcoCurto",
+    "escudo": "",
+    "brasao": "#e8c040",
+    "orbe": "",
+    "aljava": true,
+    "mascara": true,
+    "magia": "#e8701e",
+    "altura": 0.86
+  },
+  "vitorias": 2,
+  "itens": [
+    "botasLigeiras",
+    "cajadoArcano",
+    "capaSombras",
+    "luvasPrecisas",
+    "armaduraEspinhos",
+    "elmoMente"
+  ],
+  "autor": "",
+  "descricao": "",
+  "rolagens": [
+    [
+      6,
+      4,
+      3,
+      5
+    ],
+    [
+      2,
+      6,
+      2,
+      5
+    ],
+    [
+      2,
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      1,
+      3,
+      4
+    ],
+    [
+      4,
+      4,
+      1,
+      2
+    ],
+    [
+      6,
+      1,
+      1,
+      6
+    ]
+  ],
+  "antecedente": "+2 DES / +1 CON"
+}

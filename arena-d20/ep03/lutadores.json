@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Nessa",
+    "classe": "MAGO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Lorcan",
+    "classe": "PATRULHEIRO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Grom",
+    "classe": "CLERIGO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Orrin",
+    "classe": "DRUIDA",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Marek",
+    "classe": "BARDO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Elowen",
+    "classe": "LADINO",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Nyx",
+    "classe": "FEITICEIRO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Maeve",
+    "classe": "PALADINO",
+    "especie": "TIEFLING"
+  },
+  {
+    "nome": "Runa",
+    "classe": "BRUXO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Wren",
+    "classe": "BARBARO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Borin",
+    "classe": "MONGE",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Doran",
+    "classe": "BARBARO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Vex",
+    "classe": "DRUIDA",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Fenris",
+    "classe": "BARDO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Yara",
+    "classe": "GUERREIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Pike",
+    "classe": "BRUXO",
+    "especie": "ANAO"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Zara",
+    "classe": "MAGO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Orrin",
+    "classe": "LADINO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Yara",
+    "classe": "BARDO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Oona",
+    "classe": "CLERIGO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Liora",
+    "classe": "FEITICEIRO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Vex",
+    "classe": "BRUXO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Wren",
+    "classe": "PALADINO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Sable",
+    "classe": "BARBARO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Runa",
+    "classe": "PATRULHEIRO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Tobias",
+    "classe": "GUERREIRO",
+    "especie": "TIEFLING"
+  },
+  {
+    "nome": "Borin",
+    "classe": "DRUIDA",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Hale",
+    "classe": "MONGE",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Fenris",
+    "classe": "PATRULHEIRO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Brann",
+    "classe": "BARBARO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Rhea",
+    "classe": "PALADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Dax",
+    "classe": "BRUXO",
+    "especie": "HUMANO"
+  }
+]

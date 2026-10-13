@@ -1,0 +1,82 @@
+[
+  {
+    "nome": "Thorin Ouroverde",
+    "classe": "CLERIGO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Brann Lunasombra",
+    "classe": "BARDO",
+    "especie": "HALFLING"
+  },
+  {
+    "nome": "Isolde Gelomanto",
+    "classe": "MONGE",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Pike Dentelobo",
+    "classe": "PALADINO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Faelan Ventobravo",
+    "classe": "PATRULHEIRO",
+    "especie": "ORC"
+  },
+  {
+    "nome": "Lyra Estrelagris",
+    "classe": "DRUIDA",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Edda Valeclaro",
+    "classe": "FEITICEIRO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Nyx Brumaclara",
+    "classe": "LADINO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Yara Rubrafonte",
+    "classe": "GUERREIRO",
+    "especie": "DRACONATO"
+  },
+  {
+    "nome": "Runa Espinhadouro",
+    "classe": "MAGO",
+    "especie": "ELFO"
+  },
+  {
+    "nome": "Grom Solposto",
+    "classe": "BRUXO",
+    "especie": "HUMANO"
+  },
+  {
+    "nome": "Kael Asaprata",
+    "classe": "BARBARO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Fenris Mantonegro",
+    "classe": "MONGE",
+    "especie": "GOLIAS"
+  },
+  {
+    "nome": "Zara Raizfunda",
+    "classe": "PALADINO",
+    "especie": "ANAO"
+  },
+  {
+    "nome": "Soren Corvonegro",
+    "classe": "PATRULHEIRO",
+    "especie": "GNOMO"
+  },
+  {
+    "nome": "Liora Ossovelho",
+    "classe": "GUERREIRO",
+    "especie": "HALFLING"
+  }
+]
